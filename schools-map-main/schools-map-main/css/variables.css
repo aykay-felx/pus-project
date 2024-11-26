@@ -1,0 +1,29 @@
+:root {
+  /* colors */
+  --tab-border: #333;
+  --border-light: rgb(200, 200, 200);
+  --main-bg-color: #5a5050;
+  --content-bg-color: rgba(255, 255, 255, 0.9);
+  --border-semi-light: rgb(150, 150, 150);
+  --icons-border-color: rgb(75, 75, 75);
+  --secondary-bg-color: #547a82;
+  --sidebar-tabs-underline-color: #a7d7ff;
+  /* sizing */
+
+  --arrow-size: 16px;
+  --arrow-size-2: 20px;
+  --header-height: 50px;
+  --content-width: 90%;
+  --chechbox-size: 14px;
+  --dropdown-height: 140px;
+  --left-side-space: 5%;
+  --header-top-space: 1.5vh;
+  --content-border-radius: 25px;
+  --details-content-height: 75%;
+  /* fonts */
+  --details-font-size: 0.8rem;
+  --sidebar-tab-font-size: 1rem;
+  --search-title-font-size: 1rem;
+  --sidebar-title-font-size: 1.2rem;
+  --search-dropdown-font-size: 0.8rem;
+}

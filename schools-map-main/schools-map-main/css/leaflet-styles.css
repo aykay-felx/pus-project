@@ -1,0 +1,43 @@
+/* leaflet elements customisation */
+.leaflet-left {
+  right: 2%;
+  left: unset;
+}
+.leaflet-top {
+  top: unset;
+  bottom: 5%;
+}
+.leaflet-popup-content-wrapper {
+  background-color: #dee4dfd3;
+  color: #201f1f;
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+  margin: 0;
+  padding: 5px;
+}
+
+.leaflet-popup-content p,
+.leaflet-popup-content a {
+  margin: 0 0 5px 0;
+  font-size: var(--details-font-size);
+}
+
+.leaflet-popup-tip-container {
+  visibility: hidden;
+}
+
+/* popup edit */
+.popup {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 15px;
+  width: 100%;
+  height: 100%;
+}
+
+.popup__school-name {
+  text-align: center;
+  font-weight: 700;
+  font-size: var(--details-font-size);
+}

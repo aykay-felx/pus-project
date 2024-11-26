@@ -1,0 +1,22 @@
+.hamburger {
+  display: inline-block;
+  cursor: pointer;
+}
+.hamburger__bar {
+  width: 25px;
+  height: 2px;
+  background-color: var(--icons-border-color);
+  margin: 6px 0;
+  transition: 0.3s;
+}
+.change-bar1 {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.change-bar2 {
+  opacity: 0;
+}
+
+.change-bar3 {
+  transform: rotate(45deg) translate(-6px, -6px);
+}

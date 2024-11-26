@@ -1,0 +1,28 @@
+@media (min-width: 600px) {
+  :root {
+    --content-width: 65%;
+    --details-content-height: 80%;
+    --search-dropdown-font-size: 1rem;
+    --search-title-font-size: 1.2rem;
+    --chechbox-size: 18px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --content-width: 50%;
+    --details-font-size: 1rem;
+    --sidebar-tab-font-size: 1.2rem;
+    --sidebar-title-font-size: 1.4rem;
+  }
+}
+@media (min-width: 1200px) {
+  :root {
+    --content-width: 40%;
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --content-width: 30%;
+  }
+}

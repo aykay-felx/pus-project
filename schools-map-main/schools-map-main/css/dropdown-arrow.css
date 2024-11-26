@@ -1,0 +1,22 @@
+.arrow {
+  display: block;
+  width: var(--arrow-size);
+  height: var(--arrow-size);
+  border: solid var(--icons-border-color);
+  border-width: 0 2px 2px 0;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.arrow--back {
+  transform: rotate(135deg) translate(-10%, -10%);
+}
+.arrow--forward {
+  transform: rotate(-45deg) translate(-15%, -15%);
+}
+.arrow--up {
+  transform: rotate(-135deg) translate(-15%, -15%);
+}
+.arrow--down {
+  transform: rotate(45deg) translate(-10%, -10%);
+}

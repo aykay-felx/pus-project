@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js"></script>
+    <!-- Cluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.Default.css" />
+    <script type="text/javascript"
+        src="https://unpkg.com/leaflet.markercluster@1.5.1/dist/leaflet.markercluster.js"></script>
+
+    <link rel="icon" href="school.png" type="image/png">
+    <title>Mapa Szkół Niepublicznych</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/leaflet-styles.css">
+    <link rel="stylesheet" href="css/dropdown-arrow.css">
+    <link rel="stylesheet" href="css/search-dropdown.css">
+    <link rel="stylesheet" href="css/hamburger-button.css">
+    <link rel="stylesheet" href="css/media-queries.css">
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <header class="header ">
+
+            <div class="hamburger">
+                <div class="hamburger__bar hamburger__bar-1"></div>
+                <div class="hamburger__bar hamburger__bar-2"></div>
+                <div class="hamburger__bar hamburger__bar-3"></div>
+            </div>
+
+            <input class="header__search" placeholder="Wyszukaj..." type="search" name="school-name" id="school-name">
+
+            <div class="header__arrow arrow arrow--down dropdown-button"></div>
+
+            <div class="dropdown-content dropdown--invisible">
+
+                <p class="dropdown-content__title">Filtry</p>
+
+                <div class="voivodeship__container">
+
+                    <label for="voivodeship">Województwo:</label>
+
+                    <select class="voivodeship__select" class="" name="select-voivodeship" id="select-voivodeship">
+
+                        <option class="voivodeship__option" value="all-schools">Cała polska</option>
+                        <option class="voivodeship__option" value="dolnośląskie">Dolnośląskie</option>
+                        <option class="voivodeship__option" value="kujawsko-pomorskie">Kujawsko-pomorskie</option>
+                        <option class="voivodeship__option" value="lubelskie">Lubelskie</option>
+                        <option class="voivodeship__option" value="lubuskie">Lubuskie</option>
+                        <option class="voivodeship__option" value="łódzkie">Łódzkie</option>
+                        <option class="voivodeship__option" value="małopolskie">Małopolskie</option>
+                        <option class="voivodeship__option" value="mazowieckie">Mazowieckie</option>
+                        <option class="voivodeship__option" value="opolskie">Opolskie</option>
+                        <option class="voivodeship__option" value="podkarpackie">Podkarpackie</option>
+                        <option class="voivodeship__option" value="podlaskie">Podlaskie</option>
+                        <option class="voivodeship__option" value="pomorskie">Pomorskie</option>
+                        <option class="voivodeship__option" value="śląskie">Śląskie</option>
+                        <option class="voivodeship__option" value="świętokrzyskie">Świętokrzyskie</option>
+                        <option class="voivodeship__option" value="warmińsko-mazurskie">Warmińsko-mazurskie</option>
+                        <option class="voivodeship__option" value="wielkopolskie">Wielkopolskie</option>
+                        <option class="voivodeship__option" value="zachodniopomorskie">Zachodniopomorskie</option>
+
+                    </select>
+                </div>
+
+                <div class="school-type__container">
+
+                    <label class="school-type__item">
+                        <input type="checkbox" class="school-type__checkbox" id="school-type-checkbox"
+                            name="school-type-checkbox" value="szkoła podstawowa" checked>
+                        <p>Podstawowa</p>
+                    </label>
+
+                    <label class="school-type__item">
+                        <input type="checkbox" class="school-type__checkbox" id="school-type-checkbox"
+                            name="school-type-checkbox" value="liceum ogólnokształcące" checked>
+                        <p>Liceum</p>
+                    </label>
+
+                    <label class="school-type__item">
+                        <input type="checkbox" class="school-type__checkbox" id="school-type-checkbox"
+                            name="school-type-checkbox" value="technikum" checked>
+                        <p>Technikum</p>
+                    </label>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <aside class="sidebar sidebar--hide">
+
+            <div class="sidebar__header">
+                <h1 class="sidebar__title">Dodatkowe informacje</h1>
+            </div>
+
+            <div class="sidebar__tabs-container">
+                <input class="sidebar__radio" id="tab1" type="radio" name="tabs" checked>
+                <label class="sidebar__tab" for="tab1">Dane ogólne</label>
+                <input class="sidebar__radio" id="tab2" type="radio" name="tabs">
+                <label class="sidebar__tab" for="tab2">Dane szczegółowe</label>
+
+            </div>
+
+            <div class="sidebar__content-container">
+                <section class="sidebar__content" id="content-1">
+                    <div class="sidebar__address-info">
+                    </div>
+                </section>
+
+                <section class="sidebar__content" id="content-2">
+                    <div class="sidebar__detailed-info">
+                    </div>
+                </section>
+            </div>
+
+        </aside>
+
+        <main class="map-container">
+            <div class="map" id="map">
+            </div>
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
