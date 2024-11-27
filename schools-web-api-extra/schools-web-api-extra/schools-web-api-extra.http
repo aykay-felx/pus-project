@@ -1,6 +1,0 @@
-@schools_web_api_extra_HostAddress = http://localhost:5262
-
-GET {{schools_web_api_extra_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

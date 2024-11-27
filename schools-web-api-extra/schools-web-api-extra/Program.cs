@@ -22,7 +22,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // ¬ключение Swagger только в среде разработки
-if (app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
     Console.WriteLine("Swagger is being set up");
     app.UseSwagger();
