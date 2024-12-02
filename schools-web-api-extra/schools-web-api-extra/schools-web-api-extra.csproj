@@ -13,4 +13,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\schools-web-api-master\schools-web-api-master\schools-web-api.csproj" />
+    </ItemGroup>
+
 </Project>
