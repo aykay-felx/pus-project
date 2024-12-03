@@ -1,6 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using schools_web_api.Model;
+using schools_web_api.TokenManager;
+using schools_web_api.TokenManager.Services.Model;
+using schools_web_api.TokenManager.TransmitModels;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text.Json;
+
 
 namespace RSPOApiIntegration.Controllers
 {
@@ -12,10 +18,12 @@ namespace RSPOApiIntegration.Controllers
     public class RSPOController : ControllerBase
     {
         private readonly HttpClient _httpClient;
+        private readonly ISchoolService _schoolService;
 
-        public RSPOController(IHttpClientFactory httpClientFactory)
+        public RSPOController(IHttpClientFactory httpClientFactory,  ISchoolService schoolService)
         {
             _httpClient = httpClientFactory.CreateClient();
+            _schoolService = schoolService;
         }
 
         /// <summary>
@@ -43,13 +51,27 @@ namespace RSPOApiIntegration.Controllers
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                var data = JsonSerializer.Deserialize<object>(content);
+                var schools = JsonSerializer.Deserialize<List<object>>(content);
+
+               
+               
+                SchoolRequestParameters body = new SchoolRequestParameters();
+                var school = await _schoolService.GetSchoolsAsync(body);
+                foreach(var oldschool in school)
+                {
+                   /* if (FullSchoolExtensions.isDifferentThan(oldschool, schools))
+                    {
+
+                    }*/
+                }
+
+
 
                 return Ok(new
                 {
                     Page = page,
                     Count = count,
-                    Results = data
+                    Results = schools.ToList()
                 });
             }
             catch (Exception ex)

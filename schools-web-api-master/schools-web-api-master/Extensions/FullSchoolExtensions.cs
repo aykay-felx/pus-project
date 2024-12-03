@@ -2,6 +2,7 @@ using System.Linq;
 using ObjectsComparer;
 using schools_web_api.Model;
 using System.Collections.Generic;
+using System;
 
 namespace schools_web_api.TokenManager 
 {
@@ -18,6 +19,11 @@ namespace schools_web_api.TokenManager
             List<Difference> differences = diffs.ToList();
 
             return (!areEqual, differences);
+        }
+
+        public static bool isDifferentThan(SimpleSchool oldschool, List<SimpleSchool> school)
+        {
+            throw new NotImplementedException();
         }
     }
 }
