@@ -1,6 +1,16 @@
 using Microsoft.OpenApi.Models;
+using schools_web_api;
+using schools_web_api.TokenManager.Services.Implementation;
+using schools_web_api.TokenManager.Services.Model;
+using schools_web_api.TokenManager;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+//builder.Services.AddControllers();
+builder.Services.AddSingleton<ISchoolService, SchoolService>();
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<ITokenManager, TokenManager>();
 
 // Добавление Swagger
 builder.Services.AddSwaggerGen(options =>
