@@ -1,12 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using schools_web_api.Model;
-using schools_web_api.TokenManager;
-using schools_web_api.TokenManager.Services.Model;
-using schools_web_api.TokenManager.TransmitModels;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Text.Json;
-
 
 namespace RSPOApiIntegration.Controllers
 {
@@ -18,12 +12,10 @@ namespace RSPOApiIntegration.Controllers
     public class RSPOController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private readonly ISchoolService _schoolService;
 
-        public RSPOController(IHttpClientFactory httpClientFactory,  ISchoolService schoolService)
+        public RSPOController(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient();
-            _schoolService = schoolService;
         }
 
         /// <summary>
@@ -35,7 +27,7 @@ namespace RSPOApiIntegration.Controllers
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1, [FromQuery] int count = 100)
         {
-            if (count > 100) count = 100; // Ограничение на 100 записей, как указано в API RSPO
+            if (count > 100) count = 100;
 
             try
             {
@@ -51,27 +43,15 @@ namespace RSPOApiIntegration.Controllers
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                var schools = JsonSerializer.Deserialize<List<object>>(content);
 
-               
-               
-                SchoolRequestParameters body = new SchoolRequestParameters();
-                var school = await _schoolService.GetSchoolsAsync(body);
-                foreach(var oldschool in school)
-                {
-                   /* if (FullSchoolExtensions.isDifferentThan(oldschool, schools))
-                    {
-
-                    }*/
-                }
-
-
+                // Преобразуем JSON: заменяем "longitude" на "longtitude"
+                var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
 
                 return Ok(new
                 {
                     Page = page,
                     Count = count,
-                    Results = schools.ToList()
+                    Results = schools
                 });
             }
             catch (Exception ex)
