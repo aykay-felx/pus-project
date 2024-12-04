@@ -30,8 +30,7 @@
     "ionicons": "^7.2.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.14.2",
-    "leaflet": "^1.7.1"
+    "zone.js": "~0.14.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.0.0",
@@ -60,8 +59,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.4.0",
-    "@types/leaflet": "^1.5.12",
-    "@types/leaflet.markercluster": "^1.4.1"
+    "@types/leaflet": "^1.9.14"
   },
   "description": "An Ionic project"
 }
