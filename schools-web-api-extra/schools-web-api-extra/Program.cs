@@ -3,6 +3,7 @@ using schools_web_api;
 using schools_web_api.TokenManager.Services.Implementation;
 using schools_web_api.TokenManager.Services.Model;
 using schools_web_api.TokenManager;
+using schools_web_api_extra.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ISchoolService, SchoolService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ITokenManager, TokenManager>();
+builder.Services.AddScoped<INewService, NewSchoolService>();
 
 // Добавление Swagger
 builder.Services.AddSwaggerGen(options =>

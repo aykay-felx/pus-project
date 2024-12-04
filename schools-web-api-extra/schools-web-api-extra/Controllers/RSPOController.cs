@@ -3,6 +3,7 @@ using schools_web_api.Model;
 using schools_web_api.TokenManager;
 using schools_web_api.TokenManager.Services.Model;
 using schools_web_api.TokenManager.TransmitModels;
+using schools_web_api_extra.Interface;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text.Json;
@@ -18,23 +19,23 @@ namespace RSPOApiIntegration.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly ISchoolService _schoolService;
+        private readonly INewService _service;
 
-        public RSPOController(IHttpClientFactory httpClientFactory,  ISchoolService schoolService)
+        public RSPOController(IHttpClientFactory httpClientFactory,  ISchoolService schoolService, INewService service)
         {
             _httpClient = httpClientFactory.CreateClient();
             _schoolService = schoolService;
+            _service = service;
         }
 
         /// <summary>
         /// Получить список школ из RSPO API.
         /// </summary>
         /// <param name="page">Номер страницы (начиная с 1).</param>
-        /// <param name="count">Количество записей (максимум 100).</param>
-        /// <returns>Список школ из RSPO API.</returns>
+     
         [HttpGet("schools")]
-        public async Task<IActionResult> GetSchools([FromQuery] int page = 1, [FromQuery] int count = 100)
+        public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
-            if (count > 100) count = 100;
 
             try
             {
@@ -70,7 +71,6 @@ namespace RSPOApiIntegration.Controllers
                 return Ok(new
                 {
                     Page = page,
-                    Count = count,
                     Results = schools
                 });
             }
@@ -78,6 +78,19 @@ namespace RSPOApiIntegration.Controllers
             {
                 return StatusCode(500, $"Ошибка сервера: {ex.Message}");
             }
+        }
+
+        [HttpGet("schoolsBaaza")]
+        public async Task<IActionResult> GetSchoolsBaza([FromQuery] SchoolRequestParameters bod)
+        {
+            var school = await _service.GetSchoolsAsync(bod);
+
+            if (school == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(school);
         }
     }
 }
