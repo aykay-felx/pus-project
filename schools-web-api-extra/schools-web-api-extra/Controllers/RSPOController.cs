@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using schools_web_api.Model;
 using schools_web_api.TokenManager;
+using schools_web_api.TokenManager.ServiceHelpers;
+using schools_web_api.TokenManager.Services.Implementation;
 using schools_web_api.TokenManager.Services.Model;
 using schools_web_api.TokenManager.TransmitModels;
 using System.Diagnostics.CodeAnalysis;
@@ -19,8 +22,7 @@ namespace RSPOApiIntegration.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly ISchoolService _schoolService;
-
-        public RSPOController(IHttpClientFactory httpClientFactory,  ISchoolService schoolService)
+        public RSPOController(IHttpClientFactory httpClientFactory, ISchoolService schoolService)
         {
             _httpClient = httpClientFactory.CreateClient();
             _schoolService = schoolService;
@@ -52,9 +54,11 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var schools = JsonSerializer.Deserialize<List<object>>(content);
-
-               
-               
+                
+                
+                
+                    
+                
                 SchoolRequestParameters body = new SchoolRequestParameters();
                 var school = await _schoolService.GetSchoolsAsync(body);
                 foreach(var oldschool in school)
