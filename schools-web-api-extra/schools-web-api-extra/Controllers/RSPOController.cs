@@ -22,6 +22,7 @@ namespace RSPOApiIntegration.Controllers
         public RSPOController(IHttpClientFactory httpClientFactory,  ISchoolService schoolService)
         {
             _httpClient = httpClientFactory.CreateClient();
+            _schoolService = schoolService;
         }
 
         /// <summary>
@@ -49,10 +50,11 @@ namespace RSPOApiIntegration.Controllers
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                var schools = JsonSerializer.Deserialize<List<object>>(content);
+                // Преобразуем JSON в fullschools
+                var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
 
-               
-               
+
+
                 SchoolRequestParameters body = new SchoolRequestParameters();
                 var school = await _schoolService.GetSchoolsAsync(body);
                 foreach(var oldschool in school)
