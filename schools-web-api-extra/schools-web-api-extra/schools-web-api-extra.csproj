@@ -10,11 +10,13 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\schools-web-api-master\schools-web-api-master\schools-web-api.csproj" />
+      <Folder Include="Interface\" />
+      <Folder Include="Service\" />
     </ItemGroup>
 
 </Project>

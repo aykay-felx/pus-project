@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
-using schools_web_api.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using schools_web_api;
+using schools_web_api_extra.Model;
 
 public static class JsonConvertToFullSchols
 {
-    public static List<FullSchool> JsongConvertToFullSchools(string data)
+    public static List<OldSchool> JsongConvertToFullSchools(string data)
     {
         // Исходный JSON (массив объектов)
         string apiData = data;
@@ -16,10 +16,10 @@ public static class JsonConvertToFullSchols
         var placowki = JsonConvert.DeserializeObject<List<Placowka>>(apiData);
 
         // Преобразование в целевой формат
-        var fullSchools = new List<FullSchool>();
+        var fullSchools = new List<OldSchool>();
         foreach (var placowka in placowki)
         {
-            var businessData = new FullSchoolBusinessData
+            var businessData = new OldSchool
             {
                 Faks = null, // Не указано в данных
                 Gmina = placowka.Gmina,
@@ -38,13 +38,6 @@ public static class JsonConvertToFullSchols
                 OrganProwadzacyNazwa = placowka.PodmiotProwadzacy?[0]?.Nazwa,
                 OrganProwadzacyRegon = placowka.PodmiotProwadzacy?[0]?.Regon
             };
-
-            fullSchools.Add(new FullSchool(
-                id: null,
-                lon: placowka.Geolokalizacja.Longitude,
-                lat: placowka.Geolokalizacja.Latitude,
-                businessData: businessData
-            ));
         }
 
         return fullSchools;
