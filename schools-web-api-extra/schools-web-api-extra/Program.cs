@@ -2,6 +2,9 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Добавление конфигурации из appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 // Добавление Swagger
 builder.Services.AddSwaggerGen(options =>
 {
@@ -18,6 +21,9 @@ builder.Services.AddHttpClient();
 
 // Добавление контроллеров
 builder.Services.AddControllers();
+
+// Регистрация DatabaseHelper с DI
+builder.Services.AddSingleton<DatabaseHelper>();
 
 var app = builder.Build();
 

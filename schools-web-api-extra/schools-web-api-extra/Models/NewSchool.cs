@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using schools_web_api_extra.HydraCollection;
 using System.ComponentModel;
 
 namespace schools_web_api_extra.Model
@@ -142,6 +143,28 @@ namespace schools_web_api_extra.Model
 
         public string? DataRozpoczeciaDzialalnosci { get; set; }
         public SubField? SubFieldDataRozpoczeciaDzialalnosci { get; set; }
+
+        public NewSchool(Placowka placowka)
+        {
+            RspoNumer = placowka.NumerRspo.ToString();
+            Longitude = placowka.Geolokalizacja?.Longitude ?? 0;
+            Latitude = placowka.Geolokalizacja?.Latitude ?? 0;
+            Typ = placowka.Typ?.Nazwa;
+            Nazwa = placowka.Nazwa;
+            Miejscowosc = placowka.Gmina;
+            Wojewodztwo = placowka.Powiat;
+            Telefon = placowka.Telefon;
+            Email = placowka.Email;
+            StronaInternetowa = placowka.StronaInternetowa;
+            NipPodmiotu = placowka.Nip;
+            RegonPodmiotu = placowka.Regon;
+            DataZalozenia = placowka.DataZalozenia;
+            LiczbaUczniow = placowka.LiczbaUczniow;
+            Dyrektor = placowka.DyrektorImie + " " + placowka.DyrektorNazwisko;
+            StatusPublicznosc = placowka.StatusPublicznoPrawny?.Nazwa;
+            KategoriaUczniow = placowka.KategoriaUczniow?.Nazwa;
+            SpecyfikaPlacowki = placowka.SpecyfikaSzkoly?.Nazwa;
+        }
     }
 
     public class SubField
@@ -152,6 +175,6 @@ namespace schools_web_api_extra.Model
         }
         public bool IsDifferent { get; set; } = false;
 
-        public string? OldValue { get; set; }
+        public string? OldValue { get; set; } = null;
     }
 }
