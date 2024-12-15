@@ -52,6 +52,11 @@ namespace schools_web_api_extra.Model
         public string? KodTerytorialnyWojewodztwo { get; set; }
         public string? OrganProwadzacyWojewodztwo { get; set; }
 
+        public OldSchool()
+        {
+
+        }
+
         public OldSchool(Placowka placowka)
         {
             RspoNumer = placowka.NumerRspo.ToString();

@@ -144,6 +144,9 @@ namespace schools_web_api_extra.Model
         public string? DataRozpoczeciaDzialalnosci { get; set; }
         public SubField? SubFieldDataRozpoczeciaDzialalnosci { get; set; }
 
+        public bool? isDiferentObj { get; set; }
+        public bool? isNewObj { get; set; }
+
         public NewSchool(Placowka placowka)
         {
             RspoNumer = placowka.NumerRspo.ToString();

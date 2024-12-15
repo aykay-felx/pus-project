@@ -26,11 +26,10 @@ namespace RSPOApiIntegration.Controllers
         /// Получить список школ из RSPO API.
         /// </summary>
         /// <param name="page">Номер страницы (начиная с 1).</param>
-     
+
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
-
             try
             {
                 var apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page={page}";
@@ -45,14 +44,16 @@ namespace RSPOApiIntegration.Controllers
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                // Преобразуем JSON в fullschools
-                var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
+                var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
 
+                // Сравнение данных
+                var updatedSchools = _databaseHelper.CompareSchools(newSchools);
+
+               // _databaseHelper.SaveNewSchools(updatedSchools);
 
                 return Ok(new
                 {
-                    Page = page,
-                    Results = schools
+                    Results = updatedSchools
                 });
             }
             catch (Exception ex)
