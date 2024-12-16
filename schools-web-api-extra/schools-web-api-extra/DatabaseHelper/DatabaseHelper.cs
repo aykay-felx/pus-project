@@ -1,6 +1,6 @@
 ﻿using Npgsql;
-using schools_web_api_extra.Model;
-using Newtonsoft.Json;
+using schools_web_api_extra.Models;
+
 public class DatabaseHelper
 {
     private readonly string _connectionString;
@@ -12,18 +12,17 @@ public class DatabaseHelper
 
     public void SaveOldSchools(List<NewSchool> oldSchools)
     {
-        using (var connection = new NpgsqlConnection(_connectionString))
+        using var connection = new NpgsqlConnection(_connectionString);
+        connection.Open();
+
+        using var transaction = connection.BeginTransaction();
+        
+        foreach (var school in oldSchools)
         {
-            connection.Open();
+            var command = connection.CreateCommand();
+            command.Transaction = transaction;
 
-            using (var transaction = connection.BeginTransaction())
-            {
-                foreach (var school in oldSchools)
-                {
-                    var command = connection.CreateCommand();
-                    command.Transaction = transaction;
-
-                    command.CommandText = @"
+            command.CommandText = @"
                         INSERT INTO OldSchools (
                             RspoNumer, Longitude, Latitude, Typ, Nazwa, Miejscowosc, Wojewodztwo, KodPocztowy, 
                             NumerBudynku, Email, Ulica, Poczta, Telefon, NumerLokalu, StatusPublicznosc, 
@@ -47,146 +46,135 @@ public class DatabaseHelper
                         );
                     ";
 
-                    command.Parameters.AddWithValue("RspoNumer", (object?)school.RspoNumer ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Longitude", school.Longitude);
-                    command.Parameters.AddWithValue("Latitude", school.Latitude);
-                    command.Parameters.AddWithValue("Typ", (object?)school.Typ ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Nazwa", (object?)school.Nazwa ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Miejscowosc", (object?)school.Miejscowosc ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Wojewodztwo", (object?)school.Wojewodztwo ?? DBNull.Value);
-                    command.Parameters.AddWithValue("KodPocztowy", (object?)school.KodPocztowy ?? DBNull.Value);
-                    command.Parameters.AddWithValue("NumerBudynku", (object?)school.NumerBudynku ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Email", (object?)school.Email ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Ulica", (object?)school.Ulica ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Poczta", (object?)school.Poczta ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Telefon", (object?)school.Telefon ?? DBNull.Value);
-                    command.Parameters.AddWithValue("NumerLokalu", (object?)school.NumerLokalu ?? DBNull.Value);
-                    command.Parameters.AddWithValue("StatusPublicznosc", (object?)school.StatusPublicznosc ?? DBNull.Value);
-                    command.Parameters.AddWithValue("StronaInternetowa", (object?)school.StronaInternetowa ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Faks", (object?)school.Faks ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Gmina", (object?)school.Gmina ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Powiat", (object?)school.Powiat ?? DBNull.Value);
-                    command.Parameters.AddWithValue("Dyrektor", (object?)school.Dyrektor ?? DBNull.Value);
-                    command.Parameters.AddWithValue("NipPodmiotu", (object?)school.NipPodmiotu ?? DBNull.Value);
-                    command.Parameters.AddWithValue("DataZalozenia", (object?)school.DataZalozenia ?? DBNull.Value);
-                    command.Parameters.AddWithValue("LiczbaUczniow", (object?)school.LiczbaUczniow ?? DBNull.Value);
-                    command.Parameters.AddWithValue("RegonPodmiotu", (object?)school.RegonPodmiotu ?? DBNull.Value);
-                    command.Parameters.AddWithValue("DataLikwidacji", (object?)school.DataLikwidacji ?? DBNull.Value);
-                    command.Parameters.AddWithValue("JezykiNauczane", school.JezykiNauczane?.Length > 0 ? (object)school.JezykiNauczane : DBNull.Value);
-                    command.Parameters.AddWithValue("TerenySportowe", school.TerenySportowe?.Length > 0 ? (object)school.TerenySportowe : DBNull.Value);
-                    command.Parameters.AddWithValue("KategoriaUczniow", (object?)school.KategoriaUczniow ?? DBNull.Value);
-                    command.Parameters.AddWithValue("StrukturaMiejsce", (object?)school.StrukturaMiejsce ?? DBNull.Value);
-                    command.Parameters.AddWithValue("SpecyfikaPlacowki", (object?)school.SpecyfikaPlacowki ?? DBNull.Value);
-                    command.Parameters.AddWithValue("RodzajMiejscowosci", (object?)school.RodzajMiejscowosci ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyNip", (object?)school.OrganProwadzacyNip ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyTyp", (object?)school.OrganProwadzacyTyp ?? DBNull.Value);
-                    command.Parameters.AddWithValue("PodmiotNadrzednyTyp", (object?)school.PodmiotNadrzednyTyp ?? DBNull.Value);
-                    command.Parameters.AddWithValue("KodTerytorialnyGmina", (object?)school.KodTerytorialnyGmina ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyGmina", (object?)school.OrganProwadzacyGmina ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyNazwa", (object?)school.OrganProwadzacyNazwa ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyRegon", (object?)school.OrganProwadzacyRegon ?? DBNull.Value);
-                    command.Parameters.AddWithValue("PodmiotNadrzednyRspo", (object?)school.PodmiotNadrzednyRspo ?? DBNull.Value);
-                    command.Parameters.AddWithValue("KodTerytorialnyPowiat", (object?)school.KodTerytorialnyPowiat ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyPowiat", (object?)school.OrganProwadzacyPowiat ?? DBNull.Value);
-                    command.Parameters.AddWithValue("PodmiotNadrzednyNazwa", (object?)school.PodmiotNadrzednyNazwa ?? DBNull.Value);
-                    command.Parameters.AddWithValue("KodTerytorialnyMiejscowosc", (object?)school.KodTerytorialnyMiejscowosc ?? DBNull.Value);
-                    command.Parameters.AddWithValue("KodTerytorialnyWojewodztwo", (object?)school.KodTerytorialnyWojewodztwo ?? DBNull.Value);
-                    command.Parameters.AddWithValue("OrganProwadzacyWojewodztwo", (object?)school.OrganProwadzacyWojewodztwo ?? DBNull.Value);
+            command.Parameters.AddWithValue("RspoNumer", (object?)school.RspoNumer ?? DBNull.Value);
+            command.Parameters.AddWithValue("Longitude", school.Longitude);
+            command.Parameters.AddWithValue("Latitude", school.Latitude);
+            command.Parameters.AddWithValue("Typ", (object?)school.Typ ?? DBNull.Value);
+            command.Parameters.AddWithValue("Nazwa", (object?)school.Nazwa ?? DBNull.Value);
+            command.Parameters.AddWithValue("Miejscowosc", (object?)school.Miejscowosc ?? DBNull.Value);
+            command.Parameters.AddWithValue("Wojewodztwo", (object?)school.Wojewodztwo ?? DBNull.Value);
+            command.Parameters.AddWithValue("KodPocztowy", (object?)school.KodPocztowy ?? DBNull.Value);
+            command.Parameters.AddWithValue("NumerBudynku", (object?)school.NumerBudynku ?? DBNull.Value);
+            command.Parameters.AddWithValue("Email", (object?)school.Email ?? DBNull.Value);
+            command.Parameters.AddWithValue("Ulica", (object?)school.Ulica ?? DBNull.Value);
+            command.Parameters.AddWithValue("Poczta", (object?)school.Poczta ?? DBNull.Value);
+            command.Parameters.AddWithValue("Telefon", (object?)school.Telefon ?? DBNull.Value);
+            command.Parameters.AddWithValue("NumerLokalu", (object?)school.NumerLokalu ?? DBNull.Value);
+            command.Parameters.AddWithValue("StatusPublicznosc", (object?)school.StatusPublicznosc ?? DBNull.Value);
+            command.Parameters.AddWithValue("StronaInternetowa", (object?)school.StronaInternetowa ?? DBNull.Value);
+            command.Parameters.AddWithValue("Faks", (object?)school.Faks ?? DBNull.Value);
+            command.Parameters.AddWithValue("Gmina", (object?)school.Gmina ?? DBNull.Value);
+            command.Parameters.AddWithValue("Powiat", (object?)school.Powiat ?? DBNull.Value);
+            command.Parameters.AddWithValue("Dyrektor", (object?)school.Dyrektor ?? DBNull.Value);
+            command.Parameters.AddWithValue("NipPodmiotu", (object?)school.NipPodmiotu ?? DBNull.Value);
+            command.Parameters.AddWithValue("DataZalozenia", (object?)school.DataZalozenia ?? DBNull.Value);
+            command.Parameters.AddWithValue("LiczbaUczniow", (object?)school.LiczbaUczniow ?? DBNull.Value);
+            command.Parameters.AddWithValue("RegonPodmiotu", (object?)school.RegonPodmiotu ?? DBNull.Value);
+            command.Parameters.AddWithValue("DataLikwidacji", (object?)school.DataLikwidacji ?? DBNull.Value);
+            command.Parameters.AddWithValue("JezykiNauczane", school.JezykiNauczane?.Length > 0 ? (object)school.JezykiNauczane : DBNull.Value);
+            command.Parameters.AddWithValue("TerenySportowe", school.TerenySportowe?.Length > 0 ? (object)school.TerenySportowe : DBNull.Value);
+            command.Parameters.AddWithValue("KategoriaUczniow", (object?)school.KategoriaUczniow ?? DBNull.Value);
+            command.Parameters.AddWithValue("StrukturaMiejsce", (object?)school.StrukturaMiejsce ?? DBNull.Value);
+            command.Parameters.AddWithValue("SpecyfikaPlacowki", (object?)school.SpecyfikaPlacowki ?? DBNull.Value);
+            command.Parameters.AddWithValue("RodzajMiejscowosci", (object?)school.RodzajMiejscowosci ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyNip", (object?)school.OrganProwadzacyNip ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyTyp", (object?)school.OrganProwadzacyTyp ?? DBNull.Value);
+            command.Parameters.AddWithValue("PodmiotNadrzednyTyp", (object?)school.PodmiotNadrzednyTyp ?? DBNull.Value);
+            command.Parameters.AddWithValue("KodTerytorialnyGmina", (object?)school.KodTerytorialnyGmina ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyGmina", (object?)school.OrganProwadzacyGmina ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyNazwa", (object?)school.OrganProwadzacyNazwa ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyRegon", (object?)school.OrganProwadzacyRegon ?? DBNull.Value);
+            command.Parameters.AddWithValue("PodmiotNadrzednyRspo", (object?)school.PodmiotNadrzednyRspo ?? DBNull.Value);
+            command.Parameters.AddWithValue("KodTerytorialnyPowiat", (object?)school.KodTerytorialnyPowiat ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyPowiat", (object?)school.OrganProwadzacyPowiat ?? DBNull.Value);
+            command.Parameters.AddWithValue("PodmiotNadrzednyNazwa", (object?)school.PodmiotNadrzednyNazwa ?? DBNull.Value);
+            command.Parameters.AddWithValue("KodTerytorialnyMiejscowosc", (object?)school.KodTerytorialnyMiejscowosc ?? DBNull.Value);
+            command.Parameters.AddWithValue("KodTerytorialnyWojewodztwo", (object?)school.KodTerytorialnyWojewodztwo ?? DBNull.Value);
+            command.Parameters.AddWithValue("OrganProwadzacyWojewodztwo", (object?)school.OrganProwadzacyWojewodztwo ?? DBNull.Value);
 
-
-                    command.ExecuteNonQuery();
-                }
-
-                transaction.Commit();
-            }
+            command.ExecuteNonQuery();
         }
+
+        transaction.Commit();
     }
 
     public void DeleteAllOldSchools()
     {
-        using (var connection = new NpgsqlConnection(_connectionString))
-        {
-            connection.Open();
+        using var connection = new NpgsqlConnection(_connectionString);
+        connection.Open();
 
-            using (var transaction = connection.BeginTransaction())
-            {
-                var command = connection.CreateCommand();
-                command.Transaction = transaction;
+        using var transaction = connection.BeginTransaction();
+        var command = connection.CreateCommand();
+        command.Transaction = transaction;
 
-                command.CommandText = @"TRUNCATE TABLE OldSchools RESTART IDENTITY;";
+        command.CommandText = @"TRUNCATE TABLE OldSchools RESTART IDENTITY;";
 
-                command.ExecuteNonQuery();
+        command.ExecuteNonQuery();
 
-                transaction.Commit();
-            }
-        }
+        transaction.Commit();
     }
 
-    public List<OldSchool> GetOldSchools()
+    private List<OldSchool> GetOldSchools()
     {
         var oldSchools = new List<OldSchool>();
 
-        using (var connection = new NpgsqlConnection(_connectionString))
+        using var connection = new NpgsqlConnection(_connectionString);
+        connection.Open();
+
+        var command = new NpgsqlCommand("SELECT * FROM OldSchools", connection);
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
         {
-            connection.Open();
-
-            var command = new NpgsqlCommand("SELECT * FROM OldSchools", connection);
-            using (var reader = command.ExecuteReader())
+            var school = new OldSchool
             {
-                while (reader.Read())
-                {
-                    var school = new OldSchool
-                    {
-                        RspoNumer = reader["RspoNumer"].ToString(),
-                        Longitude = Double.Parse(reader["Longitude"].ToString()),
-                        Latitude = Double.Parse(reader["Latitude"].ToString()),
-                        Typ = reader["Typ"]?.ToString(),
-                        Nazwa = reader["Nazwa"]?.ToString(),
-                        Miejscowosc = reader["Miejscowosc"]?.ToString(),
-                        Wojewodztwo = reader["Wojewodztwo"]?.ToString(),
-                        KodPocztowy = reader["KodPocztowy"]?.ToString(),
-                        NumerBudynku = reader["NumerBudynku"]?.ToString(),
-                        Email = reader["Email"]?.ToString(),
-                        Ulica = reader["Ulica"]?.ToString(),
-                        Poczta = reader["Poczta"]?.ToString(),
-                        Telefon = reader["Telefon"]?.ToString(),
-                        NumerLokalu = reader["NumerLokalu"]?.ToString(),
-                        StatusPublicznosc = reader["StatusPublicznosc"]?.ToString(),
-                        StronaInternetowa = reader["StronaInternetowa"]?.ToString(),
-                        Faks = reader["Faks"]?.ToString(),
-                        Gmina = reader["Gmina"]?.ToString(),
-                        Powiat = reader["Powiat"]?.ToString(),
-                        Dyrektor = reader["Dyrektor"]?.ToString(),
-                        NipPodmiotu = reader["NipPodmiotu"]?.ToString(),
-                        DataZalozenia = reader["DataZalozenia"].ToString(),
-                        LiczbaUczniow = reader["LiczbaUczniow"] as int?,
-                        RegonPodmiotu = reader["RegonPodmiotu"]?.ToString(),
-                        DataLikwidacji = reader["DataLikwidacji"].ToString(),
-                        JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(','),
-                        TerenySportowe = reader["TerenySportowe"]?.ToString()?.Split(','),
-                        KategoriaUczniow = reader["KategoriaUczniow"]?.ToString(),
-                        StrukturaMiejsce = reader["StrukturaMiejsce"]?.ToString(),
-                        SpecyfikaPlacowki = reader["SpecyfikaPlacowki"]?.ToString(),
-                        RodzajMiejscowosci = reader["RodzajMiejscowosci"]?.ToString(),
-                        OrganProwadzacyNip = reader["OrganProwadzacyNip"]?.ToString(),
-                        OrganProwadzacyTyp = reader["OrganProwadzacyTyp"]?.ToString(),
-                        PodmiotNadrzednyTyp = reader["PodmiotNadrzednyTyp"]?.ToString(),
-                        KodTerytorialnyGmina = reader["KodTerytorialnyGmina"]?.ToString(),
-                        OrganProwadzacyGmina = reader["OrganProwadzacyGmina"]?.ToString(),
-                        OrganProwadzacyNazwa = reader["OrganProwadzacyNazwa"]?.ToString(),
-                        OrganProwadzacyRegon = reader["OrganProwadzacyRegon"]?.ToString(),
-                        PodmiotNadrzednyRspo = reader["PodmiotNadrzednyRspo"]?.ToString(),
-                        KodTerytorialnyPowiat = reader["KodTerytorialnyPowiat"]?.ToString(),
-                        OrganProwadzacyPowiat = reader["OrganProwadzacyPowiat"]?.ToString(),
-                        PodmiotNadrzednyNazwa = reader["PodmiotNadrzednyNazwa"]?.ToString(),
-                        KodTerytorialnyMiejscowosc = reader["KodTerytorialnyMiejscowosc"]?.ToString(),
-                        KodTerytorialnyWojewodztwo = reader["KodTerytorialnyWojewodztwo"]?.ToString(),
-                        OrganProwadzacyWojewodztwo = reader["OrganProwadzacyWojewodztwo"]?.ToString()
-                    };
+                RspoNumer = reader["RspoNumer"].ToString(),
+                Longitude = Double.Parse(reader["Longitude"].ToString()),
+                Latitude = Double.Parse(reader["Latitude"].ToString()),
+                Typ = reader["Typ"]?.ToString(),
+                Nazwa = reader["Nazwa"]?.ToString(),
+                Miejscowosc = reader["Miejscowosc"]?.ToString(),
+                Wojewodztwo = reader["Wojewodztwo"]?.ToString(),
+                KodPocztowy = reader["KodPocztowy"]?.ToString(),
+                NumerBudynku = reader["NumerBudynku"]?.ToString(),
+                Email = reader["Email"]?.ToString(),
+                Ulica = reader["Ulica"]?.ToString(),
+                Poczta = reader["Poczta"]?.ToString(),
+                Telefon = reader["Telefon"]?.ToString(),
+                NumerLokalu = reader["NumerLokalu"]?.ToString(),
+                StatusPublicznosc = reader["StatusPublicznosc"]?.ToString(),
+                StronaInternetowa = reader["StronaInternetowa"]?.ToString(),
+                Faks = reader["Faks"]?.ToString(),
+                Gmina = reader["Gmina"]?.ToString(),
+                Powiat = reader["Powiat"]?.ToString(),
+                Dyrektor = reader["Dyrektor"]?.ToString(),
+                NipPodmiotu = reader["NipPodmiotu"]?.ToString(),
+                DataZalozenia = reader["DataZalozenia"].ToString(),
+                LiczbaUczniow = reader["LiczbaUczniow"] as int?,
+                RegonPodmiotu = reader["RegonPodmiotu"]?.ToString(),
+                DataLikwidacji = reader["DataLikwidacji"].ToString(),
+                JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(','),
+                TerenySportowe = reader["TerenySportowe"]?.ToString()?.Split(','),
+                KategoriaUczniow = reader["KategoriaUczniow"]?.ToString(),
+                StrukturaMiejsce = reader["StrukturaMiejsce"]?.ToString(),
+                SpecyfikaPlacowki = reader["SpecyfikaPlacowki"]?.ToString(),
+                RodzajMiejscowosci = reader["RodzajMiejscowosci"]?.ToString(),
+                OrganProwadzacyNip = reader["OrganProwadzacyNip"]?.ToString(),
+                OrganProwadzacyTyp = reader["OrganProwadzacyTyp"]?.ToString(),
+                PodmiotNadrzednyTyp = reader["PodmiotNadrzednyTyp"]?.ToString(),
+                KodTerytorialnyGmina = reader["KodTerytorialnyGmina"]?.ToString(),
+                OrganProwadzacyGmina = reader["OrganProwadzacyGmina"]?.ToString(),
+                OrganProwadzacyNazwa = reader["OrganProwadzacyNazwa"]?.ToString(),
+                OrganProwadzacyRegon = reader["OrganProwadzacyRegon"]?.ToString(),
+                PodmiotNadrzednyRspo = reader["PodmiotNadrzednyRspo"]?.ToString(),
+                KodTerytorialnyPowiat = reader["KodTerytorialnyPowiat"]?.ToString(),
+                OrganProwadzacyPowiat = reader["OrganProwadzacyPowiat"]?.ToString(),
+                PodmiotNadrzednyNazwa = reader["PodmiotNadrzednyNazwa"]?.ToString(),
+                KodTerytorialnyMiejscowosc = reader["KodTerytorialnyMiejscowosc"]?.ToString(),
+                KodTerytorialnyWojewodztwo = reader["KodTerytorialnyWojewodztwo"]?.ToString(),
+                OrganProwadzacyWojewodztwo = reader["OrganProwadzacyWojewodztwo"]?.ToString()
+            };
 
-                    oldSchools.Add(school);
-                }
-            }
+            oldSchools.Add(school);
         }
 
         return oldSchools;
@@ -194,17 +182,16 @@ public class DatabaseHelper
 
     public List<NewSchool> CompareSchools(List<NewSchool> newSchools)
     {
-        var oldSchools = GetOldSchools(); // Получаем данные из базы
+        var oldSchools = GetOldSchools();
 
         foreach (var newSchool in newSchools)
         {
             var oldSchool = oldSchools.FirstOrDefault(o => o.RspoNumer == newSchool.RspoNumer);
 
-            if (oldSchool != null)  // Если такая запись существует в базе данных
+            if (oldSchool != null)
             {
-                newSchool.isDiferentObj = false;  // Сброс флага перед сравнением
+                newSchool.isDiferentObj = false;
 
-                // Сравниваем все поля
                 if (newSchool.Nazwa != oldSchool.Nazwa)
                 {
                     newSchool.SubFieldNazwa = new SubField(true, oldSchool.Nazwa);
@@ -282,7 +269,7 @@ public class DatabaseHelper
                     newSchool.SubFieldRodzajMiejscowosci = new SubField(true, oldSchool.RodzajMiejscowosci);
                 }
             }
-            else  // Если не найдено в базе данных
+            else
             {
                 newSchool.isDiferentObj = true;
                 newSchool.isNewObj = true;

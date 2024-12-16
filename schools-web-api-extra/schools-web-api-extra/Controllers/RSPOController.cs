@@ -1,15 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using schools_web_api_extra.Model;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Text.Json;
 
 namespace RSPOApiIntegration.Controllers
 {
-    /// <summary>
-    /// Контроллер для работы с RSPO API.
-    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class RSPOController : ControllerBase
@@ -21,12 +13,7 @@ namespace RSPOApiIntegration.Controllers
             _httpClient = httpClientFactory.CreateClient();
             _databaseHelper = databaseHelper;
         }
-
-        /// <summary>
-        /// Получить список школ из RSPO API.
-        /// </summary>
-        /// <param name="page">Номер страницы (начиная с 1).</param>
-
+        
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
@@ -40,13 +27,11 @@ namespace RSPOApiIntegration.Controllers
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return StatusCode((int)response.StatusCode, "Ошибка при обращении к API RSPO.");
+                    return StatusCode((int)response.StatusCode, "Error while accessing RSPO's Api.");
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
                 var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-
-                // Сравнение данных
                 var updatedSchools = _databaseHelper.CompareSchools(newSchools);
 
                // _databaseHelper.SaveNewSchools(updatedSchools);
@@ -58,11 +43,11 @@ namespace RSPOApiIntegration.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+                return StatusCode(500, $"пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {ex.Message}");
             }
         }
 
-        [HttpGet("CreateTableOldSchoolFromPages")]
+        [HttpGet("old-schools")]
         public async Task<IActionResult> SaveSchools([FromQuery] int page = 1)
         {
             try
@@ -75,13 +60,12 @@ namespace RSPOApiIntegration.Controllers
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return StatusCode((int)response.StatusCode, "Ошибка при обращении к API RSPO.");
+                    return StatusCode((int)response.StatusCode, "Error while accessing RSPO's API.");
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                // Преобразуем JSON в fullschools
                 var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-                _databaseHelper.SaveOldSchools(schools); // Вызов метода сохранения
+                _databaseHelper.SaveOldSchools(schools);
                 return Ok("Schools saved successfully");
             }
             catch (Exception ex)
@@ -90,13 +74,12 @@ namespace RSPOApiIntegration.Controllers
             }
         }
 
-        // Пример метода для удаления всех школ
-        [HttpDelete("ClearetableAllOldSchools")]
+        [HttpDelete("old-schools")]
         public async Task<IActionResult> DeleteSchools()
         {
             try
             {
-                _databaseHelper.DeleteAllOldSchools(); // Вызов метода удаления
+                _databaseHelper.DeleteAllOldSchools();
                 return Ok("All schools deleted successfully");
             }
             catch (Exception ex)
