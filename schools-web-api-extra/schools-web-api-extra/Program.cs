@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using schools_web_api_extra.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<DatabaseHelper>();
+builder.Services.AddSingleton<ISchoolService, SchoolReposiries>();
 
 var app = builder.Build();
 

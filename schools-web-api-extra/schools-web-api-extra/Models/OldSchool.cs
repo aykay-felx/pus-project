@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using schools_web_api_extra.HydraCollection;
 using System.ComponentModel;
 
 namespace schools_web_api_extra.Models

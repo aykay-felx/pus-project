@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using schools_web_api_extra.Models;
-using schools_web_api_extra.HydraCollection;
 
 public static class JsonConvertToFullSchols
 {

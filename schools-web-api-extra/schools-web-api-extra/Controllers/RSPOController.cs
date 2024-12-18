@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using schools_web_api_extra.Interface;
 
 namespace RSPOApiIntegration.Controllers
 {
@@ -7,14 +8,13 @@ namespace RSPOApiIntegration.Controllers
     public class RSPOController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private readonly DatabaseHelper _databaseHelper;
-        public RSPOController(IHttpClientFactory httpClientFactory, DatabaseHelper databaseHelper)
+        private readonly ISchoolService _service;
+        public RSPOController(IHttpClientFactory httpClientFactory, ISchoolService service)
         {
             _httpClient = httpClientFactory.CreateClient();
-            _databaseHelper = databaseHelper;
+            _service = service;
         }
-        
-        [HttpGet("schools")]
+
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
             try
@@ -32,18 +32,21 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-                var updatedSchools = _databaseHelper.CompareSchools(newSchools);
+                var updatedSchools = await _service.CompareSchoolsAsync(newSchools); // ожидаем результат асинхронной операции
 
-               // _databaseHelper.SaveNewSchools(updatedSchools);
+                // Преобразуем IEnumerable в List
+                var updatedSchoolsList = updatedSchools.ToList();
+
+                await _service.SaveNewSchoolsAsync(updatedSchoolsList); // передаем List<NewSchool>
 
                 return Ok(new
                 {
-                    Results = updatedSchools
+                    Results = updatedSchoolsList
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"������ �������: {ex.Message}");
+                return StatusCode(500, $"Error occurred: {ex.Message}");
             }
         }
 
@@ -65,7 +68,7 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-                _databaseHelper.SaveOldSchools(schools);
+                _service.SaveOldSchoolsAsync(schools);
                 return Ok("Schools saved successfully");
             }
             catch (Exception ex)
@@ -79,7 +82,7 @@ namespace RSPOApiIntegration.Controllers
         {
             try
             {
-                _databaseHelper.DeleteAllOldSchools();
+                _service.DeleteAllOldSchoolsAsync();
                 return Ok("All schools deleted successfully");
             }
             catch (Exception ex)

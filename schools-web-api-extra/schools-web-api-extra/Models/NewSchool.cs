@@ -1,5 +1,3 @@
-using schools_web_api_extra.HydraCollection;
-
 namespace schools_web_api_extra.Models
 {
     public class NewSchool
