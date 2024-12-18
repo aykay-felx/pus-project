@@ -3,11 +3,11 @@ using Npgsql;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
 
-public class SchoolReposiries : ISchoolService
+public class SchoolRepository : ISchoolService
 {
-    private readonly string _connectionString;
+    private readonly string? _connectionString;
 
-    public SchoolReposiries(IConfiguration configuration)
+    public SchoolRepository(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("Postgres");
     }
@@ -49,6 +49,7 @@ public class SchoolReposiries : ISchoolService
                 );
             ";
 
+            // TODO: maybe it is possible to automate this?
             command.Parameters.AddWithValue("RspoNumer", (object?)school.RspoNumer ?? DBNull.Value);
             command.Parameters.AddWithValue("Longitude", school.Longitude);
             command.Parameters.AddWithValue("Latitude", school.Latitude);
@@ -101,8 +102,6 @@ public class SchoolReposiries : ISchoolService
         await transaction.CommitAsync();
     }
 
-
-
     public async Task DeleteAllOldSchoolsAsync()
     {
         await using var connection = new NpgsqlConnection(_connectionString);
@@ -128,6 +127,7 @@ public class SchoolReposiries : ISchoolService
         var command = new NpgsqlCommand("SELECT * FROM OldSchools", connection);
         await using var reader = await command.ExecuteReaderAsync();
 
+        // TODO: maybe make a constructor, that will be accepting OldSchool?
         while (await reader.ReadAsync())
         {
             var school = new OldSchool
@@ -185,6 +185,7 @@ public class SchoolReposiries : ISchoolService
         return oldSchools;
     }
 
+    // TODO: refactor this
     public async Task<IEnumerable<NewSchool>> CompareSchoolsAsync(List<NewSchool> newSchools)
     {
         var oldSchools = (await GetOldSchoolsAsync()).ToList();
@@ -341,8 +342,9 @@ public class SchoolReposiries : ISchoolService
             );
         ";
 
-            using var command = new NpgsqlCommand(insertQuery, connection, transaction);
+            await using var command = new NpgsqlCommand(insertQuery, connection, transaction);
 
+            // TODO: this needs refactoring too
             foreach (var school in newSchools)
             {
                 command.Parameters.Clear();

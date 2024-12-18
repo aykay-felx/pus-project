@@ -44,7 +44,7 @@ namespace RSPOApiIntegration.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"������ �������: {ex.Message}");
+                return StatusCode(500, $"Error occured: {ex.Message}");
             }
         }
 
@@ -80,7 +80,7 @@ namespace RSPOApiIntegration.Controllers
         {
             try
             {
-                _service.DeleteAllOldSchoolsAsync();
+                await _service.DeleteAllOldSchoolsAsync();
                 return Ok("All schools deleted successfully");
             }
             catch (Exception ex)

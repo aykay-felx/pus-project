@@ -19,7 +19,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<ISchoolService, SchoolReposiries>();
+builder.Services.AddSingleton<ISchoolService, SchoolRepository>();
 
 var app = builder.Build();
 
