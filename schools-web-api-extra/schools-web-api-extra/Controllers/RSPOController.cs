@@ -14,7 +14,8 @@ namespace RSPOApiIntegration.Controllers
             _httpClient = httpClientFactory.CreateClient();
             _service = service;
         }
-
+        
+        [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
             try
@@ -32,21 +33,18 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-                var updatedSchools = await _service.CompareSchoolsAsync(newSchools); // ожидаем результат асинхронной операции
+                var updatedSchools = _service.CompareSchoolsAsync(newSchools);
 
-                // Преобразуем IEnumerable в List
-                var updatedSchoolsList = updatedSchools.ToList();
-
-                await _service.SaveNewSchoolsAsync(updatedSchoolsList); // передаем List<NewSchool>
+              //  await _service.SaveNewSchoolsAsync(updatedSchools);
 
                 return Ok(new
                 {
-                    Results = updatedSchoolsList
+                    Results = updatedSchools
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error occurred: {ex.Message}");
+                return StatusCode(500, $"������ �������: {ex.Message}");
             }
         }
 
