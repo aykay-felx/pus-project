@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using schools_web_api_extra.Interface;
+using schools_web_api_extra.Models;
 
 namespace RSPOApiIntegration.Controllers
 {
@@ -15,7 +16,7 @@ namespace RSPOApiIntegration.Controllers
             _service = service;
         }
 
-        [HttpGet("schools")]
+        [HttpGet("Get and Compare Schools ")]
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
             try
@@ -38,7 +39,15 @@ namespace RSPOApiIntegration.Controllers
                 var updatedSchools = (await _service.CompareSchoolsAsync(newSchools)).ToList();
 
                 await _service.SaveNewSchoolsAsync(updatedSchools);
-
+                 List<NewSchool> upd = new List<NewSchool>();
+                foreach (var school in updatedSchools)
+                {
+                   
+                    if(school.isDiferentObj == true || school.isNewObj == true)
+                    {
+                        upd.Add(school);
+                    }
+                }
                 return Ok(new
                 {
                     Results = updatedSchools
@@ -51,7 +60,7 @@ namespace RSPOApiIntegration.Controllers
         }
 
 
-        [HttpGet("old-schools")]
+        [HttpGet("Save old-schools")]
         public async Task<IActionResult> SaveSchools([FromQuery] int page = 1)
         {
             try
@@ -69,7 +78,7 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-               // await _service.SaveOldSchoolsAsync(schools);
+                await _service.SaveOldSchoolsAsync(schools);
                 return Ok(schools);
             }
             catch (Exception ex)

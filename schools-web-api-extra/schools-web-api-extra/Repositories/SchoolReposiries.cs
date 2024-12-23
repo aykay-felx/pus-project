@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Npgsql;
+using NpgsqlTypes;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
 
@@ -95,7 +96,7 @@ public class SchoolRepository : ISchoolService
             command.Parameters.AddWithValue("KodTerytorialnyMiejscowosc", (object?)school.KodTerytorialnyMiejscowosc ?? DBNull.Value);
             command.Parameters.AddWithValue("KodTerytorialnyWojewodztwo", (object?)school.KodTerytorialnyWojewodztwo ?? DBNull.Value);
             command.Parameters.AddWithValue("OrganProwadzacyWojewodztwo", (object?)school.OrganProwadzacyWojewodztwo ?? DBNull.Value);
-
+            command.Parameters.AddWithValue("PodmiotNadrzednyTyp", (object?)school.PodmiotNadrzednyTyp ?? DBNull.Value);
             await command.ExecuteNonQueryAsync();
         }
 
@@ -286,6 +287,11 @@ public class SchoolRepository : ISchoolService
     }
 
 
+
+
+
+
+
     public async Task<IEnumerable<NewSchool>> SaveNewSchoolsAsync(List<NewSchool> newSchools)
     {
         if (newSchools == null || !newSchools.Any())
@@ -299,204 +305,192 @@ public class SchoolRepository : ISchoolService
         try
         {
             var insertQuery = @"
-            INSERT INTO NewSchools (
-                RspoNumer, SubFieldRspoNumer, Longitude, SubFieldLongitude, Latitude, SubFieldLatitude, Typ, SubFieldTyp,
-                Nazwa, SubFieldNazwa, Miejscowosc, SubFieldMiejscowosc, Wojewodztwo, SubFieldWojewodztwo, KodPocztowy,
-                SubFieldKodPocztowy, NumerBudynku, SubFieldNumerBudynku, Email, SubFieldEmail, Ulica, SubFieldUlica,
-                Poczta, SubFieldPoczta, Telefon, SubFieldTelefon, NumerLokalu, SubFieldNumerLokalu, StatusPublicznosc,
-                SubFieldStatusPublicznosc, StronaInternetowa, SubFieldStronaInternetowa, Faks, SubFieldFaks, Gmina,
-                SubFieldGmina, Powiat, SubFieldPowiat, Dyrektor, SubFieldDyrektor, NipPodmiotu, SubFieldNipPodmiotu,
-                DataZalozenia, SubFieldDataZalozenia, LiczbaUczniow, SubFieldLiczbaUczniow, RegonPodmiotu,
-                SubFieldRegonPodmiotu, DataLikwidacji, SubFieldDataLikwidacji, JezykiNauczane, SubFieldJezykiNauczane,
-                TerenySportowe, SubFieldTerenySportowe, KategoriaUczniow, SubFieldKategoriaUczniow, StrukturaMiejsce,
-                SubFieldStrukturaMiejsce, SpecyfikaPlacowki, SubFieldSpecyfikaPlacowki, RodzajMiejscowosci,
-                SubFieldRodzajMiejscowosci, OrganProwadzacyNip, SubFieldOrganProwadzacyNip, OrganProwadzacyTyp,
-                SubFieldOrganProwadzacyTyp, KodTerytorialnyGmina,
-                SubFieldKodTerytorialnyGmina, OrganProwadzacyGmina, SubFieldOrganProwadzacyGmina, OrganProwadzacyNazwa,
-                SubFieldOrganProwadzacyNazwa, OrganProwadzacyRegon, SubFieldOrganProwadzacyRegon, PodmiotNadrzednyRspo,
-                SubFieldPodmiotNadrzednyRspo, KodTerytorialnyPowiat, SubFieldKodTerytorialnyPowiat, OrganProwadzacyPowiat,
-                SubFieldOrganProwadzacyPowiat, PodmiotNadrzednyNazwa, SubFieldPodmiotNadrzednyNazwa, KodTerytorialnyMiejscowosc,
-                KodTerytorialnyWojewodztwo, SubFieldKodTerytorialnyWojewodztwo, OrganProwadzacyWojewodztwo,
-                SubFieldOrganProwadzacyWojewodztwo, DataRozpoczeciaDzialalnosci, SubFieldDataRozpoczeciaDzialalnosci,
-                isDiferentObj, isNewObj
-            ) VALUES (
-                @RspoNumer, @SubFieldRspoNumer, @Longitude, @SubFieldLongitude, @Latitude, @SubFieldLatitude, @Typ,
-                @SubFieldTyp, @Nazwa, @SubFieldNazwa, @Miejscowosc, @SubFieldMiejscowosc, @Wojewodztwo, @SubFieldWojewodztwo,
-                @KodPocztowy, @SubFieldKodPocztowy, @NumerBudynku, @SubFieldNumerBudynku, @Email, @SubFieldEmail, @Ulica,
-                @SubFieldUlica, @Poczta, @SubFieldPoczta, @Telefon, @SubFieldTelefon, @NumerLokalu, @SubFieldNumerLokalu,
-                @StatusPublicznosc, @SubFieldStatusPublicznosc, @StronaInternetowa, @SubFieldStronaInternetowa, @Faks,
-                @SubFieldFaks, @Gmina, @SubFieldGmina, @Powiat, @SubFieldPowiat, @Dyrektor, @SubFieldDyrektor, @NipPodmiotu,
-                @SubFieldNipPodmiotu, @DataZalozenia, @SubFieldDataZalozenia, @LiczbaUczniow, @SubFieldLiczbaUczniow,
-                @RegonPodmiotu, @SubFieldRegonPodmiotu, @DataLikwidacji, @SubFieldDataLikwidacji, @JezykiNauczane,
-                @SubFieldJezykiNauczane, @TerenySportowe, @SubFieldTerenySportowe, @KategoriaUczniow, @SubFieldKategoriaUczniow,
-                @StrukturaMiejsce, @SubFieldStrukturaMiejsce, @SpecyfikaPlacowki, @SubFieldSpecyfikaPlacowki,
-                @RodzajMiejscowosci, @SubFieldRodzajMiejscowosci, @OrganProwadzacyNip, @SubFieldOrganProwadzacyNip,
-                @OrganProwadzacyTyp, @SubFieldOrganProwadzacyTyp,
-                @KodTerytorialnyGmina, @SubFieldKodTerytorialnyGmina, @OrganProwadzacyGmina, @SubFieldOrganProwadzacyGmina,
-                @OrganProwadzacyNazwa, @SubFieldOrganProwadzacyNazwa, @OrganProwadzacyRegon, @SubFieldOrganProwadzacyRegon,
-                @PodmiotNadrzednyRspo, @SubFieldPodmiotNadrzednyRspo, @KodTerytorialnyPowiat, @SubFieldKodTerytorialnyPowiat,
-                @OrganProwadzacyPowiat, @SubFieldOrganProwadzacyPowiat, @PodmiotNadrzednyNazwa, @SubFieldPodmiotNadrzednyNazwa,
-                @KodTerytorialnyMiejscowosc, @KodTerytorialnyWojewodztwo, @SubFieldKodTerytorialnyWojewodztwo,
-                @OrganProwadzacyWojewodztwo, @SubFieldOrganProwadzacyWojewodztwo, @DataRozpoczeciaDzialalnosci,
-                @SubFieldDataRozpoczeciaDzialalnosci, @isDiferentObj, @isNewObj
-            );
-        ";
+        INSERT INTO NewSchools (
+            RspoNumer, SubFieldRspoNumer, Longitude, SubFieldLongitude, Latitude, SubFieldLatitude, Typ, SubFieldTyp,
+            Nazwa, SubFieldNazwa, Miejscowosc, SubFieldMiejscowosc, Wojewodztwo, SubFieldWojewodztwo, KodPocztowy,
+            SubFieldKodPocztowy, NumerBudynku, SubFieldNumerBudynku, Email, SubFieldEmail, Ulica, SubFieldUlica,
+            Poczta, SubFieldPoczta, Telefon, SubFieldTelefon, NumerLokalu, SubFieldNumerLokalu, StatusPublicznosc,
+            SubFieldStatusPublicznosc, StronaInternetowa, SubFieldStronaInternetowa, Faks, SubFieldFaks, Gmina,
+            SubFieldGmina, Powiat, SubFieldPowiat, Dyrektor, SubFieldDyrektor, NipPodmiotu, SubFieldNipPodmiotu,
+            DataZalozenia, SubFieldDataZalozenia, LiczbaUczniow, SubFieldLiczbaUczniow, RegonPodmiotu,
+            SubFieldRegonPodmiotu, DataLikwidacji, SubFieldDataLikwidacji, JezykiNauczane, SubFieldJezykiNauczane,
+            TerenySportowe, SubFieldTerenySportowe, KategoriaUczniow, SubFieldKategoriaUczniow, StrukturaMiejsce,
+            SubFieldStrukturaMiejsce, SpecyfikaPlacowki, SubFieldSpecyfikaPlacowki, RodzajMiejscowosci,
+            SubFieldRodzajMiejscowosci, OrganProwadzacyNip, SubFieldOrganProwadzacyNip, OrganProwadzacyTyp,
+            SubFieldOrganProwadzacyTyp, KodTerytorialnyGmina, SubFieldKodTerytorialnyGmina, OrganProwadzacyGmina,
+            SubFieldOrganProwadzacyGmina, OrganProwadzacyNazwa, SubFieldOrganProwadzacyNazwa, OrganProwadzacyRegon,
+            SubFieldOrganProwadzacyRegon, PodmiotNadrzednyRspo, SubFieldPodmiotNadrzednyRspo, KodTerytorialnyPowiat,
+            SubFieldKodTerytorialnyPowiat, OrganProwadzacyPowiat, SubFieldOrganProwadzacyPowiat, PodmiotNadrzednyNazwa,
+            SubFieldPodmiotNadrzednyNazwa, KodTerytorialnyMiejscowosc, SubFieldKodTerytorialnyMiejscowosc,
+            KodTerytorialnyWojewodztwo, SubFieldKodTerytorialnyWojewodztwo, OrganProwadzacyWojewodztwo,
+            SubFieldOrganProwadzacyWojewodztwo, DataRozpoczeciaDzialalnosci, SubFieldDataRozpoczeciaDzialalnosci,
+            IsDiferentObj, IsNewObj
+        ) VALUES (
+            @RspoNumer, @SubFieldRspoNumer, @Longitude, @SubFieldLongitude, @Latitude, @SubFieldLatitude, @Typ,
+            @SubFieldTyp, @Nazwa, @SubFieldNazwa, @Miejscowosc, @SubFieldMiejscowosc, @Wojewodztwo, @SubFieldWojewodztwo,
+            @KodPocztowy, @SubFieldKodPocztowy, @NumerBudynku, @SubFieldNumerBudynku, @Email, @SubFieldEmail, @Ulica,
+            @SubFieldUlica, @Poczta, @SubFieldPoczta, @Telefon, @SubFieldTelefon, @NumerLokalu, @SubFieldNumerLokalu,
+            @StatusPublicznosc, @SubFieldStatusPublicznosc, @StronaInternetowa, @SubFieldStronaInternetowa, @Faks,
+            @SubFieldFaks, @Gmina, @SubFieldGmina, @Powiat, @SubFieldPowiat, @Dyrektor, @SubFieldDyrektor, @NipPodmiotu,
+            @SubFieldNipPodmiotu, @DataZalozenia, @SubFieldDataZalozenia, @LiczbaUczniow, @SubFieldLiczbaUczniow,
+            @RegonPodmiotu, @SubFieldRegonPodmiotu, @DataLikwidacji, @SubFieldDataLikwidacji, @JezykiNauczane,
+            @SubFieldJezykiNauczane, @TerenySportowe, @SubFieldTerenySportowe, @KategoriaUczniow, @SubFieldKategoriaUczniow,
+            @StrukturaMiejsce, @SubFieldStrukturaMiejsce, @SpecyfikaPlacowki, @SubFieldSpecyfikaPlacowki,
+            @RodzajMiejscowosci, @SubFieldRodzajMiejscowosci, @OrganProwadzacyNip, @SubFieldOrganProwadzacyNip,
+            @OrganProwadzacyTyp, @SubFieldOrganProwadzacyTyp, @KodTerytorialnyGmina, @SubFieldKodTerytorialnyGmina,
+            @OrganProwadzacyGmina, @SubFieldOrganProwadzacyGmina, @OrganProwadzacyNazwa, @SubFieldOrganProwadzacyNazwa,
+            @OrganProwadzacyRegon, @SubFieldOrganProwadzacyRegon, @PodmiotNadrzednyRspo, @SubFieldPodmiotNadrzednyRspo,
+            @KodTerytorialnyPowiat, @SubFieldKodTerytorialnyPowiat, @OrganProwadzacyPowiat, @SubFieldOrganProwadzacyPowiat,
+            @PodmiotNadrzednyNazwa, @SubFieldPodmiotNadrzednyNazwa, @KodTerytorialnyMiejscowosc, @SubFieldKodTerytorialnyMiejscowosc,
+            @KodTerytorialnyWojewodztwo, @SubFieldKodTerytorialnyWojewodztwo, @OrganProwadzacyWojewodztwo,
+            @SubFieldOrganProwadzacyWojewodztwo, @DataRozpoczeciaDzialalnosci, @SubFieldDataRozpoczeciaDzialalnosci,
+            @IsDiferentObj, @IsNewObj
+        );";
 
             await using var command = new NpgsqlCommand(insertQuery, connection, transaction);
 
-            // TODO: this needs refactoring too
             foreach (var school in newSchools)
             {
                 command.Parameters.Clear();
-                command.Parameters.AddWithValue("DataRozpoczeciaDzialalnosci", school.DataRozpoczeciaDzialalnosci ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldDataRozpoczeciaDzialalnosci", school.SubFieldDataRozpoczeciaDzialalnosci != null ? JsonConvert.SerializeObject(school.SubFieldDataRozpoczeciaDzialalnosci) : (object)DBNull.Value);
 
-                command.Parameters.AddWithValue("RspoNumer", school.RspoNumer ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldRspoNumer", school.SubFieldRspoNumer != null ? JsonConvert.SerializeObject(school.SubFieldRspoNumer) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Longitude", (object)school.Longitude ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldLongitude", school.SubFieldLongitude != null ? JsonConvert.SerializeObject(school.SubFieldLongitude) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Latitude", (object)school.Latitude ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldLatitude", school.SubFieldLatitude != null ? JsonConvert.SerializeObject(school.SubFieldLatitude) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Typ", school.Typ ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldTyp", school.SubFieldTyp != null ? JsonConvert.SerializeObject(school.SubFieldTyp) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Nazwa", school.Nazwa ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldNazwa", school.SubFieldNazwa != null ? JsonConvert.SerializeObject(school.SubFieldNazwa) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Miejscowosc", school.Miejscowosc ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldMiejscowosc", school.SubFieldMiejscowosc != null ? JsonConvert.SerializeObject(school.SubFieldMiejscowosc) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Wojewodztwo", school.Wojewodztwo ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldWojewodztwo", school.SubFieldWojewodztwo != null ? JsonConvert.SerializeObject(school.SubFieldWojewodztwo) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("KodPocztowy", school.KodPocztowy ?? (object)DBNull.Value);
-                command.Parameters.Add(new NpgsqlParameter("SubFieldKodPocztowy", NpgsqlTypes.NpgsqlDbType.Jsonb)
-                {
-                    Value = school.SubFieldKodPocztowy != null ? JsonConvert.SerializeObject(school.SubFieldKodPocztowy) : (object)DBNull.Value
-                });
-
-                command.Parameters.AddWithValue("NumerBudynku", school.NumerBudynku ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldNumerBudynku", school.SubFieldNumerBudynku != null ? JsonConvert.SerializeObject(school.SubFieldNumerBudynku) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Email", school.Email ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldEmail", school.SubFieldEmail != null ? JsonConvert.SerializeObject(school.SubFieldEmail) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Ulica", school.Ulica ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldUlica", school.SubFieldUlica != null ? JsonConvert.SerializeObject(school.SubFieldUlica) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Poczta", school.Poczta ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldPoczta", school.SubFieldPoczta != null ? JsonConvert.SerializeObject(school.SubFieldPoczta) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Telefon", school.Telefon ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldTelefon", school.SubFieldTelefon != null ? JsonConvert.SerializeObject(school.SubFieldTelefon) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("NumerLokalu", school.NumerLokalu ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldNumerLokalu", school.SubFieldNumerLokalu != null ? JsonConvert.SerializeObject(school.SubFieldNumerLokalu) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("StatusPublicznosc", school.StatusPublicznosc ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldStatusPublicznosc", school.SubFieldStatusPublicznosc != null ? JsonConvert.SerializeObject(school.SubFieldStatusPublicznosc) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("StronaInternetowa", school.StronaInternetowa ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldStronaInternetowa", school.SubFieldStronaInternetowa != null ? JsonConvert.SerializeObject(school.SubFieldStronaInternetowa) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Faks", school.Faks ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldFaks", school.SubFieldFaks != null ? JsonConvert.SerializeObject(school.SubFieldFaks) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Gmina", school.Gmina ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldGmina", school.SubFieldGmina != null ? JsonConvert.SerializeObject(school.SubFieldGmina) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Powiat", school.Powiat ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldPowiat", school.SubFieldPowiat != null ? JsonConvert.SerializeObject(school.SubFieldPowiat) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("Dyrektor", school.Dyrektor ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldDyrektor", school.SubFieldDyrektor != null ? JsonConvert.SerializeObject(school.SubFieldDyrektor) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("NipPodmiotu", school.NipPodmiotu ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldNipPodmiotu", school.SubFieldNipPodmiotu != null ? JsonConvert.SerializeObject(school.SubFieldNipPodmiotu) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("DataZalozenia", school.DataZalozenia ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldDataZalozenia", school.SubFieldDataZalozenia != null ? JsonConvert.SerializeObject(school.SubFieldDataZalozenia) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("LiczbaUczniow", school.LiczbaUczniow ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldLiczbaUczniow", school.SubFieldLiczbaUczniow != null ? JsonConvert.SerializeObject(school.SubFieldLiczbaUczniow) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("RegonPodmiotu", school.RegonPodmiotu ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldRegonPodmiotu", school.SubFieldRegonPodmiotu != null ? JsonConvert.SerializeObject(school.SubFieldRegonPodmiotu) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("DataLikwidacji", school.DataLikwidacji ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldDataLikwidacji", school.SubFieldDataLikwidacji != null ? JsonConvert.SerializeObject(school.SubFieldDataLikwidacji) : (object)DBNull.Value);
-                command.Parameters.AddWithValue("JezykiNauczane", school.JezykiNauczane != null ? JsonConvert.SerializeObject(school.JezykiNauczane) : (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldJezykiNauczane", school.SubFieldJezykiNauczane != null ? JsonConvert.SerializeObject(school.SubFieldJezykiNauczane) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("TerenySportowe", school.TerenySportowe != null ? JsonConvert.SerializeObject(school.TerenySportowe) : (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldTerenySportowe", school.SubFieldTerenySportowe != null ? JsonConvert.SerializeObject(school.SubFieldTerenySportowe) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("KategoriaUczniow", school.KategoriaUczniow ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldKategoriaUczniow", school.SubFieldKategoriaUczniow != null ? JsonConvert.SerializeObject(school.SubFieldKategoriaUczniow) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("StrukturaMiejsce", school.StrukturaMiejsce ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldStrukturaMiejsce", school.SubFieldStrukturaMiejsce != null ? JsonConvert.SerializeObject(school.SubFieldStrukturaMiejsce) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("SpecyfikaPlacowki", school.SpecyfikaPlacowki ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldSpecyfikaPlacowki", school.SubFieldSpecyfikaPlacowki != null ? JsonConvert.SerializeObject(school.SubFieldSpecyfikaPlacowki) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("RodzajMiejscowosci", school.RodzajMiejscowosci ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldRodzajMiejscowosci", school.SubFieldRodzajMiejscowosci != null ? JsonConvert.SerializeObject(school.SubFieldRodzajMiejscowosci) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("OrganProwadzacyNip", school.OrganProwadzacyNip ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyNip", school.SubFieldOrganProwadzacyNip != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyNip) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("OrganProwadzacyTyp", school.OrganProwadzacyTyp ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyTyp", school.SubFieldOrganProwadzacyTyp != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyTyp) : (object)DBNull.Value);
-                command.Parameters.AddWithValue("KodTerytorialnyGmina", school.KodTerytorialnyGmina ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldKodTerytorialnyGmina", school.SubFieldKodTerytorialnyGmina !=null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyTyp) : (object)DBNull.Value);
-                command.Parameters.AddWithValue("OrganProwadzacyGmina", school.OrganProwadzacyGmina ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyGmina", school.SubFieldOrganProwadzacyGmina != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyGmina) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("OrganProwadzacyNazwa", school.OrganProwadzacyGmina ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyNazwa", school.SubFieldOrganProwadzacyGmina != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyNazwa) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("OrganProwadzacyRegon", (object?)school.OrganProwadzacyRegon ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyRegon", school.SubFieldOrganProwadzacyRegon != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyRegon) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("PodmiotNadrzednyRspo", (object?)school.PodmiotNadrzednyRspo ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldPodmiotNadrzednyRspo", school.SubFieldPodmiotNadrzednyRspo != null ? JsonConvert.SerializeObject(school.SubFieldPodmiotNadrzednyRspo) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("KodTerytorialnyPowiat", (object?)school.KodTerytorialnyPowiat ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldKodTerytorialnyPowiat", school.SubFieldKodTerytorialnyPowiat != null ? JsonConvert.SerializeObject(school.SubFieldKodTerytorialnyPowiat) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("OrganProwadzacyPowiat", (object?)school.OrganProwadzacyPowiat ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyPowiat", school.SubFieldOrganProwadzacyPowiat != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyPowiat) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("PodmiotNadrzednyNazwa", (object?)school.PodmiotNadrzednyNazwa ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldPodmiotNadrzednyNazwa", school.SubFieldPodmiotNadrzednyNazwa != null ? JsonConvert.SerializeObject(school.SubFieldPodmiotNadrzednyNazwa) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("KodTerytorialnyMiejscowosc", (object?)school.KodTerytorialnyMiejscowosc ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldKodTerytorialnyMiejscowosc", school.SubFieldKodTerytorialnyMiejscowosc != null ? JsonConvert.SerializeObject(school.SubFieldKodTerytorialnyMiejscowosc) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("KodTerytorialnyWojewodztwo", (object?)school.KodTerytorialnyWojewodztwo ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldKodTerytorialnyWojewodztwo", school.SubFieldKodTerytorialnyWojewodztwo != null ? JsonConvert.SerializeObject(school.SubFieldKodTerytorialnyWojewodztwo) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("OrganProwadzacyWojewodztwo", (object?)school.OrganProwadzacyWojewodztwo ?? DBNull.Value);
-                command.Parameters.AddWithValue("SubFieldOrganProwadzacyWojewodztwo", school.SubFieldOrganProwadzacyWojewodztwo != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyWojewodztwo) : (object)DBNull.Value);
-
-                command.Parameters.AddWithValue("isDiferentObj", school.isDiferentObj ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("isNewObj", school.isNewObj ?? (object)DBNull.Value);
+                AddParameter(command, "RspoNumer", school.RspoNumer);
+                AddParameter(command, "SubFieldRspoNumer", SerializeJson(school.SubFieldRspoNumer), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Longitude", school.Longitude, NpgsqlDbType.Double);
+                AddParameter(command, "SubFieldLongitude", SerializeJson(school.SubFieldLongitude), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Latitude", school.Latitude, NpgsqlDbType.Double);
+                AddParameter(command, "SubFieldLatitude", SerializeJson(school.SubFieldLatitude), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Typ", school.Typ);
+                AddParameter(command, "SubFieldTyp", SerializeJson(school.SubFieldTyp), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Nazwa", school.Nazwa);
+                AddParameter(command, "SubFieldNazwa", SerializeJson(school.SubFieldNazwa), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Miejscowosc", school.Miejscowosc);
+                AddParameter(command, "SubFieldMiejscowosc", SerializeJson(school.SubFieldMiejscowosc), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Wojewodztwo", school.Wojewodztwo);
+                AddParameter(command, "SubFieldWojewodztwo", SerializeJson(school.SubFieldWojewodztwo), NpgsqlDbType.Jsonb);
+                AddParameter(command, "KodPocztowy", school.KodPocztowy);
+                AddParameter(command, "SubFieldKodPocztowy", SerializeJson(school.SubFieldKodPocztowy), NpgsqlDbType.Jsonb);
+                AddParameter(command, "NumerBudynku", school.NumerBudynku);
+                AddParameter(command, "SubFieldNumerBudynku", SerializeJson(school.SubFieldNumerBudynku), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Email", school.Email);
+                AddParameter(command, "SubFieldEmail", SerializeJson(school.SubFieldEmail), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Ulica", school.Ulica);
+                AddParameter(command, "SubFieldUlica", SerializeJson(school.SubFieldUlica), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Poczta", school.Poczta);
+                AddParameter(command, "SubFieldPoczta", SerializeJson(school.SubFieldPoczta), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Telefon", school.Telefon);
+                AddParameter(command, "SubFieldTelefon", SerializeJson(school.SubFieldTelefon), NpgsqlDbType.Jsonb);
+                AddParameter(command, "NumerLokalu", school.NumerLokalu);
+                AddParameter(command, "SubFieldNumerLokalu", SerializeJson(school.SubFieldNumerLokalu), NpgsqlDbType.Jsonb);
+                AddParameter(command, "StatusPublicznosc", school.StatusPublicznosc);
+                AddParameter(command, "SubFieldStatusPublicznosc", SerializeJson(school.SubFieldStatusPublicznosc), NpgsqlDbType.Jsonb);
+                AddParameter(command, "StronaInternetowa", school.StronaInternetowa);
+                AddParameter(command, "SubFieldStronaInternetowa", SerializeJson(school.SubFieldStronaInternetowa), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Faks", school.Faks);
+                AddParameter(command, "SubFieldFaks", SerializeJson(school.SubFieldFaks), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Gmina", school.Gmina);
+                AddParameter(command, "SubFieldGmina", SerializeJson(school.SubFieldGmina), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Powiat", school.Powiat);
+                AddParameter(command, "SubFieldPowiat", SerializeJson(school.SubFieldPowiat), NpgsqlDbType.Jsonb);
+                AddParameter(command, "Dyrektor", school.Dyrektor);
+                AddParameter(command, "SubFieldDyrektor", SerializeJson(school.SubFieldDyrektor), NpgsqlDbType.Jsonb);
+                AddParameter(command, "NipPodmiotu", school.NipPodmiotu);
+                AddParameter(command, "SubFieldNipPodmiotu", SerializeJson(school.SubFieldNipPodmiotu), NpgsqlDbType.Jsonb);
+                // Важно: DataZalozenia теперь строка (VARCHAR) => передаём как Text
+                AddParameter(command, "DataZalozenia", school.DataZalozenia);
+                AddParameter(command, "SubFieldDataZalozenia", SerializeJson(school.SubFieldDataZalozenia), NpgsqlDbType.Jsonb);
+                AddParameter(command, "LiczbaUczniow", school.LiczbaUczniow, NpgsqlDbType.Integer);
+                AddParameter(command, "SubFieldLiczbaUczniow", SerializeJson(school.SubFieldLiczbaUczniow), NpgsqlDbType.Jsonb);
+                AddParameter(command, "RegonPodmiotu", school.RegonPodmiotu);
+                AddParameter(command, "SubFieldRegonPodmiotu", SerializeJson(school.SubFieldRegonPodmiotu), NpgsqlDbType.Jsonb);
+                // DataLikwidacji тоже строка
+                AddParameter(command, "DataLikwidacji", school.DataLikwidacji);
+                AddParameter(command, "SubFieldDataLikwidacji", SerializeJson(school.SubFieldDataLikwidacji), NpgsqlDbType.Jsonb);
+                AddParameter(command, "JezykiNauczane", SerializeJson(school.JezykiNauczane), NpgsqlDbType.Jsonb);
+                AddParameter(command, "SubFieldJezykiNauczane", SerializeJson(school.SubFieldJezykiNauczane), NpgsqlDbType.Jsonb);
+                AddParameter(command, "TerenySportowe", SerializeJson(school.TerenySportowe), NpgsqlDbType.Jsonb);
+                AddParameter(command, "SubFieldTerenySportowe", SerializeJson(school.SubFieldTerenySportowe), NpgsqlDbType.Jsonb);
+                AddParameter(command, "KategoriaUczniow", school.KategoriaUczniow);
+                AddParameter(command, "SubFieldKategoriaUczniow", SerializeJson(school.SubFieldKategoriaUczniow), NpgsqlDbType.Jsonb);
+                AddParameter(command, "StrukturaMiejsce", school.StrukturaMiejsce);
+                AddParameter(command, "SubFieldStrukturaMiejsce", SerializeJson(school.SubFieldStrukturaMiejsce), NpgsqlDbType.Jsonb);
+                AddParameter(command, "SpecyfikaPlacowki", school.SpecyfikaPlacowki);
+                AddParameter(command, "SubFieldSpecyfikaPlacowki", SerializeJson(school.SubFieldSpecyfikaPlacowki), NpgsqlDbType.Jsonb);
+                AddParameter(command, "RodzajMiejscowosci", school.RodzajMiejscowosci);
+                AddParameter(command, "SubFieldRodzajMiejscowosci", SerializeJson(school.SubFieldRodzajMiejscowosci), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyNip", school.OrganProwadzacyNip);
+                AddParameter(command, "SubFieldOrganProwadzacyNip", SerializeJson(school.SubFieldOrganProwadzacyNip), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyTyp", school.OrganProwadzacyTyp);
+                AddParameter(command, "SubFieldOrganProwadzacyTyp", SerializeJson(school.SubFieldOrganProwadzacyTyp), NpgsqlDbType.Jsonb);
+                AddParameter(command, "KodTerytorialnyGmina", school.KodTerytorialnyGmina);
+                AddParameter(command, "SubFieldKodTerytorialnyGmina", SerializeJson(school.SubFieldKodTerytorialnyGmina), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyGmina", school.OrganProwadzacyGmina);
+                AddParameter(command, "SubFieldOrganProwadzacyGmina", SerializeJson(school.SubFieldOrganProwadzacyGmina), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyNazwa", school.OrganProwadzacyNazwa);
+                AddParameter(command, "SubFieldOrganProwadzacyNazwa", SerializeJson(school.SubFieldOrganProwadzacyNazwa), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyRegon", school.OrganProwadzacyRegon);
+                AddParameter(command, "SubFieldOrganProwadzacyRegon", SerializeJson(school.SubFieldOrganProwadzacyRegon), NpgsqlDbType.Jsonb);
+                AddParameter(command, "PodmiotNadrzednyRspo", school.PodmiotNadrzednyRspo);
+                AddParameter(command, "SubFieldPodmiotNadrzednyRspo", SerializeJson(school.SubFieldPodmiotNadrzednyRspo), NpgsqlDbType.Jsonb);
+                AddParameter(command, "KodTerytorialnyPowiat", school.KodTerytorialnyPowiat);
+                AddParameter(command, "SubFieldKodTerytorialnyPowiat", SerializeJson(school.SubFieldKodTerytorialnyPowiat), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyPowiat", school.OrganProwadzacyPowiat);
+                AddParameter(command, "SubFieldOrganProwadzacyPowiat", SerializeJson(school.SubFieldOrganProwadzacyPowiat), NpgsqlDbType.Jsonb);
+                AddParameter(command, "PodmiotNadrzednyNazwa", school.PodmiotNadrzednyNazwa);
+                AddParameter(command, "SubFieldPodmiotNadrzednyNazwa", SerializeJson(school.SubFieldPodmiotNadrzednyNazwa), NpgsqlDbType.Jsonb);
+                AddParameter(command, "KodTerytorialnyMiejscowosc", school.KodTerytorialnyMiejscowosc);
+                AddParameter(command, "SubFieldKodTerytorialnyMiejscowosc", SerializeJson(school.SubFieldKodTerytorialnyMiejscowosc), NpgsqlDbType.Jsonb);
+                AddParameter(command, "KodTerytorialnyWojewodztwo", school.KodTerytorialnyWojewodztwo);
+                AddParameter(command, "SubFieldKodTerytorialnyWojewodztwo", SerializeJson(school.SubFieldKodTerytorialnyWojewodztwo), NpgsqlDbType.Jsonb);
+                AddParameter(command, "OrganProwadzacyWojewodztwo", school.OrganProwadzacyWojewodztwo);
+                AddParameter(command, "SubFieldOrganProwadzacyWojewodztwo", SerializeJson(school.SubFieldOrganProwadzacyWojewodztwo), NpgsqlDbType.Jsonb);
+                // DataRozpoczeciaDzialalnosci тоже строка
+                AddParameter(command, "DataRozpoczeciaDzialalnosci", school.DataRozpoczeciaDzialalnosci);
+                AddParameter(command, "SubFieldDataRozpoczeciaDzialalnosci", SerializeJson(school.SubFieldDataRozpoczeciaDzialalnosci), NpgsqlDbType.Jsonb);
+                AddParameter(command, "IsDiferentObj", school.isDiferentObj, NpgsqlDbType.Boolean);
+                AddParameter(command, "IsNewObj", school.isNewObj, NpgsqlDbType.Boolean);
 
                 await command.ExecuteNonQueryAsync();
             }
 
             await transaction.CommitAsync();
-
-            return newSchools; 
+            return newSchools;
         }
-        catch (Exception)
+        catch
         {
             await transaction.RollbackAsync();
             throw;
         }
     }
+
+    private void AddParameter(NpgsqlCommand command, string parameterName, object value, NpgsqlDbType? type = null)
+    {
+        var parameter = command.Parameters.Add(parameterName, type ?? InferDbType(value));
+        parameter.Value = value ?? DBNull.Value;
+    }
+
+    /// <summary>
+    /// Определяет NpgsqlDbType (тип параметра) по типу value, 
+    /// если тип явно не задан в AddParameter.
+    /// </summary>
+    private NpgsqlDbType InferDbType(object value)
+    {
+        return value switch
+        {
+            double => NpgsqlDbType.Double,
+            int => NpgsqlDbType.Integer,
+            string => NpgsqlDbType.Text,
+            bool => NpgsqlDbType.Boolean,
+            // Если бы у нас были DateTime или DateOnly, можно добавить соответствующий вариант
+            _ => NpgsqlDbType.Jsonb,
+        };
+    }
+
+    /// <summary>
+    /// Сериализуем объект в JSON-строку. Если value == null — вернём null.
+    /// </summary>
+    private string SerializeJson(object value)
+        => value != null ? JsonConvert.SerializeObject(value) : null;
+
+
 }
+
