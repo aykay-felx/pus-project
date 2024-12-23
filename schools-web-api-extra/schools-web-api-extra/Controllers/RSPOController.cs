@@ -14,7 +14,7 @@ namespace RSPOApiIntegration.Controllers
             _httpClient = httpClientFactory.CreateClient();
             _service = service;
         }
-        
+
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] int page = 1)
         {
@@ -33,9 +33,11 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-                var updatedSchools = _service.CompareSchoolsAsync(newSchools);
 
-              //  await _service.SaveNewSchoolsAsync(updatedSchools);
+                // Исправлено здесь
+                var updatedSchools = (await _service.CompareSchoolsAsync(newSchools)).ToList();
+
+                await _service.SaveNewSchoolsAsync(updatedSchools);
 
                 return Ok(new
                 {
@@ -47,6 +49,7 @@ namespace RSPOApiIntegration.Controllers
                 return StatusCode(500, $"Error occured: {ex.Message}");
             }
         }
+
 
         [HttpGet("old-schools")]
         public async Task<IActionResult> SaveSchools([FromQuery] int page = 1)
@@ -66,8 +69,8 @@ namespace RSPOApiIntegration.Controllers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var schools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
-                _service.SaveOldSchoolsAsync(schools);
-                return Ok("Schools saved successfully");
+               // await _service.SaveOldSchoolsAsync(schools);
+                return Ok(schools);
             }
             catch (Exception ex)
             {

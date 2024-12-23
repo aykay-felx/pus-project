@@ -83,7 +83,7 @@ public class SchoolRepository : ISchoolService
             command.Parameters.AddWithValue("RodzajMiejscowosci", (object?)school.RodzajMiejscowosci ?? DBNull.Value);
             command.Parameters.AddWithValue("OrganProwadzacyNip", (object?)school.OrganProwadzacyNip ?? DBNull.Value);
             command.Parameters.AddWithValue("OrganProwadzacyTyp", (object?)school.OrganProwadzacyTyp ?? DBNull.Value);
-            command.Parameters.AddWithValue("PodmiotNadrzednyTyp", (object?)school.PodmiotNadrzednyTyp ?? DBNull.Value);
+            command.Parameters.AddWithValue("PodmiotNadrzednyNazwa", (object?)school.PodmiotNadrzednyNazwa ?? DBNull.Value);
             command.Parameters.AddWithValue("KodTerytorialnyGmina", (object?)school.KodTerytorialnyGmina ?? DBNull.Value);
             command.Parameters.AddWithValue("OrganProwadzacyGmina", (object?)school.OrganProwadzacyGmina ?? DBNull.Value);
             command.Parameters.AddWithValue("OrganProwadzacyNazwa", (object?)school.OrganProwadzacyNazwa ?? DBNull.Value);
@@ -124,7 +124,7 @@ public class SchoolRepository : ISchoolService
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        var command = new NpgsqlCommand("SELECT * FROM OldSchools", connection);
+        var command = new NpgsqlCommand("SELECT * FROM oldSchools", connection);
         await using var reader = await command.ExecuteReaderAsync();
 
         // TODO: maybe make a constructor, that will be accepting OldSchool?
@@ -311,7 +311,7 @@ public class SchoolRepository : ISchoolService
                 TerenySportowe, SubFieldTerenySportowe, KategoriaUczniow, SubFieldKategoriaUczniow, StrukturaMiejsce,
                 SubFieldStrukturaMiejsce, SpecyfikaPlacowki, SubFieldSpecyfikaPlacowki, RodzajMiejscowosci,
                 SubFieldRodzajMiejscowosci, OrganProwadzacyNip, SubFieldOrganProwadzacyNip, OrganProwadzacyTyp,
-                SubFieldOrganProwadzacyTyp, PodmiotNadrzednyTyp, SubFieldPodmiotNadrzednyTyp, KodTerytorialnyGmina,
+                SubFieldOrganProwadzacyTyp, KodTerytorialnyGmina,
                 SubFieldKodTerytorialnyGmina, OrganProwadzacyGmina, SubFieldOrganProwadzacyGmina, OrganProwadzacyNazwa,
                 SubFieldOrganProwadzacyNazwa, OrganProwadzacyRegon, SubFieldOrganProwadzacyRegon, PodmiotNadrzednyRspo,
                 SubFieldPodmiotNadrzednyRspo, KodTerytorialnyPowiat, SubFieldKodTerytorialnyPowiat, OrganProwadzacyPowiat,
@@ -331,7 +331,7 @@ public class SchoolRepository : ISchoolService
                 @SubFieldJezykiNauczane, @TerenySportowe, @SubFieldTerenySportowe, @KategoriaUczniow, @SubFieldKategoriaUczniow,
                 @StrukturaMiejsce, @SubFieldStrukturaMiejsce, @SpecyfikaPlacowki, @SubFieldSpecyfikaPlacowki,
                 @RodzajMiejscowosci, @SubFieldRodzajMiejscowosci, @OrganProwadzacyNip, @SubFieldOrganProwadzacyNip,
-                @OrganProwadzacyTyp, @SubFieldOrganProwadzacyTyp, @PodmiotNadrzednyTyp, @SubFieldPodmiotNadrzednyTyp,
+                @OrganProwadzacyTyp, @SubFieldOrganProwadzacyTyp,
                 @KodTerytorialnyGmina, @SubFieldKodTerytorialnyGmina, @OrganProwadzacyGmina, @SubFieldOrganProwadzacyGmina,
                 @OrganProwadzacyNazwa, @SubFieldOrganProwadzacyNazwa, @OrganProwadzacyRegon, @SubFieldOrganProwadzacyRegon,
                 @PodmiotNadrzednyRspo, @SubFieldPodmiotNadrzednyRspo, @KodTerytorialnyPowiat, @SubFieldKodTerytorialnyPowiat,
@@ -348,6 +348,9 @@ public class SchoolRepository : ISchoolService
             foreach (var school in newSchools)
             {
                 command.Parameters.Clear();
+                command.Parameters.AddWithValue("DataRozpoczeciaDzialalnosci", school.DataRozpoczeciaDzialalnosci ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldDataRozpoczeciaDzialalnosci", school.SubFieldDataRozpoczeciaDzialalnosci != null ? JsonConvert.SerializeObject(school.SubFieldDataRozpoczeciaDzialalnosci) : (object)DBNull.Value);
+
                 command.Parameters.AddWithValue("RspoNumer", school.RspoNumer ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("SubFieldRspoNumer", school.SubFieldRspoNumer != null ? JsonConvert.SerializeObject(school.SubFieldRspoNumer) : (object)DBNull.Value);
 
@@ -448,6 +451,40 @@ public class SchoolRepository : ISchoolService
 
                 command.Parameters.AddWithValue("OrganProwadzacyTyp", school.OrganProwadzacyTyp ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("SubFieldOrganProwadzacyTyp", school.SubFieldOrganProwadzacyTyp != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyTyp) : (object)DBNull.Value);
+                command.Parameters.AddWithValue("KodTerytorialnyGmina", school.KodTerytorialnyGmina ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldKodTerytorialnyGmina", school.SubFieldKodTerytorialnyGmina !=null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyTyp) : (object)DBNull.Value);
+                command.Parameters.AddWithValue("OrganProwadzacyGmina", school.OrganProwadzacyGmina ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldOrganProwadzacyGmina", school.SubFieldOrganProwadzacyGmina != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyGmina) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("OrganProwadzacyNazwa", school.OrganProwadzacyGmina ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldOrganProwadzacyNazwa", school.SubFieldOrganProwadzacyGmina != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyNazwa) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("OrganProwadzacyRegon", (object?)school.OrganProwadzacyRegon ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldOrganProwadzacyRegon", school.SubFieldOrganProwadzacyRegon != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyRegon) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("PodmiotNadrzednyRspo", (object?)school.PodmiotNadrzednyRspo ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldPodmiotNadrzednyRspo", school.SubFieldPodmiotNadrzednyRspo != null ? JsonConvert.SerializeObject(school.SubFieldPodmiotNadrzednyRspo) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("KodTerytorialnyPowiat", (object?)school.KodTerytorialnyPowiat ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldKodTerytorialnyPowiat", school.SubFieldKodTerytorialnyPowiat != null ? JsonConvert.SerializeObject(school.SubFieldKodTerytorialnyPowiat) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("OrganProwadzacyPowiat", (object?)school.OrganProwadzacyPowiat ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldOrganProwadzacyPowiat", school.SubFieldOrganProwadzacyPowiat != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyPowiat) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("PodmiotNadrzednyNazwa", (object?)school.PodmiotNadrzednyNazwa ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldPodmiotNadrzednyNazwa", school.SubFieldPodmiotNadrzednyNazwa != null ? JsonConvert.SerializeObject(school.SubFieldPodmiotNadrzednyNazwa) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("KodTerytorialnyMiejscowosc", (object?)school.KodTerytorialnyMiejscowosc ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldKodTerytorialnyMiejscowosc", school.SubFieldKodTerytorialnyMiejscowosc != null ? JsonConvert.SerializeObject(school.SubFieldKodTerytorialnyMiejscowosc) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("KodTerytorialnyWojewodztwo", (object?)school.KodTerytorialnyWojewodztwo ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldKodTerytorialnyWojewodztwo", school.SubFieldKodTerytorialnyWojewodztwo != null ? JsonConvert.SerializeObject(school.SubFieldKodTerytorialnyWojewodztwo) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("OrganProwadzacyWojewodztwo", (object?)school.OrganProwadzacyWojewodztwo ?? DBNull.Value);
+                command.Parameters.AddWithValue("SubFieldOrganProwadzacyWojewodztwo", school.SubFieldOrganProwadzacyWojewodztwo != null ? JsonConvert.SerializeObject(school.SubFieldOrganProwadzacyWojewodztwo) : (object)DBNull.Value);
+
+                command.Parameters.AddWithValue("isDiferentObj", school.isDiferentObj ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("isNewObj", school.isNewObj ?? (object)DBNull.Value);
 
                 await command.ExecuteNonQueryAsync();
             }
