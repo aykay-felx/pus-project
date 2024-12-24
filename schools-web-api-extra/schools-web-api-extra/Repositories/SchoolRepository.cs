@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
+﻿using Npgsql;
 using Newtonsoft.Json;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
@@ -46,7 +40,7 @@ public class SchoolRepository : ISchoolService
 
         // Предположим, что есть некий метод JsonConvertToFullSchols.JsongConvertToFullSchools(...)
         // который десериализует JSON-ответ в List<NewSchool>.
-        var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
+        var newSchools = JsonConvertToFullSchols.JsonConvertToFullSchools(content);
 
         return newSchools;
     }
@@ -420,6 +414,7 @@ public class SchoolRepository : ISchoolService
     // ----------------------------------------------------------------
     // «Частичное» обновление OldSchools
     // ----------------------------------------------------------------
+    // Нас Гаврила казнит, если увидит 23 сравнения через if, может переделаю завтра этот метод
     private async Task UpdateOldSchoolAsync(
       NpgsqlConnection connection,
       NpgsqlTransaction transaction,

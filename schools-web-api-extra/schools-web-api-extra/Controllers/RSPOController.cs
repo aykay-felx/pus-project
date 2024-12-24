@@ -16,10 +16,10 @@ namespace RSPOApiIntegration.Controllers
         }
 
         /// <summary>
-        /// 1) Получить все старые школы (OldSchools).
+        /// 1) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (OldSchools).
         /// GET: api/RSPO/oldschools
         /// </summary>
-        [HttpGet("oldschools")]
+        [HttpGet("old-schools")]
         public async Task<IActionResult> GetAllOldSchools()
         {
             try
@@ -34,7 +34,7 @@ namespace RSPOApiIntegration.Controllers
         }
 
         /// <summary>
-        /// 2) Удалить одну школу по RspoNumer.
+        /// 2) пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ RspoNumer.
         /// DELETE: api/RSPO/oldschools/{rspoNumer}
         /// </summary>
         [HttpDelete("oldschools/{rspoNumer}")]
@@ -52,26 +52,26 @@ namespace RSPOApiIntegration.Controllers
         }
 
         /// <summary>
-        /// 3) Сходить во внешний API RSPO, взять список школ (page=?), 
-        ///    сравнить с OldSchools, сохранить результат в NewSchools, 
-        ///    и вернуть список NewSchools пользователю (фронту).
+        /// 3) пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ API RSPO, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (page=?), 
+        ///    пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ OldSchools, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ NewSchools, 
+        ///    пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NewSchools пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ).
         /// GET: api/RSPO/fetch-and-compare?page=1
         /// </summary>
-        [HttpGet("fetch-and-compare")]
+        [HttpGet("new-schools/fetch-and-compare")]
         public async Task<IActionResult> FetchAndCompare(int page = 1)
         {
             try
             {
-                // 3.1. Сходить в внешний API, получить newSchools
+                // 3.1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ API, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ newSchools
                 var newSchools = await _service.FetchSchoolsFromApiAsync(page);
 
-                // 3.2. Сравнить с OldSchools (заполняем SubField, isDifferentObj, isNewObj)
+                // 3.2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ OldSchools (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SubField, isDifferentObj, isNewObj)
                 var comparedList = await _service.CompareWithOldSchoolsAsync(newSchools);
 
-                // 3.3. Сохранить в таблицу NewSchools
+                // 3.3. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ NewSchools
                 await _service.SaveNewSchoolsAsync(comparedList);
 
-                // 3.4. Возвращаем на фронт
+                // 3.4. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 return Ok(comparedList);
             }
             catch (Exception ex)
@@ -81,12 +81,12 @@ namespace RSPOApiIntegration.Controllers
         }
 
         /// <summary>
-        /// 4) Применить изменения из списка NewSchool:
-        ///    Обычно вызывается, когда пользователь на фронте 
-        ///    выбрал, какие поля обновлять/менять.
+        /// 4) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NewSchool:
+        ///    пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
+        ///    пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅ.
         ///    POST: api/RSPO/apply-changes
         /// </summary>
-        [HttpPost("apply-changes")]
+        [HttpPost("new-schools/apply-changes")]
         public async Task<IActionResult> ApplyChanges([FromBody] List<NewSchool> newSchools)
         {
             try
@@ -96,7 +96,7 @@ namespace RSPOApiIntegration.Controllers
                     return BadRequest("No data received.");
                 }
 
-                // 4.1. Применяем изменения к OldSchools (insert/update)
+                // 4.1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ OldSchools (insert/update)
                 await _service.ApplyChangesFromNewSchoolsAsync(newSchools);
 
                 return Ok("Changes applied successfully.");
