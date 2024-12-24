@@ -1,14 +1,43 @@
-﻿using schools_web_api_extra.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using schools_web_api_extra.Models;
 
 namespace schools_web_api_extra.Interface
 {
     public interface ISchoolService
     {
-        Task SaveOldSchoolsAsync(List<NewSchool> oldSchools);
-        Task DeleteAllOldSchoolsAsync();
-        Task<IEnumerable<OldSchool>> GetOldSchoolsAsync();
+        /// <summary>
+        /// 1) Извлечь список школ из внешнего API, вернуть их как List<NewSchool>.
+        /// </summary>
+        Task<List<NewSchool>> FetchSchoolsFromApiAsync(int page);
 
-        Task<IEnumerable<NewSchool>> CompareSchoolsAsync(List<NewSchool> newSchools);
-        Task <IEnumerable<NewSchool>> SaveNewSchoolsAsync(List<NewSchool> newSchools);
+        /// <summary>
+        /// 2) Сравнить список NewSchool с уже существующими OldSchools 
+        ///    (для каждого NewSchool заполнить SubFields, isDifferentObj, isNewObj).
+        /// </summary>
+        Task<List<NewSchool>> CompareWithOldSchoolsAsync(List<NewSchool> newSchools);
+
+        /// <summary>
+        /// 3) Сохранить список NewSchool в таблицу NewSchools (для последующего отображения на фронте).
+        /// </summary>
+        Task SaveNewSchoolsAsync(List<NewSchool> newSchools);
+
+        /// <summary>
+        /// 4) По запросу пользователя (после ручных корректировок) применить изменения 
+        ///    из списка NewSchool к OldSchools:
+        ///    - Если записи с таким RspoNumer нет, делаем INSERT.
+        ///    - Если есть, делаем «частичное» обновление только по нужным полям.
+        /// </summary>
+        Task ApplyChangesFromNewSchoolsAsync(IEnumerable<NewSchool> newSchools);
+
+        /// <summary>
+        /// 5) Получить все старые школы (OldSchools).
+        /// </summary>
+        Task<IEnumerable<OldSchool>> GetAllOldSchoolsAsync();
+
+        /// <summary>
+        /// 6) Удалить одну запись OldSchools по RspoNumer.
+        /// </summary>
+        Task DeleteOldSchoolAsync(string rspoNumer);
     }
 }
