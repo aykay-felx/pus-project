@@ -39,5 +39,7 @@ namespace schools_web_api_extra.Interface
         /// 6) Удалить одну запись OldSchools по RspoNumer.
         /// </summary>
         Task DeleteOldSchoolAsync(string rspoNumer);
+        Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer);
+
     }
 }

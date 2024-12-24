@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
 
@@ -9,6 +10,7 @@ namespace RSPOApiIntegration.Controllers
     public class RSPOController : ControllerBase
     {
         private readonly ISchoolService _service;
+        
 
         public RSPOController(ISchoolService service)
         {
@@ -106,5 +108,21 @@ namespace RSPOApiIntegration.Controllers
                 return StatusCode(500, $"Error occured: {ex.Message}");
             }
         }
+
+        [HttpGet("history/{rspoNumer}")]
+        public async Task<IActionResult> GetHistory(string rspoNumer)
+        {
+            try
+            {
+                var history = await _service.GetHistoryByRspoAsync(rspoNumer);
+                return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error occured: {ex.Message}");
+            }
+        }
+
+
     }
 }
