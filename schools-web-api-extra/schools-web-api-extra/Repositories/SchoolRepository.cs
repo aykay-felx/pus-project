@@ -40,7 +40,7 @@ public class SchoolRepository : ISchoolService
 
         // Предположим, что есть некий метод JsonConvertToFullSchols.JsongConvertToFullSchools(...)
         // который десериализует JSON-ответ в List<NewSchool>.
-        var newSchools = JsonConvertToFullSchols.JsonConvertToFullSchools(content);
+        var newSchools = JsonConvertToFullSchols.JsongConvertToFullSchools(content);
 
         return newSchools;
     }
