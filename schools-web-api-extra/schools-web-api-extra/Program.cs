@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
 using schools_web_api_extra.Interface;
+using schools_web_api_extra.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

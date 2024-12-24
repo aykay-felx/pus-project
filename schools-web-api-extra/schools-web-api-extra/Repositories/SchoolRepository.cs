@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
 
+namespace schools_web_api_extra.Repositories;
+
 public class SchoolRepository : ISchoolService
 {
     private readonly string _connectionString;
@@ -21,7 +23,6 @@ public class SchoolRepository : ISchoolService
     }
 
     #region 1) Fetch from API
-
     /// <summary>
     /// 1) Извлечь список школ с внешнего API (https://api-rspo.men.gov.pl/api/placowki/?page=...).
     /// Преобразовать их в List<NewSchool> и вернуть.
@@ -58,200 +59,47 @@ public class SchoolRepository : ISchoolService
     /// 2) Сравнить список NewSchool с уже существующими OldSchools 
     ///    (заполняем SubFields, isDifferentObj, isNewObj).
     /// </summary>
+    ///
+    ///
+    
     public async Task<List<NewSchool>> CompareWithOldSchoolsAsync(List<NewSchool> newSchools)
     {
-        if (newSchools == null) return new List<NewSchool>();
-
         var oldSchools = (await GetAllOldSchoolsAsync()).ToList();
+        var specialProperties = new HashSet<string> { nameof(NewSchool.JezykiNauczane) };
 
         foreach (var newSchool in newSchools)
         {
             var oldSchool = oldSchools.FirstOrDefault(o => o.RspoNumer == newSchool.RspoNumer);
 
-            if (oldSchool == null)
+            if (oldSchool is null)
             {
-                // Нет в OldSchools
                 newSchool.isDifferentObj = true;
                 newSchool.isNewObj = true;
+                continue;
             }
-            else
+
+            foreach (var property in typeof(NewSchool).GetProperties())
             {
-                // Есть в OldSchools => проверяем поля
-                newSchool.isNewObj = false;
-                newSchool.isDifferentObj = false;
+                if (property.Name.StartsWith("SubField")) continue;
 
-                // 1) Сравниваем double Longitude
-                if (newSchool.Longitude != oldSchool.Longitude)
-                {
-                    newSchool.isDifferentObj = true;
-                    // Преобразуем double -> string через ToString(...)
-                    newSchool.SubFieldLongitude = new SubField(true, oldSchool.Longitude.ToString());
-                }
+                var newValue = property.GetValue(newSchool);
+                var oldProperty = oldSchool.GetType().GetProperty(property.Name);
+                var oldValue = oldProperty?.GetValue(oldSchool);
 
-                // 2) Latitude
-                if (newSchool.Latitude != oldSchool.Latitude)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldLatitude = new SubField(true, oldSchool.Latitude.ToString());
-                }
+                if (Equals(newValue, oldValue)) continue;
+                
+                var subFieldProperty = typeof(NewSchool).GetProperty($"SubField{property.Name}");
+                
+                if (subFieldProperty == null) continue;
 
-                // 3) Typ
-                if (newSchool.Typ != oldSchool.Typ)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldTyp = new SubField(true, oldSchool.Typ);
-                }
+                SubField subField;
 
-                // 4) Nazwa
-                if (newSchool.Nazwa != oldSchool.Nazwa)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldNazwa = new SubField(true, oldSchool.Nazwa);
-                }
-
-                // 5) Miejscowosc
-                if (newSchool.Miejscowosc != oldSchool.Miejscowosc)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldMiejscowosc = new SubField(true, oldSchool.Miejscowosc);
-                }
-
-                // 6) Wojewodztwo
-                if (newSchool.Wojewodztwo != oldSchool.Wojewodztwo)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldWojewodztwo = new SubField(true, oldSchool.Wojewodztwo);
-                }
-
-                // 7) KodPocztowy
-                if (newSchool.KodPocztowy != oldSchool.KodPocztowy)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldKodPocztowy = new SubField(true, oldSchool.KodPocztowy);
-                }
-
-                // 8) NumerBudynku
-                if (newSchool.NumerBudynku != oldSchool.NumerBudynku)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldNumerBudynku = new SubField(true, oldSchool.NumerBudynku);
-                }
-
-                // 9) Email
-                if (newSchool.Email != oldSchool.Email)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldEmail = new SubField(true, oldSchool.Email);
-                }
-
-                // 10) Ulica
-                if (newSchool.Ulica != oldSchool.Ulica)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldUlica = new SubField(true, oldSchool.Ulica);
-                }
-
-                // 11) Telefon
-                if (newSchool.Telefon != oldSchool.Telefon)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldTelefon = new SubField(true, oldSchool.Telefon);
-                }
-
-                // 12) StatusPublicznosc
-                if (newSchool.StatusPublicznosc != oldSchool.StatusPublicznosc)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldStatusPublicznosc = new SubField(true, oldSchool.StatusPublicznosc);
-                }
-
-                // 13) StronaInternetowa
-                if (newSchool.StronaInternetowa != oldSchool.StronaInternetowa)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldStronaInternetowa = new SubField(true, oldSchool.StronaInternetowa);
-                }
-
-                // 14) Dyrektor
-                if (newSchool.Dyrektor != oldSchool.Dyrektor)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldDyrektor = new SubField(true, oldSchool.Dyrektor);
-                }
-
-                // 15) NipPodmiotu
-                if (newSchool.NipPodmiotu != oldSchool.NipPodmiotu)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldNipPodmiotu = new SubField(true, oldSchool.NipPodmiotu);
-                }
-
-                // 16) RegonPodmiotu
-                if (newSchool.RegonPodmiotu != oldSchool.RegonPodmiotu)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldRegonPodmiotu = new SubField(true, oldSchool.RegonPodmiotu);
-                }
-
-                // 17) DataZalozenia
-                if (newSchool.DataZalozenia != oldSchool.DataZalozenia)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldDataZalozenia = new SubField(true, oldSchool.DataZalozenia);
-                }
-
-                // 18) LiczbaUczniow (int?)
-                if (newSchool.LiczbaUczniow != oldSchool.LiczbaUczniow)
-                {
-                    newSchool.isDifferentObj = true;
-                    // Преобразуем int? -> string (если null, OldValue станет "null" или "Empty")
-                    var oldVal = oldSchool.LiczbaUczniow?.ToString() ?? "";
-                    newSchool.SubFieldLiczbaUczniow = new SubField(true, oldVal);
-                }
-
-                // 19) KategoriaUczniow
-                if (newSchool.KategoriaUczniow != oldSchool.KategoriaUczniow)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldKategoriaUczniow = new SubField(true, oldSchool.KategoriaUczniow);
-                }
-
-                // 20) SpecyfikaPlacowki
-                if (newSchool.SpecyfikaPlacowki != oldSchool.SpecyfikaPlacowki)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldSpecyfikaPlacowki = new SubField(true, oldSchool.SpecyfikaPlacowki);
-                }
-
-                // 21) Gmina
-                if (newSchool.Gmina != oldSchool.Gmina)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldGmina = new SubField(true, oldSchool.Gmina);
-                }
-
-                // 22) Powiat
-                if (newSchool.Powiat != oldSchool.Powiat)
-                {
-                    newSchool.isDifferentObj = true;
-                    newSchool.SubFieldPowiat = new SubField(true, oldSchool.Powiat);
-                }
-
-                // 23) JezykiNauczane (string[]?)
-                var oldJezyki = oldSchool.JezykiNauczane ?? new string[0];
-                var newJezyki = newSchool.JezykiNauczane ?? new string[0];
-                if (!Enumerable.SequenceEqual(newJezyki, oldJezyki))
-                {
-                    newSchool.isDifferentObj = true;
-                    // Для OldValue складываем массив oldJezyki через запятую
-                    var oldVal = string.Join(",", oldJezyki);
-                    newSchool.SubFieldJezykiNauczane = new SubField(true, oldVal);
-                }
-
-                // (Если у вас есть ещё поля, добавьте аналогичные проверки.)
+                if (specialProperties.Contains(property.Name)) subField = new SubField(true, string.Join(",", oldValue));
+                else subField = new SubField(true, oldValue?.ToString());
+                
+                subFieldProperty.SetValue(newSchool, subField);
             }
         }
-
 
         return newSchools;
     }
