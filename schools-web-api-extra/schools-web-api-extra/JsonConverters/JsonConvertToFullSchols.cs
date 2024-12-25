@@ -7,7 +7,7 @@ public static class JsonConvertToFullSchols
     {
         var placowki = JsonConvert.DeserializeObject<List<Placowka>>(data);
 
-        return placowki.Select(placowka => new NewSchool(placowka)).ToList();
+        return placowki?.Select(placowka => new NewSchool(placowka)).ToList() ?? new List<NewSchool>();
     }
 }
 

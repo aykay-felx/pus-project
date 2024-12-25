@@ -414,7 +414,6 @@ public class SchoolRepository : ISchoolService
     // ----------------------------------------------------------------
     // «Частичное» обновление OldSchools
     // ----------------------------------------------------------------
-    // Нас Гаврила казнит, если увидит 23 сравнения через if, может переделаю завтра этот метод
     private async Task UpdateOldSchoolAsync(
       NpgsqlConnection connection,
       NpgsqlTransaction transaction,
@@ -423,105 +422,31 @@ public class SchoolRepository : ISchoolService
     {
         var fieldsToUpdate = new Dictionary<string, object?>();
 
-        // 1. double Longitude
-        if (newSchool.Longitude != oldSchool.Longitude)
-            fieldsToUpdate["Longitude"] = newSchool.Longitude;
+        var newSchoolProperties = newSchool.GetType().GetProperties();
 
-        // 2. double Latitude
-        if (newSchool.Latitude != oldSchool.Latitude)
-            fieldsToUpdate["Latitude"] = newSchool.Latitude;
-
-        // 3. string Typ
-        if (newSchool.Typ != oldSchool.Typ)
-            fieldsToUpdate["Typ"] = newSchool.Typ ?? (object)DBNull.Value;
-
-        // 4. string Nazwa
-        if (newSchool.Nazwa != oldSchool.Nazwa)
-            fieldsToUpdate["Nazwa"] = newSchool.Nazwa ?? (object)DBNull.Value;
-
-        // 5. string Miejscowosc
-        if (newSchool.Miejscowosc != oldSchool.Miejscowosc)
-            fieldsToUpdate["Miejscowosc"] = newSchool.Miejscowosc ?? (object)DBNull.Value;
-
-        // 6. string Wojewodztwo
-        if (newSchool.Wojewodztwo != oldSchool.Wojewodztwo)
-            fieldsToUpdate["Wojewodztwo"] = newSchool.Wojewodztwo ?? (object)DBNull.Value;
-
-        // 7. string KodPocztowy
-        if (newSchool.KodPocztowy != oldSchool.KodPocztowy)
-            fieldsToUpdate["KodPocztowy"] = newSchool.KodPocztowy ?? (object)DBNull.Value;
-
-        // 8. string NumerBudynku
-        if (newSchool.NumerBudynku != oldSchool.NumerBudynku)
-            fieldsToUpdate["NumerBudynku"] = newSchool.NumerBudynku ?? (object)DBNull.Value;
-
-        // 9. string? Email
-        if (newSchool.Email != oldSchool.Email)
-            fieldsToUpdate["Email"] = newSchool.Email ?? (object)DBNull.Value;
-
-        // 10. string? Ulica
-        if (newSchool.Ulica != oldSchool.Ulica)
-            fieldsToUpdate["Ulica"] = newSchool.Ulica ?? (object)DBNull.Value;
-
-        // 11. string? Telefon
-        if (newSchool.Telefon != oldSchool.Telefon)
-            fieldsToUpdate["Telefon"] = newSchool.Telefon ?? (object)DBNull.Value;
-
-        // 12. string? StatusPublicznosc
-        if (newSchool.StatusPublicznosc != oldSchool.StatusPublicznosc)
-            fieldsToUpdate["StatusPublicznosc"] = newSchool.StatusPublicznosc ?? (object)DBNull.Value;
-
-        // 13. string? StronaInternetowa
-        if (newSchool.StronaInternetowa != oldSchool.StronaInternetowa)
-            fieldsToUpdate["StronaInternetowa"] = newSchool.StronaInternetowa ?? (object)DBNull.Value;
-
-        // 14. string? Dyrektor
-        if (newSchool.Dyrektor != oldSchool.Dyrektor)
-            fieldsToUpdate["Dyrektor"] = newSchool.Dyrektor ?? (object)DBNull.Value;
-
-        // 15. string? NipPodmiotu
-        if (newSchool.NipPodmiotu != oldSchool.NipPodmiotu)
-            fieldsToUpdate["NipPodmiotu"] = newSchool.NipPodmiotu ?? (object)DBNull.Value;
-
-        // 16. string? RegonPodmiotu
-        if (newSchool.RegonPodmiotu != oldSchool.RegonPodmiotu)
-            fieldsToUpdate["RegonPodmiotu"] = newSchool.RegonPodmiotu ?? (object)DBNull.Value;
-
-        // 17. string? DataZalozenia
-        if (newSchool.DataZalozenia != oldSchool.DataZalozenia)
-            fieldsToUpdate["DataZalozenia"] = newSchool.DataZalozenia ?? (object)DBNull.Value;
-
-        // 18. int? LiczbaUczniow
-        if (newSchool.LiczbaUczniow != oldSchool.LiczbaUczniow)
-            fieldsToUpdate["LiczbaUczniow"] = newSchool.LiczbaUczniow ?? (object)DBNull.Value;
-
-        // 19. string? KategoriaUczniow
-        if (newSchool.KategoriaUczniow != oldSchool.KategoriaUczniow)
-            fieldsToUpdate["KategoriaUczniow"] = newSchool.KategoriaUczniow ?? (object)DBNull.Value;
-
-        // 20. string? SpecyfikaPlacowki
-        if (newSchool.SpecyfikaPlacowki != oldSchool.SpecyfikaPlacowki)
-            fieldsToUpdate["SpecyfikaPlacowki"] = newSchool.SpecyfikaPlacowki ?? (object)DBNull.Value;
-
-        // 21. string? Gmina
-        if (newSchool.Gmina != oldSchool.Gmina)
-            fieldsToUpdate["Gmina"] = newSchool.Gmina ?? (object)DBNull.Value;
-
-        // 22. string? Powiat
-        if (newSchool.Powiat != oldSchool.Powiat)
-            fieldsToUpdate["Powiat"] = newSchool.Powiat ?? (object)DBNull.Value;
-
-        // 23. string[]? JezykiNauczane
-        var oldJezyki = oldSchool.JezykiNauczane ?? new string[0];
-        var newJezyki = newSchool.JezykiNauczane ?? new string[0];
-        if (!Enumerable.SequenceEqual(newJezyki, oldJezyki))
+        foreach (var newSchoolProperty in newSchoolProperties)
         {
-            // Храним в БД как строку, соединённую запятой
-            fieldsToUpdate["JezykiNauczane"] = newJezyki.Any()
-                ? string.Join(",", newJezyki)
-                : (object)DBNull.Value;
-        }
+            var oldSchoolProperty = oldSchool.GetType().GetProperty(newSchoolProperty.Name);
 
+            if (newSchoolProperty.Name == nameof(NewSchool.JezykiNauczane))
+            {
+                var oldJezyki = oldSchool.JezykiNauczane ?? new string[0];
+                var newJezyki = newSchool.JezykiNauczane ?? new string[0];
+
+                if (!Enumerable.SequenceEqual(newJezyki, oldJezyki))
+                {
+                    fieldsToUpdate[newSchoolProperty.Name] = newJezyki.Any()
+                        ? string.Join(",", newJezyki)
+                        : DBNull.Value;
+                }
+
+                continue;
+            }
+
+            if (newSchoolProperty.GetValue(newSchool) != oldSchoolProperty?.GetValue(oldSchool))
+                fieldsToUpdate[newSchoolProperty.Name] = newSchoolProperty.GetValue(newSchool) ?? DBNull.Value;
+        }
+        
         // Если нечего обновлять — выходим
         if (fieldsToUpdate.Count == 0) return;
 
@@ -529,7 +454,7 @@ public class SchoolRepository : ISchoolService
         var sb = new System.Text.StringBuilder("UPDATE OldSchools SET ");
         var parameters = new List<NpgsqlParameter>();
 
-        int i = 0;
+        var i = 0;
         foreach (var kvp in fieldsToUpdate)
         {
             if (i > 0) sb.Append(", ");
@@ -551,8 +476,7 @@ public class SchoolRepository : ISchoolService
 
         await cmd.ExecuteNonQueryAsync();
     }
-
-
+    
     #endregion
 
     #region 5) GetAllOldSchoolsAsync & 6) DeleteOldSchoolAsync
