@@ -37,4 +37,5 @@ public interface ISchoolService
     /// 6) Удалить одну запись OldSchools по RspoNumer.
     /// </summary>
     Task DeleteOldSchoolAsync(string rspoNumer);
+    Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer);
 }
