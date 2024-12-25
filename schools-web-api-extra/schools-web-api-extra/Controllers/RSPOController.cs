@@ -105,5 +105,21 @@ public class RSPOController : ControllerBase
         {
             return StatusCode(500, $"Error occured: {ex.Message}");
         }
+
+        [HttpGet("history/{rspoNumer}")]
+        public async Task<IActionResult> GetHistory(string rspoNumer)
+        {
+            try
+            {
+                var history = await _service.GetHistoryByRspoAsync(rspoNumer);
+                return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error occured: {ex.Message}");
+            }
+        }
+
+
     }
 }

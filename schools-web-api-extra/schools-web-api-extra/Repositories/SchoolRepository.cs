@@ -412,7 +412,7 @@ public class SchoolRepository : ISchoolService
     }
 
     // ----------------------------------------------------------------
-    // «Частичное» обновление OldSchools
+    // «Partial Reload OldSchools
     // ----------------------------------------------------------------
     private async Task UpdateOldSchoolAsync(
       NpgsqlConnection connection,
@@ -450,7 +450,7 @@ public class SchoolRepository : ISchoolService
         // Если нечего обновлять — выходим
         if (fieldsToUpdate.Count == 0) return;
 
-        // Генерируем SQL: UPDATE OldSchools SET field1=@p0, field2=@p1... WHERE RspoNumer=@rspo
+        // Generate SQL: UPDATE OldSchools SET field1=@p0, field2=@p1... WHERE RspoNumer=@rspo
         var sb = new System.Text.StringBuilder("UPDATE OldSchools SET ");
         var parameters = new List<NpgsqlParameter>();
 
@@ -475,6 +475,12 @@ public class SchoolRepository : ISchoolService
         cmd.Parameters.AddRange(parameters.ToArray());
 
         await cmd.ExecuteNonQueryAsync();
+
+
+        var changedFields = string.Join(", ", fieldsToUpdate.Keys);
+        var changesDescription = $"Updated fields: {changedFields}";
+        // Записываем в историю
+        await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, changesDescription);
     }
     
     #endregion
@@ -482,7 +488,7 @@ public class SchoolRepository : ISchoolService
     #region 5) GetAllOldSchoolsAsync & 6) DeleteOldSchoolAsync
 
     /// <summary>
-    /// 5) Получить все OldSchools
+    /// 5) Get All OldSchools
     /// </summary>
     public async Task<IEnumerable<OldSchool>> GetAllOldSchoolsAsync()
     {
@@ -532,7 +538,7 @@ public class SchoolRepository : ISchoolService
     }
 
     /// <summary>
-    /// 6) Удалить одну OldSchool по RspoNumer
+    /// 6) Delete OldSchool by RspoNumer
     /// </summary>
     public async Task DeleteOldSchoolAsync(string rspoNumer)
     {
@@ -547,11 +553,72 @@ public class SchoolRepository : ISchoolService
     }
 
     #endregion
+    //Add History
 
-    #region (Дополнительные маленькие методы)
+
+    public async Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer)
+    {
+        var historyList = new List<SchoolHistory>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var sql = @"
+        SELECT Id, RspoNumer, ChangedAt, Changes
+        FROM SchoolHistory
+        WHERE RspoNumer = @rspo
+        ORDER BY ChangedAt DESC;
+    ";
+
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = sql;
+        cmd.Parameters.AddWithValue("rspo", rspoNumer);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var item = new SchoolHistory
+            {
+                Id = reader.GetInt32(0),
+                RspoNumer = reader.GetString(1),
+                ChangedAt = reader.GetDateTime(2),
+                Changes = reader.GetString(3)
+            };
+            historyList.Add(item);
+        }
+
+        return historyList;
+    }
+
+
+
+
+    private async Task AddHistoryRecordAsync(
+      NpgsqlConnection connection,
+      NpgsqlTransaction transaction,
+      string rspoNumer,
+      string changes
+  )
+    {
+        const string sql = @"
+        INSERT INTO SchoolHistory (RspoNumer, ChangedAt, Changes)
+        VALUES (@rspo, @changedAt, @changes);
+    ";
+
+        using var cmd = connection.CreateCommand();
+        cmd.Transaction = transaction;
+        cmd.CommandText = sql;
+
+        cmd.Parameters.AddWithValue("rspo", rspoNumer);
+        cmd.Parameters.AddWithValue("changedAt", DateTime.Now); // или DateTime.UtcNow
+        cmd.Parameters.AddWithValue("changes", changes);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
 
     private string SerializeJson(object value)
         => value != null ? JsonConvert.SerializeObject(value) : null;
 
-    #endregion
+ 
 }
