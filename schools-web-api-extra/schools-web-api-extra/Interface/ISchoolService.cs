@@ -51,7 +51,7 @@ public interface ISchoolService
     /// (insert/update), а затем принудительно поменять поле Nazwa на '1' 
     /// для каждой затронутой школы.
     /// </summary>
-    Task SaveOldSchoolFromApplyChangesAsync();
+    Task SetOldSchoolForTestingAsync();
     Task DeleteAllNewSchoolAsync();
 
 }

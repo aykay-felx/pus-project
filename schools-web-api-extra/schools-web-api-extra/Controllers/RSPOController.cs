@@ -132,10 +132,10 @@ namespace schools_web_api_extra.Controllers
         /// <summary>
         /// НОВЫЙ метод: Сохранить данные из списка NewSchool в OldSchools,
         /// после чего установить поле Nazwa = '1' (для каждой школы).
-        /// POST: api/RSPO/save-oldschool-nazwa
+        /// POST: api/RSPO/set-oldschool-nazwa-for-testing
         /// </summary>
-        [HttpPost("save-oldschool-nazwa = '1'")]
-        public async Task<IActionResult> SaveOldSchoolNazwa([FromBody] List<NewSchool>? newSchools)
+        [HttpPost("set-oldschool-nazwa-for-testing")]
+        public async Task<IActionResult> SetOldSchoolNazwaForTesting([FromBody] List<NewSchool>? newSchools)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace schools_web_api_extra.Controllers
 
                 // Вызываем новый метод в интерфейсе/репозитории,
                 // который сохранит (insert/update) и установит Nazwa='1'
-                await _service.SaveOldSchoolFromApplyChangesAsync();
+                await _service.SetOldSchoolForTestingAsync();
 
                 return Ok("OldSchools saved (Nazwa set to '1').");
             }

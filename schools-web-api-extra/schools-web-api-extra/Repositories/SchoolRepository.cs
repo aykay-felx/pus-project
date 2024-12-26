@@ -906,13 +906,13 @@ public async Task DeleteAllNewSchoolAsync()
 
 
 
-    #region Новый метод: SaveOldSchoolFromApplyChangesAsync (меняем только его)
+    #region Новый метод: SetOldSchoolForTestingAsync (меняем только его)
 
     /// <summary>
     /// Берёт данные из NewSchools и сохраняет их в OldSchools (INSERT/UPDATE).
     /// После каждого сохранения ставим Nazwa='1' в OldSchools.
     /// </summary>
-    public async Task SaveOldSchoolFromApplyChangesAsync()
+    public async Task SetOldSchoolForTestingAsync()
     {
         // 1) Берём все записи из таблицы NewSchools
         var newList = (await GetAllNewSchoolAsync()).ToList();
