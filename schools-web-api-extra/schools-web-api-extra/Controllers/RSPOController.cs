@@ -112,7 +112,10 @@ namespace schools_web_api_extra.Controllers
                 {
                     return BadRequest("No data received.");
                 }
-
+                if (newSchools[0].RspoNumer == "string")
+                {
+                    return BadRequest("No data received.");
+                }
                 // Применяем изменения к OldSchools (insert/update)
                 await _service.ApplyChangesFromNewSchoolsAsync(newSchools);
 
@@ -129,7 +132,7 @@ namespace schools_web_api_extra.Controllers
         /// после чего установить поле Nazwa = '1' (для каждой школы).
         /// POST: api/RSPO/save-oldschool-nazwa
         /// </summary>
-        [HttpPost("save-oldschool-nazwa")]
+        [HttpPost("save-oldschool-nazwa = '1'")]
         public async Task<IActionResult> SaveOldSchoolNazwa([FromBody] List<NewSchool>? newSchools)
         {
             try
