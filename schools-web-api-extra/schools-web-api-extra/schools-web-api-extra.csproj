@@ -9,6 +9,13 @@
   </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Service\**" />
+      <Content Remove="Service\**" />
+      <EmbeddedResource Remove="Service\**" />
+      <None Remove="Service\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
@@ -17,10 +24,6 @@
         <PackageReference Include="Npgsql" Version="9.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Service\" />
     </ItemGroup>
 
 </Project>

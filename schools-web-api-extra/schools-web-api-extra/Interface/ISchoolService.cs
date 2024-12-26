@@ -37,7 +37,7 @@ public interface ISchoolService
     /// <summary>
     /// 5) Получить все старые школы (OldSchools).
     /// </summary>
-    Task<IEnumerable<NewSchool>> GetAllNewSchool();
+    Task<IEnumerable<NewSchool>> GetAllNewSchoolAsync();
 
     /// <summary>
     /// 6) Удалить одну запись OldSchools по RspoNumer.

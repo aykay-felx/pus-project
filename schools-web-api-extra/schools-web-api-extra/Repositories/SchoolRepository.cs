@@ -647,8 +647,8 @@ public class SchoolRepository : ISchoolService
                 SpecyfikaPlacowki = reader["SpecyfikaPlacowki"]?.ToString(),
                 Gmina = reader["Gmina"]?.ToString(),
                 Powiat = reader["Powiat"]?.ToString(),
-                JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(',')
-                // ManualFlags и т.д. по необходимости
+                JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(','),
+               // ManualFlags = reader["ManualFlags"]?.ToString()?.Split(',')
             };
             results.Add(oldSchool);
         }
@@ -657,7 +657,7 @@ public class SchoolRepository : ISchoolService
     }
 
 
-    public async Task<IEnumerable<NewSchool>> GetAllNewSchool()
+    public async Task<IEnumerable<NewSchool>> GetAllNewSchoolAsync()
     {
         var results = new List<NewSchool>();
 
@@ -770,20 +770,61 @@ public class SchoolRepository : ISchoolService
     /// </summary>
     public async Task DeleteOldSchoolAsync(string rspoNumer)
     {
+        // Определите SQL-запросы для удаления и добавления записи в историю
+        const string deleteSql = "DELETE FROM public.oldschools WHERE rspoNumer = @rspoNumer;";
+        const string insertHistorySql = @"
+            INSERT INTO public.schoolhistory (rspoNumer, changedat, changes)
+            VALUES (@RspoNumer, @ChangedAt, @Changes);";
+
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        var sql = "DELETE FROM OldSchools WHERE RspoNumer=@rspo";
-        using var cmd = new NpgsqlCommand(sql, connection);
-        cmd.Parameters.AddWithValue("rspo", rspoNumer);
+        // Начинаем транзакцию
+        await using var transaction = await connection.BeginTransactionAsync();
 
-        await cmd.ExecuteNonQueryAsync();
+        try
+        {
+            // 1. Удаление записи из OldSchools
+            await using (var deleteCmd = new NpgsqlCommand(deleteSql, connection, transaction))
+            {
+                deleteCmd.Parameters.AddWithValue("@rspoNumer", rspoNumer);
+                int affectedRows = await deleteCmd.ExecuteNonQueryAsync();
+
+                if (affectedRows == 0)
+                {
+                    throw new InvalidOperationException($"Запись с rspoNumer = {rspoNumer} не найдена и не была удалена.");
+                }
+            }
+
+            // 2. Добавление записи в историю
+            await using (var historyCmd = new NpgsqlCommand(insertHistorySql, connection, transaction))
+            {
+                historyCmd.Parameters.AddWithValue("@RspoNumer", rspoNumer);
+                historyCmd.Parameters.AddWithValue("@ChangedAt", DateTime.UtcNow);
+                historyCmd.Parameters.AddWithValue("@Changes", "DELETE");
+
+                await historyCmd.ExecuteNonQueryAsync();
+            }
+
+            // Фиксируем транзакцию, если все операции прошли успешно
+            await transaction.CommitAsync();
+
+            Console.WriteLine($"Запись с rspoNumer = {rspoNumer} успешно удалена и зафиксирована в истории.");
+        }
+        catch (Exception ex)
+        {
+            // Откатываем транзакцию в случае ошибки
+            await transaction.RollbackAsync();
+            Console.Error.WriteLine($"Ошибка при удалении записи с rspoNumer = {rspoNumer}: {ex.Message}");
+            throw; // Перебрасываем исключение для дальнейшей обработки
+        }
     }
 
 
-    /// 8) Delete All NewSchool
-    /// </summary>
-    public async Task DeleteAllNewSchoolAsync()
+
+/// 8) Delete All NewSchool
+/// </summary>
+public async Task DeleteAllNewSchoolAsync()
     {
         const string sql = "DELETE FROM public.newschools;"; // Или используйте TRUNCATE
 
@@ -874,7 +915,7 @@ public class SchoolRepository : ISchoolService
     public async Task SaveOldSchoolFromApplyChangesAsync()
     {
         // 1) Берём все записи из таблицы NewSchools
-        var newList = (await GetAllNewSchool()).ToList();
+        var newList = (await GetAllNewSchoolAsync()).ToList();
         if (!newList.Any()) return; // если нет данных
 
         // 2) Считываем OldSchools

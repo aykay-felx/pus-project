@@ -42,7 +42,7 @@ namespace schools_web_api_extra.Controllers
         {
             try
             {
-                var newSchools = await _service.GetAllNewSchool();
+                var newSchools = await _service.GetAllNewSchoolAsync();
                 return Ok(newSchools);
             }
             catch (Exception ex)
