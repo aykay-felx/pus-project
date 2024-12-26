@@ -33,9 +33,25 @@ public interface ISchoolService
     /// </summary>
     Task<IEnumerable<OldSchool>> GetAllOldSchoolsAsync();
 
+
+    /// <summary>
+    /// 5) Получить все старые школы (OldSchools).
+    /// </summary>
+    Task<IEnumerable<NewSchool>> GetAllNewSchool();
+
     /// <summary>
     /// 6) Удалить одну запись OldSchools по RspoNumer.
     /// </summary>
     Task DeleteOldSchoolAsync(string rspoNumer);
     Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer);
+
+
+    /// <summary>
+    /// Новый метод: Сохранить изменения из списка NewSchool в OldSchools 
+    /// (insert/update), а затем принудительно поменять поле Nazwa на '1' 
+    /// для каждой затронутой школы.
+    /// </summary>
+    Task SaveOldSchoolFromApplyChangesAsync();
+    Task DeleteAllNewSchoolAsync();
+
 }

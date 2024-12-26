@@ -2,6 +2,7 @@ namespace schools_web_api_extra.Models;
 
 public class NewSchool
 {
+    public NewSchool() { }
 
     public NewSchool(Placowka placowka)
     {

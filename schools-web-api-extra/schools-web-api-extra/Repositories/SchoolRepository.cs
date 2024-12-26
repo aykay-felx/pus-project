@@ -115,111 +115,110 @@ public class SchoolRepository : ISchoolService
 
         try
         {
-            // Пример вставки (INSERT) по одному или батчом
             var insertSql = @"
-                INSERT INTO NewSchools (
-                    RspoNumer,
-                    Longitude,
-                    Latitude,
-                    Typ,
-                    Nazwa,
-                    Miejscowosc,
-                    Wojewodztwo,
-                    KodPocztowy,
-                    NumerBudynku,
-                    Email,
-                    Ulica,
-                    Telefon,
-                    StatusPublicznosc,
-                    StronaInternetowa,
-                    Dyrektor,
-                    NipPodmiotu,
-                    RegonPodmiotu,
-                    DataZalozenia,
-                    LiczbaUczniow,
-                    KategoriaUczniow,
-                    SpecyfikaPlacowki,
-                    Gmina,
-                    Powiat,
-                    JezykiNauczane,
-                    SubFieldRspoNumer,
-                    SubFieldLongitude,
-                    SubFieldLatitude,
-                    SubFieldTyp,
-                    SubFieldNazwa,
-                    SubFieldMiejscowosc,
-                    SubFieldWojewodztwo,
-                    SubFieldKodPocztowy,
-                    SubFieldNumerBudynku,
-                    SubFieldEmail,
-                    SubFieldUlica,
-                    SubFieldTelefon,
-                    SubFieldStatusPublicznosc,
-                    SubFieldStronaInternetowa,
-                    SubFieldDyrektor,
-                    SubFieldNipPodmiotu,
-                    SubFieldRegonPodmiotu,
-                    SubFieldDataZalozenia,
-                    SubFieldLiczbaUczniow,
-                    SubFieldKategoriaUczniow,
-                    SubFieldSpecyfikaPlacowki,
-                    SubFieldGmina,
-                    SubFieldPowiat,
-                    SubFieldJezykiNauczane,
-                    isDifferentObj,
-                    isNewObj
-                ) VALUES (
-                    @RspoNumer,
-                    @Longitude,
-                    @Latitude,
-                    @Typ,
-                    @Nazwa,
-                    @Miejscowosc,
-                    @Wojewodztwo,
-                    @KodPocztowy,
-                    @NumerBudynku,
-                    @Email,
-                    @Ulica,
-                    @Telefon,
-                    @StatusPublicznosc,
-                    @StronaInternetowa,
-                    @Dyrektor,
-                    @NipPodmiotu,
-                    @RegonPodmiotu,
-                    @DataZalozenia,
-                    @LiczbaUczniow,
-                    @KategoriaUczniow,
-                    @SpecyfikaPlacowki,
-                    @Gmina,
-                    @Powiat,
-                    @JezykiNauczane,
-                    @SubFieldRspoNumer,
-                    @SubFieldLongitude,
-                    @SubFieldLatitude,
-                    @SubFieldTyp,
-                    @SubFieldNazwa,
-                    @SubFieldMiejscowosc,
-                    @SubFieldWojewodztwo,
-                    @SubFieldKodPocztowy,
-                    @SubFieldNumerBudynku,
-                    @SubFieldEmail,
-                    @SubFieldUlica,
-                    @SubFieldTelefon,
-                    @SubFieldStatusPublicznosc,
-                    @SubFieldStronaInternetowa,
-                    @SubFieldDyrektor,
-                    @SubFieldNipPodmiotu,
-                    @SubFieldRegonPodmiotu,
-                    @SubFieldDataZalozenia,
-                    @SubFieldLiczbaUczniow,
-                    @SubFieldKategoriaUczniow,
-                    @SubFieldSpecyfikaPlacowki,
-                    @SubFieldGmina,
-                    @SubFieldPowiat,
-                    @SubFieldJezykiNauczane,
-                    @isDifferentObj,
-                    @isNewObj
-                );";
+            INSERT INTO NewSchools (
+                RspoNumer,
+                Longitude,
+                Latitude,
+                Typ,
+                Nazwa,
+                Miejscowosc,
+                Wojewodztwo,
+                KodPocztowy,
+                NumerBudynku,
+                Email,
+                Ulica,
+                Telefon,
+                StatusPublicznosc,
+                StronaInternetowa,
+                Dyrektor,
+                NipPodmiotu,
+                RegonPodmiotu,
+                DataZalozenia,
+                LiczbaUczniow,
+                KategoriaUczniow,
+                SpecyfikaPlacowki,
+                Gmina,
+                Powiat,
+                JezykiNauczane,
+                SubFieldRspoNumer,
+                SubFieldLongitude,
+                SubFieldLatitude,
+                SubFieldTyp,
+                SubFieldNazwa,
+                SubFieldMiejscowosc,
+                SubFieldWojewodztwo,
+                SubFieldKodPocztowy,
+                SubFieldNumerBudynku,
+                SubFieldEmail,
+                SubFieldUlica,
+                SubFieldTelefon,
+                SubFieldStatusPublicznosc,
+                SubFieldStronaInternetowa,
+                SubFieldDyrektor,
+                SubFieldNipPodmiotu,
+                SubFieldRegonPodmiotu,
+                SubFieldDataZalozenia,
+                SubFieldLiczbaUczniow,
+                SubFieldKategoriaUczniow,
+                SubFieldSpecyfikaPlacowki,
+                SubFieldGmina,
+                SubFieldPowiat,
+                SubFieldJezykiNauczane,
+                isDifferentObj,
+                isNewObj
+            ) VALUES (
+                @RspoNumer,
+                @Longitude,
+                @Latitude,
+                @Typ,
+                @Nazwa,
+                @Miejscowosc,
+                @Wojewodztwo,
+                @KodPocztowy,
+                @NumerBudynku,
+                @Email,
+                @Ulica,
+                @Telefon,
+                @StatusPublicznosc,
+                @StronaInternetowa,
+                @Dyrektor,
+                @NipPodmiotu,
+                @RegonPodmiotu,
+                @DataZalozenia,
+                @LiczbaUczniow,
+                @KategoriaUczniow,
+                @SpecyfikaPlacowki,
+                @Gmina,
+                @Powiat,
+                @JezykiNauczane,
+                @SubFieldRspoNumer,
+                @SubFieldLongitude,
+                @SubFieldLatitude,
+                @SubFieldTyp,
+                @SubFieldNazwa,
+                @SubFieldMiejscowosc,
+                @SubFieldWojewodztwo,
+                @SubFieldKodPocztowy,
+                @SubFieldNumerBudynku,
+                @SubFieldEmail,
+                @SubFieldUlica,
+                @SubFieldTelefon,
+                @SubFieldStatusPublicznosc,
+                @SubFieldStronaInternetowa,
+                @SubFieldDyrektor,
+                @SubFieldNipPodmiotu,
+                @SubFieldRegonPodmiotu,
+                @SubFieldDataZalozenia,
+                @SubFieldLiczbaUczniow,
+                @SubFieldKategoriaUczniow,
+                @SubFieldSpecyfikaPlacowki,
+                @SubFieldGmina,
+                @SubFieldPowiat,
+                @SubFieldJezykiNauczane,
+                @isDifferentObj,
+                @isNewObj
+            );";
 
             using var cmd = new NpgsqlCommand(insertSql, connection, transaction);
 
@@ -227,7 +226,7 @@ public class SchoolRepository : ISchoolService
             {
                 cmd.Parameters.Clear();
 
-                // Заполняем "обычные" поля
+                // Обычные поля
                 cmd.Parameters.AddWithValue("RspoNumer", school.RspoNumer ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("Longitude", school.Longitude);
                 cmd.Parameters.AddWithValue("Latitude", school.Latitude);
@@ -252,41 +251,136 @@ public class SchoolRepository : ISchoolService
                 cmd.Parameters.AddWithValue("Gmina", school.Gmina ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("Powiat", school.Powiat ?? (object)DBNull.Value);
 
-                // Массив (jezykiNauczane) — можно сериализовать в строку
+                // Массив JezykiNauczane → как строку "angielski,niemiecki" (или массив text[])
                 if (school.JezykiNauczane != null && school.JezykiNauczane.Any())
                     cmd.Parameters.AddWithValue("JezykiNauczane", string.Join(",", school.JezykiNauczane));
                 else
                     cmd.Parameters.AddWithValue("JezykiNauczane", DBNull.Value);
 
-                // Заполняем JSONB-поля (SubFields)
-                cmd.Parameters.AddWithValue("SubFieldRspoNumer", (object?)SerializeJson(school.SubFieldRspoNumer) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldLongitude", (object?)SerializeJson(school.SubFieldLongitude) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldLatitude", (object?)SerializeJson(school.SubFieldLatitude) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldTyp", (object?)SerializeJson(school.SubFieldTyp) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldNazwa", (object?)SerializeJson(school.SubFieldNazwa) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldMiejscowosc", (object?)SerializeJson(school.SubFieldMiejscowosc) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldWojewodztwo", (object?)SerializeJson(school.SubFieldWojewodztwo) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldKodPocztowy", (object?)SerializeJson(school.SubFieldKodPocztowy) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldNumerBudynku", (object?)SerializeJson(school.SubFieldNumerBudynku) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldEmail", (object?)SerializeJson(school.SubFieldEmail) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldUlica", (object?)SerializeJson(school.SubFieldUlica) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldTelefon", (object?)SerializeJson(school.SubFieldTelefon) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldStatusPublicznosc", (object?)SerializeJson(school.SubFieldStatusPublicznosc) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldStronaInternetowa", (object?)SerializeJson(school.SubFieldStronaInternetowa) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldDyrektor", (object?)SerializeJson(school.SubFieldDyrektor) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldNipPodmiotu", (object?)SerializeJson(school.SubFieldNipPodmiotu) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldRegonPodmiotu", (object?)SerializeJson(school.SubFieldRegonPodmiotu) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldDataZalozenia", (object?)SerializeJson(school.SubFieldDataZalozenia) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldLiczbaUczniow", (object?)SerializeJson(school.SubFieldLiczbaUczniow) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldKategoriaUczniow", (object?)SerializeJson(school.SubFieldKategoriaUczniow) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldSpecyfikaPlacowki", (object?)SerializeJson(school.SubFieldSpecyfikaPlacowki) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldGmina", (object?)SerializeJson(school.SubFieldGmina) ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("SubFieldPowiat", (object?)SerializeJson(school.SubFieldPowiat) ?? DBNull.Value);
+                // Для SubField* полей, в БД — JSONB
+                // Указываем NpgsqlDbType.Jsonb
+                cmd.Parameters.AddWithValue(
+                    "SubFieldRspoNumer",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldRspoNumer) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldLongitude",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldLongitude) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldLatitude",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldLatitude) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldTyp",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldTyp) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldNazwa",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldNazwa) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldMiejscowosc",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldMiejscowosc) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldWojewodztwo",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldWojewodztwo) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldKodPocztowy",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldKodPocztowy) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldNumerBudynku",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldNumerBudynku) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldEmail",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldEmail) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldUlica",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldUlica) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldTelefon",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldTelefon) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldStatusPublicznosc",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldStatusPublicznosc) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldStronaInternetowa",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldStronaInternetowa) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldDyrektor",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldDyrektor) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldNipPodmiotu",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldNipPodmiotu) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldRegonPodmiotu",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldRegonPodmiotu) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldDataZalozenia",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldDataZalozenia) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldLiczbaUczniow",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldLiczbaUczniow) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldKategoriaUczniow",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldKategoriaUczniow) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldSpecyfikaPlacowki",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldSpecyfikaPlacowki) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldGmina",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldGmina) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldPowiat",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldPowiat) ?? DBNull.Value
+                );
+                cmd.Parameters.AddWithValue(
+                    "SubFieldJezykiNauczane",
+                    NpgsqlTypes.NpgsqlDbType.Jsonb,
+                    (object?)SerializeJson(school.SubFieldJezykiNauczane) ?? DBNull.Value
+                );
 
-                // Если массив subFieldJezykiNauczane -> сериализуем в JSON
-                cmd.Parameters.AddWithValue("SubFieldJezykiNauczane", (object?)SerializeJson(school.SubFieldJezykiNauczane) ?? DBNull.Value);
-
-                // Флаги
+                // bool?
                 cmd.Parameters.AddWithValue("isDifferentObj", (object?)school.isDifferentObj ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("isNewObj", (object?)school.isNewObj ?? DBNull.Value);
 
@@ -301,6 +395,7 @@ public class SchoolRepository : ISchoolService
             throw;
         }
     }
+
 
     #endregion
 
@@ -418,16 +513,25 @@ public class SchoolRepository : ISchoolService
       NpgsqlConnection connection,
       NpgsqlTransaction transaction,
       OldSchool oldSchool,
-      NewSchool newSchool)
+      NewSchool newSchool
+  )
     {
         var fieldsToUpdate = new Dictionary<string, object?>();
 
-        var newSchoolProperties = newSchool.GetType().GetProperties();
+        // Получаем все свойства NewSchool
+        var newSchoolProperties = typeof(NewSchool).GetProperties();
 
         foreach (var newSchoolProperty in newSchoolProperties)
         {
-            var oldSchoolProperty = oldSchool.GetType().GetProperty(newSchoolProperty.Name);
+            // 1. Проверяем, есть ли в OldSchool такое же свойство
+            var oldSchoolProperty = typeof(OldSchool).GetProperty(newSchoolProperty.Name);
+            if (oldSchoolProperty == null)
+            {
+                // Свойство (например, SubFieldNazwa) отсутствует в OldSchool => пропускаем
+                continue;
+            }
 
+            // 2. Если это массив JezykiNauczane => делаем отдельную логику
             if (newSchoolProperty.Name == nameof(NewSchool.JezykiNauczane))
             {
                 var oldJezyki = oldSchool.JezykiNauczane ?? new string[0];
@@ -435,31 +539,45 @@ public class SchoolRepository : ISchoolService
 
                 if (!Enumerable.SequenceEqual(newJezyki, oldJezyki))
                 {
-                    fieldsToUpdate[newSchoolProperty.Name] = newJezyki.Any()
-                        ? string.Join(",", newJezyki)
-                        : DBNull.Value;
+                    fieldsToUpdate["JezykiNauczane"] =
+                        newJezyki.Any() ? string.Join(",", newJezyki) : DBNull.Value;
                 }
-
                 continue;
             }
 
-            if (newSchoolProperty.GetValue(newSchool) != oldSchoolProperty?.GetValue(oldSchool))
-                fieldsToUpdate[newSchoolProperty.Name] = newSchoolProperty.GetValue(newSchool) ?? DBNull.Value;
+            // 3. Получаем значение из newSchool
+            var newValue = newSchoolProperty.GetValue(newSchool);
+            var oldValue = oldSchoolProperty.GetValue(oldSchool);
+
+            // 4. Если newValue — это SubField (или вообще не тот тип),
+            //    а в OldSchool нет аналогичного поля, пропускаем
+            //    (в данном случае не нужно переносить SubField в OldSchool).
+            if (newValue is SubField)
+            {
+                // Пропускаем, т.к. OldSchool не умеет хранить SubField
+                continue;
+            }
+
+            // 5. Сравниваем: если значения отличаются — добавим в fieldsToUpdate
+            if (!Equals(newValue, oldValue))
+            {
+                fieldsToUpdate[newSchoolProperty.Name] = newValue ?? DBNull.Value;
+            }
         }
-        
-        // Если нечего обновлять — выходим
+
+        // 6. Если никаких изменений — выходим
         if (fieldsToUpdate.Count == 0) return;
 
-        // Generate SQL: UPDATE OldSchools SET field1=@p0, field2=@p1... WHERE RspoNumer=@rspo
+        // 7. Формируем SQL
         var sb = new System.Text.StringBuilder("UPDATE OldSchools SET ");
         var parameters = new List<NpgsqlParameter>();
+        int i = 0;
 
-        var i = 0;
         foreach (var kvp in fieldsToUpdate)
         {
             if (i > 0) sb.Append(", ");
-            var colName = kvp.Key;
-            var paramName = "@p" + i;
+            var colName = kvp.Key;        // Например, "Nazwa"
+            var paramName = "@p" + i;     // "@p0", "@p1", ...
             sb.Append($"{colName}={paramName}");
 
             parameters.Add(new NpgsqlParameter(paramName, kvp.Value ?? DBNull.Value));
@@ -469,6 +587,7 @@ public class SchoolRepository : ISchoolService
         sb.Append(" WHERE RspoNumer=@rspo;");
         parameters.Add(new NpgsqlParameter("@rspo", oldSchool.RspoNumer));
 
+        // 8. Выполняем UPDATE
         using var cmd = connection.CreateCommand();
         cmd.Transaction = transaction;
         cmd.CommandText = sb.ToString();
@@ -476,13 +595,13 @@ public class SchoolRepository : ISchoolService
 
         await cmd.ExecuteNonQueryAsync();
 
-
+        // 9. Пишем в историю (если нужно)
         var changedFields = string.Join(", ", fieldsToUpdate.Keys);
         var changesDescription = $"Updated fields: {changedFields}";
-        // Записываем в историю
         await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, changesDescription);
     }
-    
+
+
     #endregion
 
     #region 5) GetAllOldSchoolsAsync & 6) DeleteOldSchoolAsync
@@ -537,6 +656,115 @@ public class SchoolRepository : ISchoolService
         return results;
     }
 
+
+    public async Task<IEnumerable<NewSchool>> GetAllNewSchool()
+    {
+        var results = new List<NewSchool>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var sql = "SELECT * FROM NewSchools";
+        using var cmd = new NpgsqlCommand(sql, connection);
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            // Создаём новый объект NewSchool
+            var newSchool = new NewSchool
+            {
+                // 1) «Основные» поля
+                RspoNumer = reader["RspoNumer"]?.ToString() ?? "",
+                Longitude = reader["Longitude"] as double? ?? 0,
+                Latitude = reader["Latitude"] as double? ?? 0,
+                Typ = reader["Typ"]?.ToString() ?? "",
+                Nazwa = reader["Nazwa"]?.ToString() ?? "",
+                Miejscowosc = reader["Miejscowosc"]?.ToString(),
+                Wojewodztwo = reader["Wojewodztwo"]?.ToString(),
+                KodPocztowy = reader["KodPocztowy"]?.ToString(),
+                NumerBudynku = reader["NumerBudynku"]?.ToString(),
+                Email = reader["Email"]?.ToString(),
+                Ulica = reader["Ulica"]?.ToString(),
+                Telefon = reader["Telefon"]?.ToString(),
+                StatusPublicznosc = reader["StatusPublicznosc"]?.ToString(),
+                StronaInternetowa = reader["StronaInternetowa"]?.ToString(),
+                Dyrektor = reader["Dyrektor"]?.ToString(),
+                NipPodmiotu = reader["NipPodmiotu"]?.ToString(),
+                RegonPodmiotu = reader["RegonPodmiotu"]?.ToString(),
+                DataZalozenia = reader["DataZalozenia"]?.ToString(),
+                LiczbaUczniow = reader["LiczbaUczniow"] as int?,
+                KategoriaUczniow = reader["KategoriaUczniow"]?.ToString(),
+                SpecyfikaPlacowki = reader["SpecyfikaPlacowki"]?.ToString(),
+                Gmina = reader["Gmina"]?.ToString(),
+                Powiat = reader["Powiat"]?.ToString(),
+
+                // 2) Массив JezykiNauczane (если хранится как "angielski,niemiecki" в столбце)
+                JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(',',
+                    StringSplitOptions.RemoveEmptyEntries),
+
+                // 3) Флаги (bool?) 
+                //  - Если столбец isDifferentObj имеет тип BOOLEAN, то читаем как bool? 
+                //    (если в БД NULL, вернём null)
+                isDifferentObj = reader["isDifferentObj"] == DBNull.Value
+                    ? null
+                    : (bool?)reader["isDifferentObj"],
+
+                isNewObj = reader["isNewObj"] == DBNull.Value
+                    ? null
+                    : (bool?)reader["isNewObj"],
+
+                // 4) Подполя (SubField...) десериализуем из JSONB
+                //    Используем вспомогательный метод DeserializeJson<SubField>(...)
+                SubFieldRspoNumer = DeserializeJson<SubField>(reader["SubFieldRspoNumer"]),
+                SubFieldLongitude = DeserializeJson<SubField>(reader["SubFieldLongitude"]),
+                SubFieldLatitude = DeserializeJson<SubField>(reader["SubFieldLatitude"]),
+                SubFieldTyp = DeserializeJson<SubField>(reader["SubFieldTyp"]),
+                SubFieldNazwa = DeserializeJson<SubField>(reader["SubFieldNazwa"]),
+                SubFieldMiejscowosc = DeserializeJson<SubField>(reader["SubFieldMiejscowosc"]),
+                SubFieldWojewodztwo = DeserializeJson<SubField>(reader["SubFieldWojewodztwo"]),
+                SubFieldKodPocztowy = DeserializeJson<SubField>(reader["SubFieldKodPocztowy"]),
+                SubFieldNumerBudynku = DeserializeJson<SubField>(reader["SubFieldNumerBudynku"]),
+                SubFieldEmail = DeserializeJson<SubField>(reader["SubFieldEmail"]),
+                SubFieldUlica = DeserializeJson<SubField>(reader["SubFieldUlica"]),
+                SubFieldTelefon = DeserializeJson<SubField>(reader["SubFieldTelefon"]),
+                SubFieldStatusPublicznosc = DeserializeJson<SubField>(reader["SubFieldStatusPublicznosc"]),
+                SubFieldStronaInternetowa = DeserializeJson<SubField>(reader["SubFieldStronaInternetowa"]),
+                SubFieldDyrektor = DeserializeJson<SubField>(reader["SubFieldDyrektor"]),
+                SubFieldNipPodmiotu = DeserializeJson<SubField>(reader["SubFieldNipPodmiotu"]),
+                SubFieldRegonPodmiotu = DeserializeJson<SubField>(reader["SubFieldRegonPodmiotu"]),
+                SubFieldDataZalozenia = DeserializeJson<SubField>(reader["SubFieldDataZalozenia"]),
+                SubFieldLiczbaUczniow = DeserializeJson<SubField>(reader["SubFieldLiczbaUczniow"]),
+                SubFieldKategoriaUczniow = DeserializeJson<SubField>(reader["SubFieldKategoriaUczniow"]),
+                SubFieldSpecyfikaPlacowki = DeserializeJson<SubField>(reader["SubFieldSpecyfikaPlacowki"]),
+                SubFieldGmina = DeserializeJson<SubField>(reader["SubFieldGmina"]),
+                SubFieldPowiat = DeserializeJson<SubField>(reader["SubFieldPowiat"]),
+                SubFieldJezykiNauczane = DeserializeJson<SubField>(reader["SubFieldJezykiNauczane"])
+            };
+
+            results.Add(newSchool);
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// Вспомогательный метод для десериализации столбца JSONB (SubField).
+    /// Если значение == DBNull, вернём null.
+    /// Иначе десериализуем в тип T.
+    /// </summary>
+    private T? DeserializeJson<T>(object dbValue)
+    {
+        if (dbValue == DBNull.Value)
+            return default; // null для T-класса
+
+        var jsonString = dbValue.ToString();
+        if (string.IsNullOrEmpty(jsonString))
+            return default;
+
+        return JsonConvert.DeserializeObject<T>(jsonString);
+    }
+
+
     /// <summary>
     /// 6) Delete OldSchool by RspoNumer
     /// </summary>
@@ -548,6 +776,25 @@ public class SchoolRepository : ISchoolService
         var sql = "DELETE FROM OldSchools WHERE RspoNumer=@rspo";
         using var cmd = new NpgsqlCommand(sql, connection);
         cmd.Parameters.AddWithValue("rspo", rspoNumer);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+
+    /// 8) Delete All NewSchool
+    /// </summary>
+    public async Task DeleteAllNewSchoolAsync()
+    {
+        const string sql = "DELETE FROM public.newschools;"; // Или используйте TRUNCATE
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var cmd = new NpgsqlCommand(sql, connection);
+
+        // Поскольку удаляются все строки, параметры не нужны
+        // Если вы решите использовать TRUNCATE, добавьте опцию CASCADE, если необходимо:
+        // const string sql = "TRUNCATE TABLE public.newschools CASCADE;";
 
         await cmd.ExecuteNonQueryAsync();
     }
@@ -615,6 +862,84 @@ public class SchoolRepository : ISchoolService
 
         await cmd.ExecuteNonQueryAsync();
     }
+
+
+
+    #region Новый метод: SaveOldSchoolFromApplyChangesAsync (меняем только его)
+
+    /// <summary>
+    /// Берёт данные из NewSchools и сохраняет их в OldSchools (INSERT/UPDATE).
+    /// После каждого сохранения ставим Nazwa='1' в OldSchools.
+    /// </summary>
+    public async Task SaveOldSchoolFromApplyChangesAsync()
+    {
+        // 1) Берём все записи из таблицы NewSchools
+        var newList = (await GetAllNewSchool()).ToList();
+        if (!newList.Any()) return; // если нет данных
+
+        // 2) Считываем OldSchools
+        var oldList = (await GetAllOldSchoolsAsync()).ToList();
+        var oldDict = oldList.ToDictionary(o => o.RspoNumer, o => o);
+
+        // 3) Открываем соединение
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            // 4) Для каждой newSchool из newList
+            foreach (var newSchool in newList)
+            {
+                // Есть ли такая запись в OldSchools?
+                if (!oldDict.TryGetValue(newSchool.RspoNumer, out var oldSchool))
+                {
+                    // Нет => INSERT
+                    await InsertSingleOldSchoolAsync(connection, transaction, newSchool);
+                }
+                else
+                {
+                    // Есть => UPDATE
+                    await UpdateOldSchoolAsync(connection, transaction, oldSchool, newSchool);
+                }
+
+                // 5) После Insert/Update => Nazwa='1'
+                await SetNazwaToOneAsync(connection, transaction, newSchool.RspoNumer);
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Метод, который ставит Nazwa='1' в OldSchools.
+    /// </summary>
+    private async Task SetNazwaToOneAsync(
+        NpgsqlConnection connection,
+        NpgsqlTransaction transaction,
+        string rspoNumer
+    )
+    {
+        const string sql = "UPDATE OldSchools SET Nazwa='1' WHERE RspoNumer=@rspo";
+        using var cmd = connection.CreateCommand();
+        cmd.Transaction = transaction;
+        cmd.CommandText = sql;
+
+        // Явно укажем, что это текст
+        var p = cmd.Parameters.Add("rspo", NpgsqlTypes.NpgsqlDbType.Text);
+        p.Value = rspoNumer ?? (object)DBNull.Value;
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    #endregion
+
+
 
 
     private string SerializeJson(object value)
