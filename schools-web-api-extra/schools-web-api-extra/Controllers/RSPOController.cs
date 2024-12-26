@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
+using schools_web_api_extra.DTOs;
 
 namespace schools_web_api_extra.Controllers
 {
@@ -167,6 +169,37 @@ namespace schools_web_api_extra.Controllers
             {
                 return StatusCode(500, $"Error occured: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 6) Get filtered records from oldschools
+        /// GET: api/RSPO/old-school/filters
+        /// </summary>
+        [HttpGet("old-school/filters")]
+        public async Task<IActionResult> GetOldSchoolsByFilters([FromQuery] FiltersDTO filters)
+        {
+            try
+            {
+                var oldSchools = (await _service.GetAllOldSchoolsAsync()).ToList();
+                var filterProperties = typeof(FiltersDTO).GetProperties();
+                var filteredSchools = new List<OldSchool>();
+
+                foreach (var property in filterProperties)
+                {
+                    if (property.GetValue(filters) is null)
+                        continue;
+
+                    var desiredValue = property.GetValue(filters);
+                    
+                    filteredSchools = oldSchools.Where(o => Equals(o.GetType().GetProperty(property.Name)?.GetValue(o), desiredValue)).ToList();
+                }
+
+                return Ok(filteredSchools);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error occured: {ex.Message}");
+            }            
         }
     }
 }
