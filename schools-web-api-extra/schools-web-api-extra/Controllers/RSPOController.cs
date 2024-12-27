@@ -18,7 +18,7 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// 1) Получить все старые школы (OldSchools).
+        /// 1) Retrieve all old schools (OldSchools).
         /// GET: api/RSPO/old-schools
         /// </summary>
         [HttpGet("old-schools")]
@@ -36,7 +36,7 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// Получить все новые школы (NewSchools).
+        /// Retrieve all new schools (NewSchools).
         /// GET: api/RSPO/new-schools
         /// </summary>
         [HttpGet("new-schools")]
@@ -54,7 +54,7 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// 2) Удалить одну школу по RspoNumer.
+        /// 2) Delete a single school by RspoNumer.
         /// DELETE: api/RSPO/oldschools/{rspoNumer}
         /// </summary>
         [HttpDelete("oldschools/{rspoNumer}")]
@@ -72,9 +72,9 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// 3) Сходить во внешний API RSPO (page=?), 
-        ///    сравнить с OldSchools, сохранить результат в NewSchools,
-        ///    и вернуть список NewSchools на фронт.
+        /// 3) Fetch data from an external RSPO API (page=?),
+        ///    compare it with OldSchools, save the result in NewSchools,
+        ///    and return the list of NewSchools to the frontend.
         /// GET: api/RSPO/new-schools/fetch-and-compare?page=1
         /// </summary>
         [HttpGet("new-schools/fetch-and-compare")]
@@ -83,16 +83,16 @@ namespace schools_web_api_extra.Controllers
             try
             {
                 await _service.DeleteAllNewSchoolAsync();
-                // 3.1. Сходить в внешний API, получить newSchools
+                // 3.1. Fetch data from the external API, get newSchools
                 var newSchools = await _service.FetchSchoolsFromApiAsync(page);
 
-                // 3.2. Сравнить с OldSchools (заполнение SubField, isDifferentObj, isNewObj)
+                // 3.2. Compare with OldSchools (populate SubField, isDifferentObj, isNewObj)
                 var comparedList = await _service.CompareWithOldSchoolsAsync(newSchools);
-               
-                // 3.3. Сохранить в таблицу NewSchools
+
+                // 3.3. Save to the NewSchools table
                 await _service.SaveNewSchoolsAsync(comparedList);
 
-                // 3.4. Возвращаем результат
+                // 3.4. Return the result
                 return Ok(comparedList);
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// 4) Применить изменения из списка NewSchool в OldSchools:
+        /// 4) Apply changes from the NewSchool list to OldSchools:
         ///    POST: api/RSPO/old-schools/apply-changes
         /// </summary>
         [HttpPost("old-schools/apply-changes")]
@@ -118,7 +118,7 @@ namespace schools_web_api_extra.Controllers
                 {
                     return BadRequest("No data received.");
                 }
-                // Применяем изменения к OldSchools (insert/update)
+                // Apply changes to OldSchools (insert/update)
                 await _service.ApplyChangesFromNewSchoolsAsync(newSchools);
 
                 return Ok("Changes applied successfully.");
@@ -130,8 +130,8 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// НОВЫЙ метод: Сохранить данные из списка NewSchool в OldSchools,
-        /// после чего установить поле Nazwa = '1' (для каждой школы).
+        /// NEW method: Save data from the NewSchool list to OldSchools,
+        /// then set the field Nazwa = '1' (for each school).
         /// POST: api/RSPO/set-oldschool-nazwa-for-testing
         /// </summary>
         [HttpPost("set-oldschool-nazwa-for-testing")]
@@ -144,8 +144,8 @@ namespace schools_web_api_extra.Controllers
                     return BadRequest("No data received.");
                 }
 
-                // Вызываем новый метод в интерфейсе/репозитории,
-                // который сохранит (insert/update) и установит Nazwa='1'
+                // Call a new method in the interface/repository
+                // that saves (insert/update) and sets Nazwa='1'
                 await _service.SetOldSchoolForTestingAsync();
 
                 return Ok("OldSchools saved (Nazwa set to '1').");
@@ -157,7 +157,7 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// 5) Получить историю изменений для заданного RspoNumer.
+        /// 5) Retrieve the change history for a given RspoNumer.
         /// GET: api/RSPO/history/{rspoNumer}
         /// </summary>
         [HttpGet("history/{rspoNumer}")]
@@ -175,7 +175,7 @@ namespace schools_web_api_extra.Controllers
         }
 
         /// <summary>
-        /// 6) Get filtered records from oldschools
+        /// 6) Get filtered records from oldschools.
         /// GET: api/RSPO/old-school/filters
         /// </summary>
         [HttpGet("old-school/filters")]
@@ -193,7 +193,7 @@ namespace schools_web_api_extra.Controllers
                         continue;
 
                     var desiredValue = property.GetValue(filters);
-                    
+
                     filteredSchools = oldSchools.Where(o => Equals(o.GetType().GetProperty(property.Name)?.GetValue(o), desiredValue)).ToList();
                 }
 
@@ -202,7 +202,7 @@ namespace schools_web_api_extra.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error occured: {ex.Message}");
-            }            
+            }
         }
     }
 }

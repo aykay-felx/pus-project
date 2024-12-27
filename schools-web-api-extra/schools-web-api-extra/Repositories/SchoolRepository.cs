@@ -18,8 +18,8 @@ public class SchoolRepository : ISchoolService
 
     #region 1) Fetch from API
     /// <summary>
-    /// 1) Извлечь список школ с внешнего API (https://api-rspo.men.gov.pl/api/placowki/?page=...).
-    /// Преобразовать их в List<NewSchool> и вернуть.
+    /// 1) Extract a list of schools from an external API (https://api-rspo.men.gov.pl/api/placowki/?page=...).
+    /// Convert them to List<NewSchool> and return.
     /// </summary>
     public async Task<List<NewSchool>> FetchSchoolsFromApiAsync(int page)
     {
@@ -38,8 +38,8 @@ public class SchoolRepository : ISchoolService
 
         var content = await response.Content.ReadAsStringAsync();
 
-        // Предположим, что есть некий метод JsonConvertToFullSchols.JsongConvertToFullSchools(...)
-        // который десериализует JSON-ответ в List<NewSchool>.
+        // Assume there is a method JsonConvertToFullSchools.JsonConvertToFullSchools(...)
+        // that deserializes the JSON response into a List<NewSchool>.
         var newSchools = JsonConvertToFullSchols.JsonConvertToFullSchools(content);
 
         return newSchools;
@@ -47,15 +47,15 @@ public class SchoolRepository : ISchoolService
 
     #endregion
 
-    #region 2) CompareWithOldSchoolsAsync
+    #region 2) Compare With Old Schools Async
 
     /// <summary>
-    /// 2) Сравнить список NewSchool с уже существующими OldSchools 
-    ///    (заполняем SubFields, isDifferentObj, isNewObj).
+    /// 2) Compare the list of NewSchool with existing OldSchools
+    ///    (populate SubFields, isDifferentObj, isNewObj).
     /// </summary>
     ///
     ///
-    
+
     public async Task<List<NewSchool>> CompareWithOldSchoolsAsync(List<NewSchool> newSchools)
     {
         var oldSchools = (await GetAllOldSchoolsAsync()).ToList();
@@ -81,16 +81,18 @@ public class SchoolRepository : ISchoolService
                 var oldValue = oldProperty?.GetValue(oldSchool);
 
                 if (Equals(newValue, oldValue)) continue;
-                
+
                 var subFieldProperty = typeof(NewSchool).GetProperty($"SubField{property.Name}");
-                
+
                 if (subFieldProperty == null) continue;
 
                 SubField subField;
 
-                if (specialProperties.Contains(property.Name)) subField = new SubField(true, string.Join(",", oldValue));
-                else subField = new SubField(true, oldValue?.ToString());
-                
+                if (specialProperties.Contains(property.Name))
+                    subField = new SubField(true, string.Join(",", oldValue));
+                else
+                    subField = new SubField(true, oldValue?.ToString());
+
                 subFieldProperty.SetValue(newSchool, subField);
             }
         }
@@ -100,10 +102,10 @@ public class SchoolRepository : ISchoolService
 
     #endregion
 
-    #region 3) SaveNewSchoolsAsync
+    #region 3) Save New Schools Async
 
     /// <summary>
-    /// 3) Сохранить список NewSchool в таблицу NewSchools.
+    /// 3) Save the list of NewSchool to the NewSchools table.
     /// </summary>
     public async Task SaveNewSchoolsAsync(List<NewSchool> newSchools)
     {
@@ -226,7 +228,7 @@ public class SchoolRepository : ISchoolService
             {
                 cmd.Parameters.Clear();
 
-                // Обычные поля
+                // Regular fields
                 cmd.Parameters.AddWithValue("RspoNumer", school.RspoNumer ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("Longitude", school.Longitude);
                 cmd.Parameters.AddWithValue("Latitude", school.Latitude);
@@ -251,14 +253,14 @@ public class SchoolRepository : ISchoolService
                 cmd.Parameters.AddWithValue("Gmina", school.Gmina ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("Powiat", school.Powiat ?? (object)DBNull.Value);
 
-                // Массив JezykiNauczane → как строку "angielski,niemiecki" (или массив text[])
+                // JezykiNauczane array → as a string "english,german" (or text[] array)
                 if (school.JezykiNauczane != null && school.JezykiNauczane.Any())
                     cmd.Parameters.AddWithValue("JezykiNauczane", string.Join(",", school.JezykiNauczane));
                 else
                     cmd.Parameters.AddWithValue("JezykiNauczane", DBNull.Value);
 
-                // Для SubField* полей, в БД — JSONB
-                // Указываем NpgsqlDbType.Jsonb
+                // For SubField* fields in the DB — JSONB
+                // Specify NpgsqlDbType.Jsonb
                 cmd.Parameters.AddWithValue(
                     "SubFieldRspoNumer",
                     NpgsqlTypes.NpgsqlDbType.Jsonb,
@@ -396,21 +398,20 @@ public class SchoolRepository : ISchoolService
         }
     }
 
-
     #endregion
 
-    #region 4) ApplyChangesFromNewSchoolsAsync
+    #region 4) Apply Changes From New Schools Async
 
     /// <summary>
-    /// 4) Применяем изменения из списка NewSchool к OldSchools.
-    ///    - Если OldSchool с таким RspoNumer не существует => INSERT
-    ///    - Иначе => частичный UPDATE
+    /// 4) Apply changes from the list of NewSchool to OldSchools.
+    ///    - If an OldSchool with the same RspoNumer does not exist => INSERT
+    ///    - Otherwise => partial UPDATE
     /// </summary>
     public async Task ApplyChangesFromNewSchoolsAsync(IEnumerable<NewSchool> newSchools)
     {
         if (newSchools == null) return;
 
-        // Загружаем все OldSchools и делаем словарь для быстрого поиска
+        // Load all OldSchools and create a dictionary for quick lookup
         var oldList = (await GetAllOldSchoolsAsync()).ToList();
         var oldDict = oldList.ToDictionary(o => o.RspoNumer, o => o);
 
@@ -424,12 +425,12 @@ public class SchoolRepository : ISchoolService
             {
                 if (!oldDict.TryGetValue(newSchool.RspoNumer, out var oldSchool))
                 {
-                    // Нет такой записи => вставляем
+                    // No such record => insert
                     await InsertSingleOldSchoolAsync(connection, transaction, newSchool);
                 }
                 else
                 {
-                    // Есть такая запись => обновляем частично
+                    // Record exists => perform partial update
                     await UpdateOldSchoolAsync(connection, transaction, oldSchool, newSchool);
                 }
             }
@@ -444,7 +445,7 @@ public class SchoolRepository : ISchoolService
     }
 
     // ----------------------------------------------------------------
-    // Вставляем одну OldSchool, конвертируя NewSchool → OldSchool
+    // Insert a single OldSchool by converting NewSchool → OldSchool
     // ----------------------------------------------------------------
     private async Task InsertSingleOldSchoolAsync(
         NpgsqlConnection connection,
@@ -459,7 +460,7 @@ public class SchoolRepository : ISchoolService
                 Dyrektor, NipPodmiotu, RegonPodmiotu, DataZalozenia, 
                 LiczbaUczniow, KategoriaUczniow, SpecyfikaPlacowki, Gmina, Powiat, 
                 JezykiNauczane
-                -- ManualFlags ? Если нужно
+                -- ManualFlags ? If needed
             ) VALUES (
                 @RspoNumer, @Longitude, @Latitude, @Typ, @Nazwa,
                 @Miejscowosc, @Wojewodztwo, @KodPocztowy, @NumerBudynku,
@@ -497,7 +498,7 @@ public class SchoolRepository : ISchoolService
         cmd.Parameters.AddWithValue("Gmina", newSchool.Gmina ?? (object)DBNull.Value);
         cmd.Parameters.AddWithValue("Powiat", newSchool.Powiat ?? (object)DBNull.Value);
 
-        // Массив jezykiNauczane => string.Join(',')
+        // JezykiNauczane array => string.Join(',')
         if (newSchool.JezykiNauczane != null && newSchool.JezykiNauczane.Any())
             cmd.Parameters.AddWithValue("JezykiNauczane", string.Join(",", newSchool.JezykiNauczane));
         else
@@ -507,7 +508,7 @@ public class SchoolRepository : ISchoolService
     }
 
     // ----------------------------------------------------------------
-    // «Partial Reload OldSchools
+    // Partial Reload OldSchools
     // ----------------------------------------------------------------
     private async Task UpdateOldSchoolAsync(
       NpgsqlConnection connection,
@@ -518,20 +519,20 @@ public class SchoolRepository : ISchoolService
     {
         var fieldsToUpdate = new Dictionary<string, object?>();
 
-        // Получаем все свойства NewSchool
+        // Get all properties of NewSchool
         var newSchoolProperties = typeof(NewSchool).GetProperties();
 
         foreach (var newSchoolProperty in newSchoolProperties)
         {
-            // 1. Проверяем, есть ли в OldSchool такое же свойство
+            // 1. Check if OldSchool has the same property
             var oldSchoolProperty = typeof(OldSchool).GetProperty(newSchoolProperty.Name);
             if (oldSchoolProperty == null)
             {
-                // Свойство (например, SubFieldNazwa) отсутствует в OldSchool => пропускаем
+                // Property (e.g., SubFieldNazwa) does not exist in OldSchool => skip
                 continue;
             }
 
-            // 2. Если это массив JezykiNauczane => делаем отдельную логику
+            // 2. If it's the JezykiNauczane array => handle separately
             if (newSchoolProperty.Name == nameof(NewSchool.JezykiNauczane))
             {
                 var oldJezyki = oldSchool.JezykiNauczane ?? new string[0];
@@ -545,30 +546,30 @@ public class SchoolRepository : ISchoolService
                 continue;
             }
 
-            // 3. Получаем значение из newSchool
+            // 3. Get the value from newSchool
             var newValue = newSchoolProperty.GetValue(newSchool);
             var oldValue = oldSchoolProperty.GetValue(oldSchool);
 
-            // 4. Если newValue — это SubField (или вообще не тот тип),
-            //    а в OldSchool нет аналогичного поля, пропускаем
-            //    (в данном случае не нужно переносить SubField в OldSchool).
+            // 4. If newValue is a SubField (or a different type),
+            //    and OldSchool does not have a similar field, skip
+            //    (in this case, no need to transfer SubField to OldSchool).
             if (newValue is SubField)
             {
-                // Пропускаем, т.к. OldSchool не умеет хранить SubField
+                // Skip, as OldSchool cannot store SubField
                 continue;
             }
 
-            // 5. Сравниваем: если значения отличаются — добавим в fieldsToUpdate
+            // 5. Compare: if values differ, add to fieldsToUpdate
             if (!Equals(newValue, oldValue))
             {
                 fieldsToUpdate[newSchoolProperty.Name] = newValue ?? DBNull.Value;
             }
         }
 
-        // 6. Если никаких изменений — выходим
+        // 6. If there are no changes, exit
         if (fieldsToUpdate.Count == 0) return;
 
-        // 7. Формируем SQL
+        // 7. Formulate SQL
         var sb = new System.Text.StringBuilder("UPDATE OldSchools SET ");
         var parameters = new List<NpgsqlParameter>();
         int i = 0;
@@ -576,7 +577,7 @@ public class SchoolRepository : ISchoolService
         foreach (var kvp in fieldsToUpdate)
         {
             if (i > 0) sb.Append(", ");
-            var colName = kvp.Key;        // Например, "Nazwa"
+            var colName = kvp.Key;        // For example, "Nazwa"
             var paramName = "@p" + i;     // "@p0", "@p1", ...
             sb.Append($"{colName}={paramName}");
 
@@ -587,7 +588,7 @@ public class SchoolRepository : ISchoolService
         sb.Append(" WHERE RspoNumer=@rspo;");
         parameters.Add(new NpgsqlParameter("@rspo", oldSchool.RspoNumer));
 
-        // 8. Выполняем UPDATE
+        // 8. Execute UPDATE
         using var cmd = connection.CreateCommand();
         cmd.Transaction = transaction;
         cmd.CommandText = sb.ToString();
@@ -595,7 +596,7 @@ public class SchoolRepository : ISchoolService
 
         await cmd.ExecuteNonQueryAsync();
 
-        // 9. Пишем в историю (если нужно)
+        // 9. Write to history (if needed)
         var changedFields = string.Join(", ", fieldsToUpdate.Keys);
         var changesDescription = $"Updated fields: {changedFields}";
         await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, changesDescription);
@@ -604,7 +605,7 @@ public class SchoolRepository : ISchoolService
 
     #endregion
 
-    #region 5) GetAllOldSchoolsAsync & 6) DeleteOldSchoolAsync
+    #region 5) Get All Old Schools Async & 6) Delete Old School Async
 
     /// <summary>
     /// 5) Get All OldSchools
@@ -648,7 +649,7 @@ public class SchoolRepository : ISchoolService
                 Gmina = reader["Gmina"]?.ToString(),
                 Powiat = reader["Powiat"]?.ToString(),
                 JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(','),
-               // ManualFlags = reader["ManualFlags"]?.ToString()?.Split(',')
+                // ManualFlags = reader["ManualFlags"]?.ToString()?.Split(',')
             };
             results.Add(oldSchool);
         }
@@ -670,10 +671,10 @@ public class SchoolRepository : ISchoolService
 
         while (await reader.ReadAsync())
         {
-            // Создаём новый объект NewSchool
+            // Create a new NewSchool object
             var newSchool = new NewSchool
             {
-                // 1) «Основные» поля
+                // 1) "Main" fields
                 RspoNumer = reader["RspoNumer"]?.ToString() ?? "",
                 Longitude = reader["Longitude"] as double? ?? 0,
                 Latitude = reader["Latitude"] as double? ?? 0,
@@ -698,13 +699,13 @@ public class SchoolRepository : ISchoolService
                 Gmina = reader["Gmina"]?.ToString(),
                 Powiat = reader["Powiat"]?.ToString(),
 
-                // 2) Массив JezykiNauczane (если хранится как "angielski,niemiecki" в столбце)
+                // 2) JezykiNauczane array (if stored as "english,german" in the column)
                 JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(',',
                     StringSplitOptions.RemoveEmptyEntries),
 
-                // 3) Флаги (bool?) 
-                //  - Если столбец isDifferentObj имеет тип BOOLEAN, то читаем как bool? 
-                //    (если в БД NULL, вернём null)
+                // 3) Flags (bool?) 
+                //  - If the isDifferentObj column is of BOOLEAN type, read as bool? 
+                //    (if NULL in DB, return null)
                 isDifferentObj = reader["isDifferentObj"] == DBNull.Value
                     ? null
                     : (bool?)reader["isDifferentObj"],
@@ -713,8 +714,8 @@ public class SchoolRepository : ISchoolService
                     ? null
                     : (bool?)reader["isNewObj"],
 
-                // 4) Подполя (SubField...) десериализуем из JSONB
-                //    Используем вспомогательный метод DeserializeJson<SubField>(...)
+                // 4) Subfields (SubField...) deserialize from JSONB
+                //    Use helper method DeserializeJson<SubField>(...)
                 SubFieldRspoNumer = DeserializeJson<SubField>(reader["SubFieldRspoNumer"]),
                 SubFieldLongitude = DeserializeJson<SubField>(reader["SubFieldLongitude"]),
                 SubFieldLatitude = DeserializeJson<SubField>(reader["SubFieldLatitude"]),
@@ -748,14 +749,14 @@ public class SchoolRepository : ISchoolService
     }
 
     /// <summary>
-    /// Вспомогательный метод для десериализации столбца JSONB (SubField).
-    /// Если значение == DBNull, вернём null.
-    /// Иначе десериализуем в тип T.
+    /// Helper method to deserialize a JSONB column (SubField).
+    /// If the value == DBNull, return null.
+    /// Otherwise, deserialize to type T.
     /// </summary>
     private T? DeserializeJson<T>(object dbValue)
     {
         if (dbValue == DBNull.Value)
-            return default; // null для T-класса
+            return default; // null for T class
 
         var jsonString = dbValue.ToString();
         if (string.IsNullOrEmpty(jsonString))
@@ -770,7 +771,7 @@ public class SchoolRepository : ISchoolService
     /// </summary>
     public async Task DeleteOldSchoolAsync(string rspoNumer)
     {
-        // Определите SQL-запросы для удаления и добавления записи в историю
+        // Define SQL queries for deleting and adding a record to history
         const string deleteSql = "DELETE FROM public.oldschools WHERE rspoNumer = @rspoNumer;";
         const string insertHistorySql = @"
             INSERT INTO public.schoolhistory (rspoNumer, changedat, changes)
@@ -779,12 +780,12 @@ public class SchoolRepository : ISchoolService
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        // Начинаем транзакцию
+        // Begin transaction
         await using var transaction = await connection.BeginTransactionAsync();
 
         try
         {
-            // 1. Удаление записи из OldSchools
+            // 1. Delete record from OldSchools
             await using (var deleteCmd = new NpgsqlCommand(deleteSql, connection, transaction))
             {
                 deleteCmd.Parameters.AddWithValue("@rspoNumer", rspoNumer);
@@ -792,11 +793,11 @@ public class SchoolRepository : ISchoolService
 
                 if (affectedRows == 0)
                 {
-                    throw new InvalidOperationException($"Запись с rspoNumer = {rspoNumer} не найдена и не была удалена.");
+                    throw new InvalidOperationException($"Record with rspoNumer = {rspoNumer} not found and was not deleted.");
                 }
             }
 
-            // 2. Добавление записи в историю
+            // 2. Add record to history
             await using (var historyCmd = new NpgsqlCommand(insertHistorySql, connection, transaction))
             {
                 historyCmd.Parameters.AddWithValue("@RspoNumer", rspoNumer);
@@ -806,42 +807,43 @@ public class SchoolRepository : ISchoolService
                 await historyCmd.ExecuteNonQueryAsync();
             }
 
-            // Фиксируем транзакцию, если все операции прошли успешно
+            // Commit transaction if all operations succeeded
             await transaction.CommitAsync();
 
-            Console.WriteLine($"Запись с rspoNumer = {rspoNumer} успешно удалена и зафиксирована в истории.");
+            Console.WriteLine($"Record with rspoNumer = {rspoNumer} successfully deleted and recorded in history.");
         }
         catch (Exception ex)
         {
-            // Откатываем транзакцию в случае ошибки
+            // Rollback transaction in case of error
             await transaction.RollbackAsync();
-            Console.Error.WriteLine($"Ошибка при удалении записи с rspoNumer = {rspoNumer}: {ex.Message}");
-            throw; // Перебрасываем исключение для дальнейшей обработки
+            Console.Error.WriteLine($"Error deleting record with rspoNumer = {rspoNumer}: {ex.Message}");
+            throw; // Rethrow exception for further handling
         }
     }
 
 
 
-/// 8) Delete All NewSchool
-/// </summary>
-public async Task DeleteAllNewSchoolAsync()
+    /// <summary>
+    /// 8) Delete All NewSchool
+    /// </summary>
+    public async Task DeleteAllNewSchoolAsync()
     {
-        const string sql = "DELETE FROM public.newschools;"; // Или используйте TRUNCATE
+        const string sql = "DELETE FROM public.newschools;"; // Or use TRUNCATE
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
 
         await using var cmd = new NpgsqlCommand(sql, connection);
 
-        // Поскольку удаляются все строки, параметры не нужны
-        // Если вы решите использовать TRUNCATE, добавьте опцию CASCADE, если необходимо:
+        // Since all rows are being deleted, no parameters are needed
+        // If you decide to use TRUNCATE, add CASCADE option if necessary:
         // const string sql = "TRUNCATE TABLE public.newschools CASCADE;";
 
         await cmd.ExecuteNonQueryAsync();
     }
 
     #endregion
-    //Add History
+    // Add History
 
 
     public async Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer)
@@ -880,7 +882,6 @@ public async Task DeleteAllNewSchoolAsync()
 
 
 
-
     private async Task AddHistoryRecordAsync(
       NpgsqlConnection connection,
       NpgsqlTransaction transaction,
@@ -898,7 +899,7 @@ public async Task DeleteAllNewSchoolAsync()
         cmd.CommandText = sql;
 
         cmd.Parameters.AddWithValue("rspo", rspoNumer);
-        cmd.Parameters.AddWithValue("changedAt", DateTime.Now); // или DateTime.UtcNow
+        cmd.Parameters.AddWithValue("changedAt", DateTime.Now); // or DateTime.UtcNow
         cmd.Parameters.AddWithValue("changes", changes);
 
         await cmd.ExecuteNonQueryAsync();
@@ -906,45 +907,45 @@ public async Task DeleteAllNewSchoolAsync()
 
 
 
-    #region Новый метод: SetOldSchoolForTestingAsync (меняем только его)
+    #region New Method: Set Old School For Testing Async (Only modify this)
 
     /// <summary>
-    /// Берёт данные из NewSchools и сохраняет их в OldSchools (INSERT/UPDATE).
-    /// После каждого сохранения ставим Nazwa='1' в OldSchools.
+    /// Takes data from NewSchools and saves it to OldSchools (INSERT/UPDATE).
+    /// After each save, sets Nazwa='1' in OldSchools.
     /// </summary>
     public async Task SetOldSchoolForTestingAsync()
     {
-        // 1) Берём все записи из таблицы NewSchools
+        // 1) Take all records from the NewSchools table
         var newList = (await GetAllNewSchoolAsync()).ToList();
-        if (!newList.Any()) return; // если нет данных
+        if (!newList.Any()) return; // if no data
 
-        // 2) Считываем OldSchools
+        // 2) Read OldSchools
         var oldList = (await GetAllOldSchoolsAsync()).ToList();
         var oldDict = oldList.ToDictionary(o => o.RspoNumer, o => o);
 
-        // 3) Открываем соединение
+        // 3) Open connection
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
         try
         {
-            // 4) Для каждой newSchool из newList
+            // 4) For each newSchool in newList
             foreach (var newSchool in newList)
             {
-                // Есть ли такая запись в OldSchools?
+                // Check if such a record exists in OldSchools
                 if (!oldDict.TryGetValue(newSchool.RspoNumer, out var oldSchool))
                 {
-                    // Нет => INSERT
+                    // No => INSERT
                     await InsertSingleOldSchoolAsync(connection, transaction, newSchool);
                 }
                 else
                 {
-                    // Есть => UPDATE
+                    // Yes => UPDATE
                     await UpdateOldSchoolAsync(connection, transaction, oldSchool, newSchool);
                 }
 
-                // 5) После Insert/Update => Nazwa='1'
+                // 5) After Insert/Update => Nazwa='1'
                 await SetNazwaToOneAsync(connection, transaction, newSchool.RspoNumer);
             }
 
@@ -958,7 +959,7 @@ public async Task DeleteAllNewSchoolAsync()
     }
 
     /// <summary>
-    /// Метод, который ставит Nazwa='1' в OldSchools.
+    /// Method that sets Nazwa='1' in OldSchools.
     /// </summary>
     private async Task SetNazwaToOneAsync(
         NpgsqlConnection connection,
@@ -971,7 +972,7 @@ public async Task DeleteAllNewSchoolAsync()
         cmd.Transaction = transaction;
         cmd.CommandText = sql;
 
-        // Явно укажем, что это текст
+        // Explicitly specify that this is text
         var p = cmd.Parameters.Add("rspo", NpgsqlTypes.NpgsqlDbType.Text);
         p.Value = rspoNumer ?? (object)DBNull.Value;
 
@@ -982,9 +983,8 @@ public async Task DeleteAllNewSchoolAsync()
 
 
 
-
     private string SerializeJson(object value)
         => value != null ? JsonConvert.SerializeObject(value) : null;
 
- 
+
 }

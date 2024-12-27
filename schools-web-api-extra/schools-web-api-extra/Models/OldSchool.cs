@@ -2,7 +2,7 @@ namespace schools_web_api_extra.Models;
 
 public class OldSchool
 {
-    public string RspoNumer { get; set; }           // ���������� �������������
+    public string RspoNumer { get; set; }
     public double Longitude { get; set; }
     public double Latitude { get; set; }
     public string Typ { get; set; }
@@ -27,38 +27,10 @@ public class OldSchool
     public string? Gmina { get; set; }
     public string? Powiat { get; set; }
     public string[]? JezykiNauczane { get; set; }
-       
+
     /// <summary>
-    /// ������ ����� ����� ��������������� ��������. 
-    /// ���� ������� = ��� ����, �������� = true/false (true => ������������� �������).
+    /// Flags for manual adjustments. 
+    /// Key = field name, Value = true/false (true => adjustment applied).
     /// </summary>
     public Dictionary<string, bool>? ManualFlags { get; set; }
 }
-
-
-/*public OldSchool(Placowka placowka)
-{
-RspoNumer = placowka.NumerRspo.ToString();
-Longitude = placowka.Geolokalizacja?.Longitude ?? 0;
-Latitude = placowka.Geolokalizacja?.Latitude ?? 0;
-Typ = placowka.Typ?.Nazwa;
-Nazwa = placowka.Nazwa;
-Miejscowosc = placowka.Gmina;
-Wojewodztwo = placowka.Powiat;
-Telefon = placowka.Telefon;
-Email = placowka.Email;
-StronaInternetowa = placowka.StronaInternetowa;
-NipPodmiotu = placowka.Nip;
-RegonPodmiotu = placowka.Regon;
-DataZalozenia = placowka.DataZalozenia;
-LiczbaUczniow = placowka.LiczbaUczniow;
-Dyrektor = placowka.DyrektorImie + " " + placowka.DyrektorNazwisko;
-StatusPublicznosc = placowka.StatusPublicznoPrawny?.Nazwa;
-KategoriaUczniow = placowka.KategoriaUczniow?.Nazwa;
-SpecyfikaPlacowki = placowka.SpecyfikaSzkoly?.Nazwa;
-Gmina = placowka.Gmina;
-Ulica = placowka.Ulica;
-KodPocztowy = placowka.KodPocztowykodPocztowy;
-NumerBudynku = placowka.NumerBudynku;
-Powiat = placowka.Powiat;
-}*/

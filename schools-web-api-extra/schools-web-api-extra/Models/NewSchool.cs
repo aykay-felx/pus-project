@@ -4,6 +4,9 @@ public class NewSchool
 {
     public NewSchool() { }
 
+    /// <summary>
+    /// Constructor to initialize the NewSchool object using a Placowka instance.
+    /// </summary>
     public NewSchool(Placowka placowka)
     {
         RspoNumer = placowka.NumerRspo.ToString();
@@ -30,8 +33,8 @@ public class NewSchool
         NumerBudynku = placowka.NumerBudynku;
         Powiat = placowka.Powiat;
     }
-    
-    public string RspoNumer { get; set; }  
+
+    public string RspoNumer { get; set; }
     public SubField? SubFieldRspoNumer { get; set; }
 
     public double Longitude { get; set; }
@@ -103,18 +106,17 @@ public class NewSchool
     public SubField? SubFieldJezykiNauczane { get; set; }
 
     /// <summary>
-    /// ����� ���������:
-    /// - isDifferentObj: ���� �� ���� �����-�� ������� � ������� �� ��������� � OldSchools?
-    /// - isNewObj: ����� ����� (� ��� � OldSchools).
+    /// Fields for comparison:
+    /// - isDifferentObj: Indicates whether this school differs in some fields compared to OldSchools.
+    /// - isNewObj: Indicates whether this is a new school (not present in OldSchools).
     /// </summary>
     public bool? isDifferentObj { get; set; }
     public bool? isNewObj { get; set; }
 }
 
-
 /// <summary>
-/// ����� ��� ���������, ������������� ������� �� OldSchool,
-/// ������ �������� � ����� �������������� ����� (����. ShouldApply, IsManual � �.�.)
+/// Class for managing comparisons of properties between NewSchool and OldSchool.
+/// Also contains additional metadata (e.g., ShouldApply, IsManual, etc.).
 /// </summary>
 public class SubField
 {
@@ -126,25 +128,24 @@ public class SubField
     }
 
     /// <summary>
-    /// �������, ��� ��� ���� ���������� �� OldSchool
-    /// (� ������ Compare �� ������ true, ���� �������� ������).
+    /// Indicates whether the field differs from OldSchool (used in the Compare method).
     /// </summary>
     public bool IsDifferent { get; set; }
 
     /// <summary>
-    /// ������ �������� ���� (�� OldSchool).
+    /// The previous value of the field (from OldSchool).
     /// </summary>
     public string? OldValue { get; set; }
 
-    // ����� � �������������� ���� �� ���� ����������:
+    // Fields for determining how the data should be applied:
 
     /// <summary>
-    /// ���� �� Front-End ������������ ������ ���������� ��� ��������� ��� ���.
+    /// Indicates if the field should be applied based on user action on the front end.
     /// </summary>
     public bool ShouldApply { get; set; }
 
     /// <summary>
-    /// ���� ������������ ������� ������������ ��� ����.
+    /// Indicates if the field value was manually corrected by the user.
     /// </summary>
     public bool IsManual { get; set; }
 }

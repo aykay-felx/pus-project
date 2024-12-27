@@ -5,53 +5,58 @@ namespace schools_web_api_extra.Interface;
 public interface ISchoolService
 {
     /// <summary>
-    /// 1) Извлечь список школ из внешнего API, вернуть их как List<NewSchool>.
+    /// 1) Fetch a list of schools from an external API and return them as List<NewSchool>.
     /// </summary>
     Task<List<NewSchool>> FetchSchoolsFromApiAsync(int page);
 
     /// <summary>
-    /// 2) Сравнить список NewSchool с уже существующими OldSchools 
-    ///    (для каждого NewSchool заполнить SubFields, isDifferentObj, isNewObj).
+    /// 2) Compare the NewSchool list with the existing OldSchools 
+    ///    (populate SubFields, isDifferentObj, isNewObj for each NewSchool).
     /// </summary>
     Task<List<NewSchool>> CompareWithOldSchoolsAsync(List<NewSchool> newSchools);
 
     /// <summary>
-    /// 3) Сохранить список NewSchool в таблицу NewSchools (для последующего отображения на фронте).
+    /// 3) Save the NewSchool list to the NewSchools table (for subsequent display on the frontend).
     /// </summary>
     Task SaveNewSchoolsAsync(List<NewSchool> newSchools);
 
     /// <summary>
-    /// 4) По запросу пользователя (после ручных корректировок) применить изменения 
-    ///    из списка NewSchool к OldSchools:
-    ///    - Если записи с таким RspoNumer нет, делаем INSERT.
-    ///    - Если есть, делаем «частичное» обновление только по нужным полям.
+    /// 4) Apply changes from the NewSchool list to OldSchools upon user request 
+    ///    (after manual corrections):
+    ///    - If a record with the same RspoNumer doesn't exist, perform an INSERT.
+    ///    - If it does exist, perform a "partial" update for only the necessary fields.
     /// </summary>
     Task ApplyChangesFromNewSchoolsAsync(IEnumerable<NewSchool> newSchools);
 
     /// <summary>
-    /// 5) Получить все старые школы (OldSchools).
+    /// 5) Retrieve all old schools (OldSchools).
     /// </summary>
     Task<IEnumerable<OldSchool>> GetAllOldSchoolsAsync();
 
-
     /// <summary>
-    /// 5) Получить все старые школы (OldSchools).
+    /// 5) Retrieve all new schools (NewSchools).
     /// </summary>
     Task<IEnumerable<NewSchool>> GetAllNewSchoolAsync();
 
     /// <summary>
-    /// 6) Удалить одну запись OldSchools по RspoNumer.
+    /// 6) Delete a single OldSchools record by RspoNumer.
     /// </summary>
     Task DeleteOldSchoolAsync(string rspoNumer);
-    Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer);
-
 
     /// <summary>
-    /// Новый метод: Сохранить изменения из списка NewSchool в OldSchools 
-    /// (insert/update), а затем принудительно поменять поле Nazwa на '1' 
-    /// для каждой затронутой школы.
+    /// Retrieve the change history for a given RspoNumer.
+    /// </summary>
+    Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer);
+
+    /// <summary>
+    /// New method: Save changes from the NewSchool list to OldSchools 
+    /// (insert/update), and then forcibly set the Nazwa field to '1' 
+    /// for each affected school.
     /// </summary>
     Task SetOldSchoolForTestingAsync();
-    Task DeleteAllNewSchoolAsync();
 
+    /// <summary>
+    /// Delete all records from the NewSchools table.
+    /// </summary>
+    Task DeleteAllNewSchoolAsync();
 }
