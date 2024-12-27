@@ -1,0 +1,22 @@
+<ion-header *ngIf="isLoggedIn">
+  <ion-toolbar>
+    <ion-title>Admin Panel</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="!isLoggedIn; else loggedInTemplate">
+    <app-admin-login (loginSuccess)="onLoginSuccess()"></app-admin-login>
+  </div>
+
+  <ng-template #loggedInTemplate>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>siemanko!</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>xd</p>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+</ion-content>
