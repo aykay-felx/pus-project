@@ -1,0 +1,83 @@
+//############################# school comparison #############################
+.comparison-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;  /* Border matching the new school table */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px; /* Slight margin at the top to separate the header from the comparison */
+  }
+  
+  .comparison-header-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px; /* Increased padding for better visibility */
+    font-weight: bold;
+    margin-left: 150px;
+  }
+  
+  .comparison-new-header,
+  .comparison-old-header {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .comparison-new-header {
+    /* No background color here, only the content stays */
+    border-right: 1px solid #ccc;
+  }
+  
+  .comparison-row {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0; /* Slightly softer border */
+  }
+  
+  .comparison-row:last-child {
+    border-bottom: none;
+  }
+  
+  .comparison-label {
+    flex: 0 0 150px;  /* Increased width for the label column */
+    background-color: #f9f9f9;
+    padding: 15px; /* Increased padding to make it visually bigger */
+    font-weight: bold;
+    text-align: right;
+    border-right: 1px solid #e0e0e0;
+  }
+  
+  .comparison-new,
+  .comparison-old {
+    flex: 1;  /* Equal flex for new and old school columns */
+    padding: 15px; /* Increased padding to make it bigger and more readable */
+    text-align: center;
+  }
+  
+  .comparison-new {
+    background-color: #e8ffe8; /* Light green for new school */
+  }
+  
+  .comparison-old {
+    background-color: #ffe8e8; /* Light red for old school */
+  }
+  
+  .school-details {
+    max-width: 100%;
+  }
+  
+  //color highlights if they are the same/different
+  .comparison-new.green {
+    color: green;
+  }
+  
+  .comparison-new.red {
+    color: red;
+  }
+  
+  .comparison-old.green {
+    color: green;
+  }
+  
+  .comparison-old.red {
+    color: red;
+  }
+  //##############################################################################
