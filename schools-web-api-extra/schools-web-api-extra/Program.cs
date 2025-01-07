@@ -22,6 +22,16 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<ISchoolService, SchoolRepository>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:8100") // Replace with your frontend URL
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -33,6 +43,8 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Schools API Extra v1");
     });
 }
+
+app.UseCors("AllowFrontend");
 
 app.MapControllers();
 
