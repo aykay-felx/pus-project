@@ -40,6 +40,278 @@
     </div>
   </div>
 
+  <ion-content>
+    <div *ngFor="let school of newSchools">
+      <ion-card (click)="toggleDetails(school)">
+        <ion-card-header>
+          <ion-card-title>{{ school.nazwa }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{ school.miejscowosc }}, {{ school.gmina }}</p>
+          <p>{{ school.kategoriaUczniow }} - {{ school.liczbaUczniow }} students</p>
+        </ion-card-content>
+      </ion-card>
+      
+      <!-- Expanded Details Section -->
+      <div *ngIf="school.isExpanded" class="school-details">
+        <ion-card>
+          <ion-card-content>
+            <div class="comparison-table">
+              <div class="comparison-header-row">
+                <div class="comparison-inv-header">
+                </div>
+                <div class="comparison-new-header">
+                  <h3>🟢 Nowa Szkoła</h3>
+                </div>
+                <div class="comparison-old-header">
+                  <h3>🔴 Stara Szkoła</h3>
+                </div>
+              </div>
+  
+              <!-- Comparison Rows -->
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Dyrektor:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.dyrektor, school.matchedOldSchool?.dyrektor)">
+                  {{ school.dyrektor }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.dyrektor, school.dyrektor)">
+                  {{ school.matchedOldSchool?.dyrektor || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Email:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.email, school.matchedOldSchool?.email)">
+                  {{ school.email }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.email, school.email)">
+                  {{ school.matchedOldSchool?.email || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Języki:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.jezykiNauczane?.join(', '), school.matchedOldSchool?.jezykiNauczane?.join(', '))">
+                  {{ school.jezykiNauczane?.join(', ') }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.jezykiNauczane?.join(', '), school.jezykiNauczane?.join(', '))">
+                  {{ school.matchedOldSchool?.jezykiNauczane?.join(', ') || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Szerokość geograficzna:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.latitude, school.matchedOldSchool?.latitude)">
+                  {{ school.latitude }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.latitude, school.latitude)">
+                  {{ school.matchedOldSchool?.latitude || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Długość geograficzna:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.longitude, school.matchedOldSchool?.longitude)">
+                  {{ school.longitude }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.longitude, school.longitude)">
+                  {{ school.matchedOldSchool?.longitude || 'N/A' }}
+                </div>
+              </div>
+              
+      
+              <!-- Additional Fields -->
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Rspo Numer:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.rspoNumer, school.matchedOldSchool?.rspoNumer)">
+                  {{ school.rspoNumer || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.rspoNumer, school.rspoNumer)">
+                  {{ school.matchedOldSchool?.rspoNumer || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Typ:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.typ, school.matchedOldSchool?.typ)">
+                  {{ school.typ || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.typ, school.typ)">
+                  {{ school.matchedOldSchool?.typ || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Miejscowość:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.miejscowosc, school.matchedOldSchool?.miejscowosc)">
+                  {{ school.miejscowosc || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.miejscowosc, school.miejscowosc)">
+                  {{ school.matchedOldSchool?.miejscowosc || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Województwo:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.wojewodztwo, school.matchedOldSchool?.wojewodztwo)">
+                  {{ school.wojewodztwo || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.wojewodztwo, school.wojewodztwo)">
+                  {{ school.matchedOldSchool?.wojewodztwo || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Kod Pocztowy:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.kodPocztowy, school.matchedOldSchool?.kodPocztowy)">
+                  {{ school.kodPocztowy || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.kodPocztowy, school.kodPocztowy)">
+                  {{ school.matchedOldSchool?.kodPocztowy || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Numer Budynku:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.numerBudynku, school.matchedOldSchool?.numerBudynku)">
+                  {{ school.numerBudynku || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.numerBudynku, school.numerBudynku)">
+                  {{ school.matchedOldSchool?.numerBudynku || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Ulica:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.ulica, school.matchedOldSchool?.ulica)">
+                  {{ school.ulica || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.ulica, school.ulica)">
+                  {{ school.matchedOldSchool?.ulica || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Telefon:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.telefon, school.matchedOldSchool?.telefon)">
+                  {{ school.telefon || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.telefon, school.telefon)">
+                  {{ school.matchedOldSchool?.telefon || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Status Publiczności:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.statusPublicznosc, school.matchedOldSchool?.statusPublicznosc)">
+                  {{ school.statusPublicznosc || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.statusPublicznosc, school.statusPublicznosc)">
+                  {{ school.matchedOldSchool?.statusPublicznosc || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Strona Internetowa:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.stronaInternetowa, school.matchedOldSchool?.stronaInternetowa)">
+                  {{ school.stronaInternetowa || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.stronaInternetowa, school.stronaInternetowa)">
+                  {{ school.matchedOldSchool?.stronaInternetowa || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>NIP:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.nipPodmiotu, school.matchedOldSchool?.nipPodmiotu)">
+                  {{ school.nipPodmiotu || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.nipPodmiotu, school.nipPodmiotu)">
+                  {{ school.matchedOldSchool?.nipPodmiotu || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>REGON:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.regonPodmiotu, school.matchedOldSchool?.regonPodmiotu)">
+                  {{ school.regonPodmiotu || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.regonPodmiotu, school.regonPodmiotu)">
+                  {{ school.matchedOldSchool?.regonPodmiotu || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Data Założenia:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.dataZalozenia, school.matchedOldSchool?.dataZalozenia)">
+                  {{ school.dataZalozenia || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.dataZalozenia, school.dataZalozenia)">
+                  {{ school.matchedOldSchool?.dataZalozenia || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Liczba Uczniów:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.liczbaUczniow, school.matchedOldSchool?.liczbaUczniow)">
+                  {{ school.liczbaUczniow || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.liczbaUczniow, school.liczbaUczniow)">
+                  {{ school.matchedOldSchool?.liczbaUczniow || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Kategoria Uczniów:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.kategoriaUczniow, school.matchedOldSchool?.kategoriaUczniow)">
+                  {{ school.kategoriaUczniow || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.kategoriaUczniow, school.kategoriaUczniow)">
+                  {{ school.matchedOldSchool?.kategoriaUczniow || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Specyfika Placówki:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.specyfikaPlacowki, school.matchedOldSchool?.specyfikaPlacowki)">
+                  {{ school.specyfikaPlacowki || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.specyfikaPlacowki, school.specyfikaPlacowki)">
+                  {{ school.matchedOldSchool?.specyfikaPlacowki || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Gmina:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.gmina, school.matchedOldSchool?.gmina)">
+                  {{ school.gmina || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.gmina, school.gmina)">
+                  {{ school.matchedOldSchool?.gmina || 'N/A' }}
+                </div>
+              </div>
+              
+              <div class="comparison-row">
+                <div class="comparison-label"><strong>Powiat:</strong></div>
+                <div class="comparison-new" [ngClass]="compareValues(school.powiat, school.matchedOldSchool?.powiat)">
+                  {{ school.powiat || 'N/A' }}
+                </div>
+                <div class="comparison-old" [ngClass]="compareValues(school.matchedOldSchool?.powiat, school.powiat)">
+                  {{ school.matchedOldSchool?.powiat || 'N/A' }}
+                </div>
+              </div>
+              
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </ion-content>
+  
+  
+  
+  
+
   <ion-menu side="start" contentId="map-content">
     <ion-header>
       <ion-toolbar>
