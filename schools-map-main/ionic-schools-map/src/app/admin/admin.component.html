@@ -283,6 +283,10 @@
       <ion-button expand="full" color="success" (click)="applyChanges()" class="submit-button">
         Zatwierdź zmiany
       </ion-button>
+      <!-- Will fix it later -->
+      <div class="apply-changes-container">
+        <button (click)="applyChanges()" [disabled]="changesMade">Apply Changes</button>
+      </div>
     </ion-content>
   </ng-template>
 </ion-content>
