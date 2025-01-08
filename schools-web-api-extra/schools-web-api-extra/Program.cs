@@ -26,9 +26,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:8100") // Replace with your frontend URL
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.SetIsOriginAllowed(origin => 
+            new Uri(origin).Host == "localhost") // Allow any localhost regardless of port
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
