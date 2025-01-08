@@ -8,16 +8,22 @@
       </div>
     </ion-buttons>
     <ion-title>Mapa Szkół Niepublicznych</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToAdmin()">
+        ADMIN PANEL
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content>
   <div class="header">
     <ion-searchbar #nameInput placeholder="Wyszukaj..." debounce="700"
       (ionChange)="filterSchoolsEvent($event)"></ion-searchbar>
 
-    <div #dropdownButton class="headerArrow arrow" [ngClass]="{'arrow--down': !showDropdown, 'arrow--up': showDropdown}"
-      (click)="toggleDropdown()"></div>
+    <div #dropdownButton #headerArrow class="headerArrow arrow"
+      [ngClass]="{'arrow--down': !showDropdown, 'arrow--up': showDropdown}" (click)="toggleDropdown()"></div>
 
     <div *ngIf="showDropdown" class="dropdown-content">
       <p class="dropdown-content__title">Filtry</p>
@@ -65,7 +71,5 @@
     </ion-content>
   </ion-menu>
 
-  <div id="map-content">
-    <div #map class="map"></div>
-  </div>
+  <div id="map" style="width: 100%; height: 100vh;"></div>
 </ion-content>

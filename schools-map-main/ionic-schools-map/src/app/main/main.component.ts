@@ -1,7 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import * as L from 'leaflet';
+import 'leaflet.markercluster';
 
 @Component({
   selector: 'app-main',
@@ -12,12 +16,13 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     CommonModule,
     FormsModule,
     IonicModule,
+    HttpClientModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]})
 
 export class MainComponent implements OnInit {
   @ViewChild('dropdownButton', { static: false }) dropdownButtonElement!: ElementRef;
-  @ViewChild('headerArrow', { static: false }) headerArrowElement!: ElementRef;
+  @ViewChild('headerArrow', { static: false }) headerArrowElement!: ElementRef
   @ViewChild('selectTab1', { static: false }) selectTab1Element!: ElementRef;
   @ViewChild('selectTab2', { static: false }) selectTab2Element!: ElementRef;
   @ViewChild('hamburger', { static: false }) hamburgerElement!: ElementRef;
@@ -61,12 +66,90 @@ export class MainComponent implements OnInit {
     { value: 'Technikum', label: 'Technikum' }
   ];
 
+  schools: any[] = [];
   filteredSchools: any[] = [];
+  markers: any = L.markerClusterGroup();
+  map!: L.Map;
 
-  constructor() { }
+  headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  });
+
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.setupEventListeners();
+    this.initializeMap();
+  }
+
+  goToAdmin(): void {
+    this.router.navigate(['/admin']);
+  }
+
+  private initializeMap(): void {
+    const markers = L.markerClusterGroup();
+
+    let mapZoom = window.innerWidth > 800 ? 6 : 5;
+
+    const map = L.map('map').setView([51.9194, 19.1451], mapZoom);
+
+    L.tileLayer(
+      'https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=RakePZLBXp7DUCKOgD6V',
+      {
+        tileSize: 512,
+        zoomOffset: -1,
+        attribution:
+          '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> ' +
+          '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+        crossOrigin: true,
+      }
+    ).addTo(map);
+
+    const marker = L.marker([51.9194, 19.1451]);
+    markers.addLayer(marker);
+    map.addLayer(markers);
+  }
+
+
+  fetchAllSchools(): void {
+    this.http.get('http://localhost:5000/api/rspo/old-schools', { headers: this.headers }).subscribe(
+      (data: any) => {
+        this.schools = data;
+        this.schools.forEach((school: any) => this.createMarker(school));
+        this.map.addLayer(this.markers);
+      },
+      (error) => console.error('Failed to fetch schools:', error)
+    );
+  }
+
+  createMarker(school: any): void {
+    const marker = L.marker([school.latitude, school.longitude])
+      .on('click', () => this.handleMarkerClick(school.id))
+      .bindPopup(this.createPopup(school.businessData));
+
+    (marker as any).myID = school.id;
+    this.markers.addLayer(marker);
+  }
+
+  handleMarkerClick(schoolId: string): void {
+    this.http.get(`http://localhost:5000/api/rspo/old-schools/${schoolId}`, { headers: this.headers }).subscribe(
+      (data: any) => {
+        console.log('School details:', data);
+      },
+      (error: any) => console.error('Failed to fetch school details:', error)
+    );
+  }
+
+  createPopup(data: any): string {
+    return `
+      <div class="popup">
+        <p class="popup__school-name">${data.nazwa}</p>
+        <p class="popup__city">${data.miejscowosc} ${data.ulica || ''}</p>
+        <p class="popup__address">${data.kodPocztowy} ${data.poczta}</p>
+        <a href="${data.stronaInternetowa}" target="_blank">${data.stronaInternetowa}</a>
+        <a href="mailto:${data.email}">${data.email}</a>
+      </div>`;
   }
 
   public setupEventListeners() {
@@ -75,7 +158,6 @@ export class MainComponent implements OnInit {
     this.selectTab1Element?.nativeElement?.addEventListener('click', () => this.activeTab = 'general');
     this.selectTab2Element?.nativeElement?.addEventListener('click', () => this.activeTab = 'detailed');
     this.hamburgerElement?.nativeElement?.addEventListener('click', () => this.toggleSidebar());
-    // Uncomment and adjust if you need these functionalities:
     // this.voivodeshipElement?.nativeElement?.addEventListener('change', () => this.filterSchools());
     // this.nameInputElement?.nativeElement?.addEventListener('input', () => {
     //   clearTimeout(this.debounceTimer);
@@ -113,7 +195,6 @@ export class MainComponent implements OnInit {
     }
   }
 
-  // If you need this method, uncomment and implement:
   // public filterSchools() {
   //   // Implement your filtering logic here
   // }
