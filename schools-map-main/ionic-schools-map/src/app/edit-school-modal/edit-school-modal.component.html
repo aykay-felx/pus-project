@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Edytuj Szkołę</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Zamknij</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-item>
+      <ion-label position="stacked">Longitude</ion-label>
+      <ion-input [(ngModel)]="school.longitude" name="longitude"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Latitude</ion-label>
+      <ion-input [(ngModel)]="school.latitude" name="latitude"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Typ</ion-label>
+      <ion-input [(ngModel)]="school.typ" name="typ"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Nazwa</ion-label>
+      <ion-input [(ngModel)]="school.nazwa" name="nazwa"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Miejscowość</ion-label>
+      <ion-input [(ngModel)]="school.miejscowosc" name="miejscowosc"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Gmina</ion-label>
+      <ion-input [(ngModel)]="school.gmina" name="gmina"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Kod pocztowy</ion-label>
+      <ion-input [(ngModel)]="school.kodPocztowy" name="kodPocztowy"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Numer budynku</ion-label>
+      <ion-input [(ngModel)]="school.numerBudynku" name="numerBudynku"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Liczba Uczniów</ion-label>
+      <ion-input type="number" [(ngModel)]="school.liczbaUczniow" name="liczbaUczniow"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input [(ngModel)]="school.email" name="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Ulica</ion-label>
+      <ion-input [(ngModel)]="school.ulica" name="ulica"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Telefon</ion-label>
+      <ion-input type="number" [(ngModel)]="school.telefon" name="telefon"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Status publiczności</ion-label>
+      <ion-input [(ngModel)]="school.statusPublicznosc" name="statusPublicznosc"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Strona internetowa</ion-label>
+      <ion-input [(ngModel)]="school.stronaInternetowa" name="stronaInternetowa"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Dyrektor</ion-label>
+      <ion-input [(ngModel)]="school.dyrektor" name="dyrektor"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">NIP podpiotu</ion-label>
+      <ion-input type="number" [(ngModel)]="school.nipPodmiotu" name="nipPodmiotu"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Regon podmiotu</ion-label>
+      <ion-input type="number" [(ngModel)]="school.regonPodmiotu" name="regonPodmiotu"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Data założenia</ion-label>
+      <ion-input [(ngModel)]="school.dataZalozenia" name="dataZalozenia"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Kategoria uczniów</ion-label>
+      <ion-input [(ngModel)]="school.kategoriaUczniow" name="kategoriaUczniow"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Specyfika placówki</ion-label>
+      <ion-input [(ngModel)]="school.specyfikaPlacowki" name="specyfikaPlacowki"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Powiat</ion-label>
+      <ion-input [(ngModel)]="school.powiat" name="powiat"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Języki nauczane</ion-label>
+      <ion-input [(ngModel)]="school.jezykiNauczane" name="jezykiNauczane"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Powiat</ion-label>
+      <ion-input [(ngModel)]="school.powiat" name="powiat"></ion-input>
+    </ion-item>
+    <!-- Dodaj kolejne pola w podobny sposób -->
+
+    <ion-button expand="full" color="primary" (click)="saveChanges()">Zapisz</ion-button>
+  </form>
+</ion-content>

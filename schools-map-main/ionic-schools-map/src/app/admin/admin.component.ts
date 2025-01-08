@@ -5,8 +5,14 @@ import { CommonModule } from '@angular/common';
 import { AdminLoginComponent } from '../admin-login/admin-login.component';
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 import { Observable, forkJoin } from 'rxjs';
+
+import { ModalController } from '@ionic/angular';
+import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal.component'; // Zaimportuj komponent modalny
+
+
 
 @Component({
   selector: 'app-admin',
@@ -16,6 +22,7 @@ import { Observable, forkJoin } from 'rxjs';
   imports: [ IonicModule, FormsModule, CommonModule, AdminLoginComponent ]
 })
 export class AdminComponent  implements OnInit {
+  
   isLoggedIn = false;
 
   private oldSchoolsUrl = 'http://localhost:5000/api/rspo/old-schools';
@@ -24,8 +31,8 @@ export class AdminComponent  implements OnInit {
   filteredSchools: any[] = [];
   oldSchools: any[] = [];
   newSchools: any[] = [];
-
-  constructor(private http: HttpClient) { }
+  
+  constructor(private http: HttpClient, private modalController: ModalController) { }
 
   ngOnInit() {}
 
@@ -82,4 +89,58 @@ export class AdminComponent  implements OnInit {
     }
   }
 
+  async editSchool(school: any) {
+    const modal = await this.modalController.create({
+      component: EditSchoolModalComponent,
+      componentProps: { school } // Przekazanie danych szkoły do modala
+    });
+  
+    await modal.present();
+  
+    const { data } = await modal.onDidDismiss(); // Obsługa po zamknięciu
+    if (data) {
+      console.log('Zaktualizowane dane:', data);
+      // Zaktualizuj dane szkoły w widoku
+    }
+  }
+  
+  applyChanges() {
+    const changedSchools = this.newSchools.filter(school => {
+      const oldSchool = school.matchedOldSchool;
+      if (!oldSchool) {
+        console.log('Brak przypisanego starego rekordu dla szkoły:', school.nazwa);
+        return false;
+      }
+  
+      console.log('Porównanie szkoły:', school, 'z', oldSchool);
+  
+      // Porównanie wszystkich pól
+      return Object.keys(school).some(key => school[key] !== oldSchool[key]);
+    });
+  
+    console.log('Znalezione zmienione szkoły:', changedSchools);
+  
+    if (changedSchools.length === 0) {
+      console.log('Brak zmian do zatwierdzenia.');
+      return;
+    }
+  
+    const url = 'https://localhost:5001/api/RSPO/old-schools/apply-changes';
+  
+    this.http.post(url, changedSchools, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    }).subscribe(
+      response => {
+        console.log('Zmiany zostały pomyślnie zatwierdzone:', response);
+        alert('Zmiany zostały zatwierdzone!');
+      },
+      error => {
+        console.error('Błąd podczas zatwierdzania zmian:', error);
+        alert('Wystąpił błąd podczas zatwierdzania zmian.');
+      }
+    );
+  }
+  
 }

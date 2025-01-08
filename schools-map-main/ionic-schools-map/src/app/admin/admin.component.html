@@ -21,6 +21,10 @@
             <p>{{ school.kategoriaUczniow }} - {{ school.liczbaUczniow }} students</p>
           </ion-card-content>
         </ion-card>
+
+        <ion-button expand="full" color="primary" (click)="editSchool(school)">
+          Edytuj
+        </ion-button>
         
         <!-- Expanded Details Section -->
         <div *ngIf="school.isExpanded" class="school-details">
@@ -276,6 +280,9 @@
           </ion-card>
         </div>
       </div>
+      <ion-button expand="full" color="success" (click)="applyChanges()" class="submit-button">
+        Zatwierdź zmiany
+      </ion-button>
     </ion-content>
   </ng-template>
 </ion-content>
