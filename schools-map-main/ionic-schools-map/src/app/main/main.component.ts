@@ -80,6 +80,7 @@ export class MainComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupEventListeners();
+    this.fetchAllSchools();
     this.initializeMap();
   }
 
@@ -88,11 +89,12 @@ export class MainComponent implements OnInit {
   }
 
   private initializeMap(): void {
-    const markers = L.markerClusterGroup();
+    this.markers = L.markerClusterGroup(); // Initialize marker cluster group
 
-    let mapZoom = window.innerWidth > 800 ? 6 : 5;
+    const mapZoom = window.innerWidth > 800 ? 6 : 5;
 
-    const map = L.map('map').setView([51.9194, 19.1451], mapZoom);
+    // Initialize the map and assign it to the class property
+    this.map = L.map('map').setView([51.9194, 19.1451], mapZoom);
 
     L.tileLayer(
       'https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=RakePZLBXp7DUCKOgD6V',
@@ -104,53 +106,87 @@ export class MainComponent implements OnInit {
           '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
         crossOrigin: true,
       }
-    ).addTo(map);
+    ).addTo(this.map);
 
-    const marker = L.marker([51.9194, 19.1451]);
-    markers.addLayer(marker);
-    map.addLayer(markers);
+    // Add a test marker
+    const testMarker = L.marker([51.9194, 19.1451]);
+    this.markers.addLayer(testMarker);
+    this.map.addLayer(this.markers);
   }
-
 
   fetchAllSchools(): void {
     this.http.get('http://localhost:5000/api/rspo/old-schools', { headers: this.headers }).subscribe(
       (data: any) => {
-        this.schools = data;
-        this.schools.forEach((school: any) => this.createMarker(school));
+        this.schools = data.map((school: any) => ({
+          ...school
+        }));
+        // Iterate through the schools and create markers for each
+        this.schools.forEach((school: any, index: number) => {
+          if (!school) {
+            console.error(`School at index ${index} is undefined.`);
+            return;
+          }
+          this.createMarker(school);
+        });
+        // Add the markers to the map
         this.map.addLayer(this.markers);
       },
       (error) => console.error('Failed to fetch schools:', error)
     );
   }
-
+  
   createMarker(school: any): void {
+    if (!school || !school.latitude || !school.longitude) {
+      console.error('Invalid school data for marker creation:', school);
+      return;
+    }
+  
     const marker = L.marker([school.latitude, school.longitude])
-      .on('click', () => this.handleMarkerClick(school.id))
-      .bindPopup(this.createPopup(school.businessData));
-
-    (marker as any).myID = school.id;
+      .on('click', () => this.handleMarkerClick(school.rspoNumer))
+      .bindPopup(this.createPopup(school));
+  
+    (marker as any).myID = school.rspoNumer;
     this.markers.addLayer(marker);
   }
+  
 
   handleMarkerClick(schoolId: string): void {
-    this.http.get(`http://localhost:5000/api/rspo/old-schools/${schoolId}`, { headers: this.headers }).subscribe(
-      (data: any) => {
-        console.log('School details:', data);
-      },
-      (error: any) => console.error('Failed to fetch school details:', error)
-    );
+    // this.http.get(`http://localhost:5000/api/rspo/old-schools/${schoolId}`, { headers: this.headers }).subscribe(
+    //   (data: any) => {
+    //     console.log('School details:', data);
+    //   },
+    //   (error: any) => console.error('Failed to fetch school details:', error)
+    // );
+    const school = this.schools.find((s: any) => s.rspoNumer === schoolId);
+
+    if (school) {
+      //console.log('School details:', school);
+    } else {
+      console.error('School not found for ID:', schoolId);
+    }
   }
 
-  createPopup(data: any): string {
+  createPopup(data: any) {
+    // Check if the required fields exist and have valid values
+    const nazwa = data.nazwa || 'Brak nazwy';  // Fallback if 'nazwa' is missing
+    const miejscowosc = data.miejscowosc || 'Brak miejscowości';  // Fallback if 'miejscowosc' is missing
+    const ulica = data.ulica ? data.ulica : 'Brak ulicy';  // Fallback to empty string if 'ulica' is missing
+    const kodPocztowy = data.kodPocztowy || 'Brak kodu pocztowego';  // Fallback if 'kodPocztowy' is missing
+    const poczta = data.poczta || '';  // Fallback if 'poczta' is missing
+    const stronaInternetowa = data.stronaInternetowa || 'Brak strony internetowej';  // Fallback link if 'stronaInternetowa' is missing
+    const email = data.email || 'Brak adresu e-mail';  // Fallback if 'email' is missing
+  
     return `
       <div class="popup">
-        <p class="popup__school-name">${data.nazwa}</p>
-        <p class="popup__city">${data.miejscowosc} ${data.ulica || ''}</p>
-        <p class="popup__address">${data.kodPocztowy} ${data.poczta}</p>
-        <a href="${data.stronaInternetowa}" target="_blank">${data.stronaInternetowa}</a>
-        <a href="mailto:${data.email}">${data.email}</a>
-      </div>`;
+        <p class="popup__school-name">${nazwa}</p>
+        <p class="popup__city">${miejscowosc} ${ulica}</p>
+        <p class="popup__address">${kodPocztowy} ${poczta}</p>
+        <a href="${stronaInternetowa}" target="_blank">${stronaInternetowa}</a>
+        <a href="mailto:${email}">${email}</a>
+      </div>
+    `;
   }
+  
 
   public setupEventListeners() {
     this.dropdownButtonElement?.nativeElement?.addEventListener('click', () => this.toggleDropdown());
