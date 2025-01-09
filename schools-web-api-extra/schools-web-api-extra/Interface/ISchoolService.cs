@@ -59,4 +59,9 @@ public interface ISchoolService
     /// Delete all records from the NewSchools table.
     /// </summary>
     Task DeleteAllNewSchoolAsync();
+    
+    /// <summary>
+    /// Delete record from the NewSchools table by rsponumer.
+    /// </summary>
+    Task DeleteNewSchoolAsync(string rsponumer);
 }

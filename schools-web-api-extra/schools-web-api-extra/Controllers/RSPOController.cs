@@ -121,6 +121,11 @@ namespace schools_web_api_extra.Controllers
                 // Apply changes to OldSchools (insert/update)
                 await _service.ApplyChangesFromNewSchoolsAsync(newSchools);
 
+                foreach (var newSchool in newSchools)
+                {
+                    await _service.DeleteNewSchoolAsync(newSchool.RspoNumer);
+                }
+
                 return Ok("Changes applied successfully.");
             }
             catch (Exception ex)

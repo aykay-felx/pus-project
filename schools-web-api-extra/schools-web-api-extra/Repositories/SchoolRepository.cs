@@ -843,7 +843,44 @@ public class SchoolRepository : ISchoolService
     }
 
     #endregion
-    // Add History
+
+    public async Task DeleteNewSchoolAsync(string rsponumer)
+    {
+        const string deleteSql = "DELETE FROM public.newschools as ns WHERE ns.rspoNumer = @rspoNumer;";
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Begin transaction
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            // 1. Delete record from OldSchools
+            await using (var deleteCmd = new NpgsqlCommand(deleteSql, connection, transaction))
+            {
+                deleteCmd.Parameters.AddWithValue("@rspoNumer", rsponumer);
+                var affectedRows = await deleteCmd.ExecuteNonQueryAsync();
+
+                if (affectedRows == 0)
+                {
+                    throw new InvalidOperationException($"Record with rsponumer = {rsponumer} not found and was not deleted.");
+                }
+            }
+
+            // Commit transaction if all operations succeeded
+            await transaction.CommitAsync();
+
+            Console.WriteLine($"Record with rsponumer = {rsponumer} successfully deleted and recorded in history.");
+        }
+        catch (Exception ex)
+        {
+            // Rollback transaction in case of error
+            await transaction.RollbackAsync();
+            await Console.Error.WriteLineAsync($"Error deleting record with rsponumer = {rsponumer}: {ex.Message}");
+            throw; // Rethrow exception for further handling
+        }
+    }
 
 
     public async Task<IEnumerable<SchoolHistory>> GetHistoryByRspoAsync(string rspoNumer)
