@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <div #hamburger class="hamburger" (click)="toggleSidebar()">
+        <div class="hamburger__bar hamburger__bar-1"></div>
+        <div class="hamburger__bar hamburger__bar-2"></div>
+        <div class="hamburger__bar hamburger__bar-3"></div>
+      </div>
+    </ion-buttons>
+    <ion-title>Mapa Szkół Niepublicznych</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToAdmin()">
+        ADMIN PANEL
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div class="header">
+    <ion-searchbar #nameInput placeholder="Wyszukaj..." debounce="700"
+      (ionChange)="filterSchoolsEvent($event)"></ion-searchbar>
+
+    <div #dropdownButton #headerArrow class="headerArrow arrow"
+      [ngClass]="{'arrow--down': !showDropdown, 'arrow--up': showDropdown}" (click)="toggleDropdown()"></div>
+
+    <div *ngIf="showDropdown" class="dropdown-content">
+      <p class="dropdown-content__title">Filtry</p>
+
+      <div class="voivodeship__container">
+        <label for="select-voivodeship">Województwo:</label>
+        <ion-select #voivodeship [(ngModel)]="selectedVoivodeship" (ngModelChange)="filterSchools()">
+          <ion-select-option *ngFor="let voivode of voivodeships" [value]="voivode.value">{{ voivode.label
+            }}</ion-select-option>
+        </ion-select>
+      </div>
+
+      <div class="school-type__container">
+        <ion-item *ngFor="let type of schoolTypes">
+          <ion-checkbox slot="start" [(ngModel)]="selectedSchoolTypes[type.value]"
+            (ionChange)="filterSchools()"></ion-checkbox>
+          <ion-label>{{ type.label }}</ion-label>
+        </ion-item>
+      </div>
+    </div>
+  </div>
+
+  <ion-menu side="start" contentId="map-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Dodatkowe informacje</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-segment [(ngModel)]="activeTab">
+        <ion-segment-button value="general">Dane ogólne</ion-segment-button>
+        <ion-segment-button value="detailed">Dane szczegółowe</ion-segment-button>
+      </ion-segment>
+
+      <div *ngIf="activeTab === 'general'" class="sidebar__content">
+        <div class="sidebar__address-info">
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'detailed'" class="sidebar__content">
+        <div class="sidebar__detailed-info">
+        </div>
+      </div>
+    </ion-content>
+  </ion-menu>
+
+  <div id="map" style="width: 100%; height: 100vh;"></div>
+</ion-content>
