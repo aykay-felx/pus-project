@@ -1,17 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { AdminLoginComponent } from '../admin-login/admin-login.component';
-
+import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
 import { Observable, forkJoin } from 'rxjs';
-
-import { ModalController } from '@ionic/angular';
-import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal.component'; // Zaimportuj komponent modalny
-
+import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal.component';
+import { AuthService } from '../auth.service';
 
 
 @Component({
@@ -23,7 +20,6 @@ import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal
 })
 export class AdminComponent  implements OnInit {
   
-  isLoggedIn = false;
   changesMade: boolean = false;
 
   private oldSchoolsUrl = 'http://localhost:5000/api/rspo/old-schools';
@@ -33,12 +29,22 @@ export class AdminComponent  implements OnInit {
   oldSchools: any[] = [];
   newSchools: any[] = [];
   
-  constructor(private http: HttpClient, private modalController: ModalController) { }
+  constructor(
+    private http: HttpClient, 
+    private modalController: ModalController, 
+    private router: Router,
+    private alertController: AlertController,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {}
 
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   onLoginSuccess() {
-    this.isLoggedIn = true;
+    this.authService.login();
     this.loadSchools();
   }
 
@@ -48,6 +54,39 @@ export class AdminComponent  implements OnInit {
         newSchools: this.http.get<any[]>(this.newSchoolsUrl)
       });
     }
+
+  public goToMain(): void {
+    this.router.navigate(['/main']);
+  }
+
+  public goToHistory(): void {
+    this.router.navigate(['/history']);
+  }
+
+  async logout() {
+    const alert = await this.alertController.create({
+      header: 'Wylogowanie',
+      message: 'Czy na pewno chcesz się wylogować?',
+      buttons: [
+        {
+          text: 'Anuluj',
+          role: 'cancel',
+        },
+        {
+          text: 'Wyloguj się',
+          handler: () => {
+            localStorage.removeItem('authToken');
+            this.authService.logout();
+            this.router.navigate(['/main']);
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+  
+  
 
   public loadSchools() {
     this.getSchools().subscribe(response => {

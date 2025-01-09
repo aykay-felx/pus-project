@@ -84,7 +84,7 @@ export class MainComponent implements OnInit {
     this.initializeMap();
   }
 
-  goToAdmin(): void {
+  public goToAdmin(): void {
     this.router.navigate(['/admin']);
   }
 
