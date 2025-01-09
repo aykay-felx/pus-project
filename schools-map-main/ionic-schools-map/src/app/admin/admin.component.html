@@ -1,6 +1,14 @@
 <ion-header *ngIf="isLoggedIn">
   <ion-toolbar>
     <ion-title>Admin Panel</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToMain()">
+        GO BACK
+      </ion-button>
+      <ion-button (click)="logout()" color="danger">
+        LOGOUT
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

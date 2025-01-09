@@ -6,7 +6,7 @@ import { EditSchoolModalComponent } from './edit-school-modal/edit-school-modal.
 
 export const routes: Routes = [
   { path: 'main', component: MainComponent },
-  { path: 'admin', component: AdminComponent },
+  { path: 'admin', component: AdminComponent},
   { path: 'edit', component: EditSchoolModalComponent},
   { path: '', redirectTo : '/main', pathMatch: 'full' },
   { path: '**', redirectTo: '/main' },
