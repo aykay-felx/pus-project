@@ -59,6 +59,10 @@ export class AdminComponent  implements OnInit {
     this.router.navigate(['/main']);
   }
 
+  public goToHistory(): void {
+    this.router.navigate(['/history']);
+  }
+
   async logout() {
     const alert = await this.alertController.create({
       header: 'Wylogowanie',
