@@ -507,17 +507,14 @@ public class SchoolRepository : ISchoolService
         await cmd.ExecuteNonQueryAsync();
     }
 
-    // ----------------------------------------------------------------
-    // Partial Reload OldSchools
-    // ----------------------------------------------------------------
     private async Task UpdateOldSchoolAsync(
-      NpgsqlConnection connection,
-      NpgsqlTransaction transaction,
-      OldSchool oldSchool,
-      NewSchool newSchool
-  )
+    NpgsqlConnection connection,
+    NpgsqlTransaction transaction,
+    OldSchool oldSchool,
+    NewSchool newSchool
+)
     {
-        var fieldsToUpdate = new Dictionary<string, object?>();
+        var fieldsToUpdate = new Dictionary<string, (object? OldValue, object? NewValue)>();
 
         // Get all properties of NewSchool
         var newSchoolProperties = typeof(NewSchool).GetProperties();
@@ -540,8 +537,10 @@ public class SchoolRepository : ISchoolService
 
                 if (!Enumerable.SequenceEqual(newJezyki, oldJezyki))
                 {
-                    fieldsToUpdate["JezykiNauczane"] =
-                        newJezyki.Any() ? string.Join(",", newJezyki) : DBNull.Value;
+                    fieldsToUpdate["JezykiNauczane"] = (
+                        oldJezyki.Any() ? string.Join(",", oldJezyki) : DBNull.Value,
+                        newJezyki.Any() ? string.Join(",", newJezyki) : DBNull.Value
+                    );
                 }
                 continue;
             }
@@ -562,7 +561,7 @@ public class SchoolRepository : ISchoolService
             // 5. Compare: if values differ, add to fieldsToUpdate
             if (!Equals(newValue, oldValue))
             {
-                fieldsToUpdate[newSchoolProperty.Name] = newValue ?? DBNull.Value;
+                fieldsToUpdate[newSchoolProperty.Name] = (oldValue, newValue ?? DBNull.Value);
             }
         }
 
@@ -581,7 +580,7 @@ public class SchoolRepository : ISchoolService
             var paramName = "@p" + i;     // "@p0", "@p1", ...
             sb.Append($"{colName}={paramName}");
 
-            parameters.Add(new NpgsqlParameter(paramName, kvp.Value ?? DBNull.Value));
+            parameters.Add(new NpgsqlParameter(paramName, kvp.Value.NewValue ?? DBNull.Value));
             i++;
         }
 
@@ -597,9 +596,14 @@ public class SchoolRepository : ISchoolService
         await cmd.ExecuteNonQueryAsync();
 
         // 9. Write to history (if needed)
-        var changedFields = string.Join(", ", fieldsToUpdate.Keys);
-        var changesDescription = $"Updated fields: {changedFields}";
-        await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, changesDescription);
+        var changesDescription = string.Join(", ", fieldsToUpdate.Select(kvp =>
+        {
+            var oldValue = kvp.Value.OldValue ?? "null";
+            var newValue = kvp.Value.NewValue ?? "null";
+            return $"{kvp.Key}: {oldValue} -> {newValue}";
+        }));
+
+        await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, $"Updated fields: {changesDescription}");
     }
 
 
