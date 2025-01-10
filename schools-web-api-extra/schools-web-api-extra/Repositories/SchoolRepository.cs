@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using schools_web_api_extra.Interface;
 using schools_web_api_extra.Models;
+using Newtonsoft.Json.Linq;
 
 namespace schools_web_api_extra.Repositories;
 
@@ -18,16 +19,16 @@ public class SchoolRepository : ISchoolService
 
     #region 1) Fetch from API
     /// <summary>
-    /// 1) Extract a list of schools from an external API (https://api-rspo.men.gov.pl/api/placowki/?page=...).
+    /// 1) Extract a list of schools from an external API (https://api-rspo.men.gov.pl/api/placowki).
     /// Convert them to List<NewSchool> and return.
     /// </summary>
-    public async Task<List<NewSchool>> FetchSchoolsFromApiAsync(int page)
+    public async Task<List<NewSchool>> FetchSchoolsFromApiAsync()
     {
-        var apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page={page}";
+        var apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page=1";
         var httpClient = _httpClientFactory.CreateClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-        request.Headers.Add("accept", "application/json");
+        request.Headers.Add("accept", "application/ld+json");
 
         var response = await httpClient.SendAsync(request);
 
@@ -37,10 +38,29 @@ public class SchoolRepository : ISchoolService
         }
 
         var content = await response.Content.ReadAsStringAsync();
+        var jsonResponse = JObject.Parse(content);
 
-        // Assume there is a method JsonConvertToFullSchools.JsonConvertToFullSchools(...)
-        // that deserializes the JSON response into a List<NewSchool>.
-        var newSchools = JsonConvertToFullSchols.JsonConvertToFullSchools(content);
+        var totalPages = int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);
+
+        var newSchools = new List<NewSchool>();
+
+        for (int i = 1; i <= totalPages; i++)
+        {
+            apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page={i}";
+            request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+            request.Headers.Add("accept", "application/json");
+
+            response = await httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error accessing RSPO's API: {response.StatusCode}");
+            }
+
+            content = await response.Content.ReadAsStringAsync();
+            var schools = JsonConvertToFullSchols.JsonConvertToFullSchools(content);
+            newSchools.AddRange(schools);
+        }
 
         return newSchools;
     }

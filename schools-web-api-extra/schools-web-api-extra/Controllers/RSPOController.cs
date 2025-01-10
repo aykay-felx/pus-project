@@ -78,13 +78,13 @@ namespace schools_web_api_extra.Controllers
         /// GET: api/RSPO/new-schools/fetch-and-compare?page=1
         /// </summary>
         [HttpGet("new-schools/fetch-and-compare")]
-        public async Task<IActionResult> FetchAndCompare(int page = 1)
+        public async Task<IActionResult> FetchAndCompare()
         {
             try
             {
                 await _service.DeleteAllNewSchoolAsync();
                 // 3.1. Fetch data from the external API, get newSchools
-                var newSchools = await _service.FetchSchoolsFromApiAsync(page);
+                var newSchools = await _service.FetchSchoolsFromApiAsync();
 
                 // 3.2. Compare with OldSchools (populate SubField, isDifferentObj, isNewObj)
                 var comparedList = await _service.CompareWithOldSchoolsAsync(newSchools);

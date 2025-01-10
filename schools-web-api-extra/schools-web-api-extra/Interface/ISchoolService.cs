@@ -7,7 +7,7 @@ public interface ISchoolService
     /// <summary>
     /// 1) Fetch a list of schools from an external API and return them as List<NewSchool>.
     /// </summary>
-    Task<List<NewSchool>> FetchSchoolsFromApiAsync(int page);
+    Task<List<NewSchool>> FetchSchoolsFromApiAsync();
 
     /// <summary>
     /// 2) Compare the NewSchool list with the existing OldSchools 
