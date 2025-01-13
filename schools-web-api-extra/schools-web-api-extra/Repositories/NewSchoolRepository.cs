@@ -39,7 +39,7 @@ public class NewSchoolRepository : INewSchoolService
         var content = await response.Content.ReadAsStringAsync();
         var jsonResponse = JObject.Parse(content);
 
-        var totalPages = 5; /*int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);*/
+        var totalPages = 2; /*int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);*/
 
         var newSchools = new List<NewSchool>();
 
