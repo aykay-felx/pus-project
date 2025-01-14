@@ -6,12 +6,12 @@ namespace schools_web_api_extra.Controllers;
 
 [ApiController]
 [Route("api/rspo/old-school")]
-public class OldSchoolRepository : ControllerBase
+public class OldSchoolController : ControllerBase
 {
     private readonly IOldSchoolService _oldSchoolService;
     private readonly INewSchoolService _newSchoolService;
 
-    public OldSchoolRepository(IOldSchoolService oldSchoolService, INewSchoolService newSchoolService)
+    public OldSchoolController(IOldSchoolService oldSchoolService, INewSchoolService newSchoolService)
     {
         _oldSchoolService = oldSchoolService;
         _newSchoolService = newSchoolService;

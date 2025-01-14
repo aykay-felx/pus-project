@@ -94,4 +94,24 @@ public class NewSchoolController : ControllerBase
             return StatusCode(500, $"Error occured: {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// Delete a newschool record by rsponumer
+    /// DELETE: api/RSPO/new-school/{rsponumer} 
+    /// </summary>
+    /// <param name="rsponumer"></param>
+    /// <returns></returns>
+    [HttpDelete("new-school/{rsponumer}")]
+    public async Task<IActionResult> DeleteNewSchoolByRspoNumer(string rsponumer)
+    {
+        try
+        {
+            await _service.DeleteNewSchoolAsync(rsponumer);
+            return Ok($"NeSchool with rsponumer = {rsponumer} has been successfully deleted");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(505, $"Error occured: {e.Message}");
+        }
+    }
 }
