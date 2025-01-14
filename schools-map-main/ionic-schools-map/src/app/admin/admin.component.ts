@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { AdminLoginComponent } from '../admin-login/admin-login.component';
-import { Router } from '@angular/router';
-import { Injectable } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
 import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal.component';
 import { AuthService } from '../auth.service';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
@@ -16,25 +16,30 @@ import { AuthService } from '../auth.service';
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [ IonicModule, FormsModule, CommonModule, AdminLoginComponent ]
+  imports: [ IonicModule, FormsModule, CommonModule, AdminLoginComponent, RouterModule ]
 })
 export class AdminComponent  implements OnInit {
   
   changesMade: boolean = false;
 
-  private oldSchoolsUrl = 'http://localhost:5000/api/rspo/old-schools';
-  private newSchoolsUrl = 'http://localhost:5000/api/rspo/new-schools';
+  private oldSchoolsUrl = 'http://localhost:5000/api/rspo/old-school/old-schools';
+  private newSchoolsUrl = 'http://localhost:5000/api/rspo/new-school/new-schools';
 
   filteredSchools: any[] = [];
   oldSchools: any[] = [];
   newSchools: any[] = [];
-  
+
+  historyList: any[] = [];
+  isLoadingHistory: boolean = false;
+  historyErrorMessage: string = '';
+
   constructor(
     private http: HttpClient, 
     private modalController: ModalController, 
     private router: Router,
     private alertController: AlertController,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {}
@@ -48,21 +53,29 @@ export class AdminComponent  implements OnInit {
     this.loadSchools();
   }
 
-    getSchools(): Observable<{ oldSchools: any[], newSchools: any[] }> {
-      return forkJoin({
-        oldSchools: this.http.get<any[]>(this.oldSchoolsUrl),
-        newSchools: this.http.get<any[]>(this.newSchoolsUrl)
-      });
-    }
+  getSchools(): Observable<{ oldSchools: any[], newSchools: any[] }> {
+    return forkJoin({
+      oldSchools: this.http.get<any[]>(this.oldSchoolsUrl),
+      newSchools: this.http.get<any[]>(this.newSchoolsUrl)
+    });
+  }
 
   public goToMain(): void {
     this.router.navigate(['/main']);
   }
 
-  public goToHistory(): void {
-    this.router.navigate(['/history']);
+  public showHistory(rspoNumer: string): void {
+    if (rspoNumer) {
+      this.router.navigate(['/history', rspoNumer]);
+    } else {
+      this.alertController.create({
+        header: 'Błąd',
+        message: 'Numer RSPO szkoły jest nieokreślony.',
+        buttons: ['OK']
+      }).then(alert => alert.present());
+    }
   }
-
+  
   async logout() {
     const alert = await this.alertController.create({
       header: 'Wylogowanie',
@@ -86,8 +99,6 @@ export class AdminComponent  implements OnInit {
     await alert.present();
   }
   
-  
-
   public loadSchools() {
     this.getSchools().subscribe(response => {
       // Process oldSchools
@@ -107,6 +118,51 @@ export class AdminComponent  implements OnInit {
     });
   }
   
+  public async deleteSchool(rspoNumer: string): Promise<void> {
+    if (!rspoNumer) {
+      return;
+    }
+  
+    const alert = await this.alertController.create({
+      header: 'Usuń szkołę',
+      message: `Czy na pewno chcesz usunąć szkołę o numerze RSPO: ${rspoNumer}?`,
+      buttons: [
+        {
+          text: 'Anuluj',
+          role: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          handler: () => {
+            const deleteUrl = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
+            this.http.delete(deleteUrl).subscribe({
+              next: () => {
+                this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
+                
+                this.alertController.create({
+                  header: 'Sukces',
+                  message: 'Szkoła została pomyślnie usunięta.',
+                  buttons: ['OK']
+                }).then(alert => alert.present());
+              },
+              error: (error) => {
+                console.error('Błąd podczas usuwania szkoły:', error);
+                
+                this.alertController.create({
+                  header: 'Błąd',
+                  message: 'Wystąpił błąd podczas usuwania szkoły',
+                  buttons: ['OK']
+                }).then(alert => alert.present());
+              }
+            });
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+  
 
   public toggleDetails(school: any) {
     school.isExpanded = !school.isExpanded;
@@ -117,6 +173,12 @@ export class AdminComponent  implements OnInit {
         oldSchool => oldSchool.rspoNumer === school.rspoNumer
       );
     }
+
+    if (!school.rspoNumer && school.matchedOldSchool) {
+      school.rspoNumer = school.matchedOldSchool.rspoNumer;
+    }
+
+    console.log('toggleDetails - school.rspoNumer:', school.rspoNumer);
   }
 
   public compareValues(newVal: any, oldVal: any): string {
@@ -369,7 +431,7 @@ export class AdminComponent  implements OnInit {
       return;
     }
 
-    const url = 'https://localhost:5001/api/RSPO/old-schools/apply-changes';
+    const url = 'https://localhost:5000/api/rspo/old-school/old-schools/apply-changes';
     //console.log('Payload being sent:', JSON.stringify(changedSchools, null, 2));
     this.http.post(url, changedSchools, {
       headers: new HttpHeaders({

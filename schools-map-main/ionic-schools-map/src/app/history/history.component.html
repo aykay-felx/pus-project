@@ -1,22 +1,46 @@
 <ion-header *ngIf="isLoggedIn">
   <ion-toolbar>
-    <ion-title slot="start">Admin Panel</ion-title>
-    <ion-buttons>
+    <ion-buttons slot="start">
       <ion-button (click)="goToAdmin()">
-        ADMIN PANEL
+        Admin Panel
       </ion-button>
     </ion-buttons>
+    <ion-title>Historia RSPO: {{ rspoNumer }}</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="fetchHistory($event)">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
       <ion-button (click)="goToMain()">
-        GO BACK
+        Cofnij
       </ion-button>
       <ion-button (click)="logout()" color="danger">
-        LOGOUT
+        Wyloguj
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<p>
-  history works!
-</p>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="fetchHistory($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="!isLoading && historyList.length > 0">
+    <ion-item *ngFor="let history of historyList">
+      <ion-label>
+        <h2>{{ history.changedAt | date:'short' }}</h2>
+        <p>{{ history.changes }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-spinner *ngIf="isLoading" class="ion-margin-auto"></ion-spinner>
+
+  <ion-text color="danger" *ngIf="!isLoading && errorMessage">
+    <p>{{ errorMessage }}</p>
+  </ion-text>
+
+  <ion-text *ngIf="!isLoading && historyList.length === 0 && !errorMessage">
+    <p>Brak danych do wyświetlenia.</p>
+  </ion-text>
+</ion-content>

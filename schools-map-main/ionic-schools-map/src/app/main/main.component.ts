@@ -115,7 +115,7 @@ export class MainComponent implements OnInit {
   }
 
   fetchAllSchools(): void {
-    this.http.get('http://localhost:5000/api/rspo/old-schools', { headers: this.headers }).subscribe(
+    this.http.get('http://localhost:5000/api/rspo/new-school/new-schools', { headers: this.headers }).subscribe(
       (data: any) => {
         this.schools = data.map((school: any) => ({
           ...school

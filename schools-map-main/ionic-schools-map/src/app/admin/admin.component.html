@@ -2,16 +2,13 @@
   <ion-toolbar>
     <ion-title slot="start">Admin Panel</ion-title>
     <ion-buttons>
-      <ion-button (click)="goToHistory()">
-        HISTORY
-      </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="goToMain()">
-        GO BACK
+        Cofnij
       </ion-button>
       <ion-button (click)="logout()" color="danger">
-        LOGOUT
+        Wyloguj
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -35,8 +32,16 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-button expand="full" color="primary" (click)="editSchool(school)">
+        <ion-button color="primary" (click)="editSchool(school)">
           Edytuj
+        </ion-button>
+
+        <ion-button color="primary" (click)="showHistory(school.rspoNumer)">
+          Pokaż historię
+        </ion-button>        
+
+        <ion-button color="danger" (click)="deleteSchool(school.rspoNumer)">
+          Usuń
         </ion-button>
         
         <!-- Expanded Details Section -->
