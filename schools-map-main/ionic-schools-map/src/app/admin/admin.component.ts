@@ -134,35 +134,47 @@ export class AdminComponent  implements OnInit {
         {
           text: 'Usuń',
           handler: () => {
-            const deleteUrl = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
-            this.http.delete(deleteUrl).subscribe({
+            const deleteUrlNewSchool = `http://localhost:5000/api/rspo/new-school/new-school/${rspoNumer}`;
+            const deleteUrlOldSchool = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
+  
+            this.http.delete(deleteUrlNewSchool).subscribe({
               next: () => {
                 this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
-                
+  
                 this.alertController.create({
                   header: 'Sukces',
                   message: 'Szkoła została pomyślnie usunięta.',
                   buttons: ['OK']
                 }).then(alert => alert.present());
               },
-              error: (error) => {
-                console.error('Błąd podczas usuwania szkoły:', error);
-                
-                this.alertController.create({
-                  header: 'Błąd',
-                  message: 'Wystąpił błąd podczas usuwania szkoły',
-                  buttons: ['OK']
-                }).then(alert => alert.present());
+              error: () => {
+                this.http.delete(deleteUrlOldSchool).subscribe({
+                  next: () => {
+                    this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
+  
+                    this.alertController.create({
+                      header: 'Sukces',
+                      message: 'Szkoła została pomyślnie usunięta.',
+                      buttons: ['OK']
+                    }).then(alert => alert.present());
+                  },
+                  error: () => {
+
+                    this.alertController.create({
+                      header: 'Błąd',
+                      message: 'Wystąpił błąd podczas usuwania szkoły.',
+                      buttons: ['OK']
+                    }).then(alert => alert.present());
+                  }
+                });
               }
             });
           }
         }
       ]
     });
-  
     await alert.present();
-  }
-  
+  }  
 
   public toggleDetails(school: any) {
     school.isExpanded = !school.isExpanded;
