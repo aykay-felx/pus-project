@@ -9,6 +9,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal.component';
 import { AuthService } from '../auth.service';
 import { RouterModule } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -39,7 +40,8 @@ export class AdminComponent  implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {}
@@ -101,22 +103,23 @@ export class AdminComponent  implements OnInit {
   
   public loadSchools() {
     this.getSchools().subscribe(response => {
-      // Process oldSchools
       this.oldSchools = response.oldSchools.map(school => ({
         ...school,
         isExpanded: false,
-        isOldObj: true // Mark explicitly
+        isOldObj: true
       }));
-      
-      // Process newSchools
+
       this.newSchools = response.newSchools.map(school => ({
         ...school,
         isExpanded: false,
-        isNewObj: true, // Mark explicitly
-        matchedOldSchool: null // Prepare for comparison
+        isNewObj: true,
+        matchedOldSchool: null
       }));
+  
+      this.changeDetectorRef.detectChanges();
     });
   }
+  
   
   public async deleteSchool(rspoNumer: string): Promise<void> {
     if (!rspoNumer) {
@@ -133,42 +136,42 @@ export class AdminComponent  implements OnInit {
         },
         {
           text: 'Usuń',
-          handler: () => {
-            const deleteUrlNewSchool = `http://localhost:5000/api/rspo/new-school/new-school/${rspoNumer}`;
+          handler: async () => {
+            const deleteUrlNewSchool = `http://localhost:5000/api/rspo/new-school/new-schools/${rspoNumer}`;
             const deleteUrlOldSchool = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
   
-            this.http.delete(deleteUrlNewSchool).subscribe({
-              next: () => {
-                this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
+            try {
+              await this.http.delete(deleteUrlNewSchool).toPromise();
+              this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
+              this.loadSchools();
+              await this.alertController.create({
+                header: 'Sukces',
+                message: 'Szkoła została pomyślnie usunięta.',
+                buttons: ['OK']
+              }).then(alert => alert.present());
   
-                this.alertController.create({
-                  header: 'Sukces',
-                  message: 'Szkoła została pomyślnie usunięta.',
-                  buttons: ['OK']
-                }).then(alert => alert.present());
-              },
-              error: () => {
-                this.http.delete(deleteUrlOldSchool).subscribe({
-                  next: () => {
-                    this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
+            } catch (error: any) {
+              const errorMessage = error?.error?.message || '';
+              if (errorMessage.includes('not found')) {
+                try {
+                  await this.http.delete(deleteUrlOldSchool).toPromise();
+                  this.oldSchools = this.oldSchools.filter(school => school.rspoNumer !== rspoNumer);
+                  this.loadSchools();
+                  await this.alertController.create({
+                    header: 'Sukces',
+                    message: 'Szkoła została pomyślnie usunięta.',
+                    buttons: ['OK']
+                  }).then(alert => alert.present());
   
-                    this.alertController.create({
-                      header: 'Sukces',
-                      message: 'Szkoła została pomyślnie usunięta.',
-                      buttons: ['OK']
-                    }).then(alert => alert.present());
-                  },
-                  error: () => {
-
-                    this.alertController.create({
-                      header: 'Błąd',
-                      message: 'Wystąpił błąd podczas usuwania szkoły.',
-                      buttons: ['OK']
-                    }).then(alert => alert.present());
-                  }
-                });
+                } catch (oldSchoolError) {
+                  await this.alertController.create({
+                    header: 'Błąd',
+                    message: 'Wystąpił błąd podczas usuwania szkoły.',
+                    buttons: ['OK']
+                  }).then(alert => alert.present());
+                }
               }
-            });
+            }
           }
         }
       ]
