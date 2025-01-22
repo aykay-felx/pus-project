@@ -66,6 +66,24 @@ export class MainComponent implements OnInit {
     { value: 'Technikum', label: 'Technikum' }
   ];
 
+  filters: {
+    name: string;
+    city: string;
+    voivodeship: string;
+    gmina: string;
+    powiat: string;
+    selectedSchoolTypes: { [key: string]: boolean };
+  } = {
+    name: '', 
+    city: '', 
+    voivodeship: '',
+    gmina: '',
+    powiat: '',
+    selectedSchoolTypes: {}
+  };
+  
+  
+
   schools: any[] = [];
   filteredSchools: any[] = [];
   markers: any = L.markerClusterGroup();
@@ -118,7 +136,7 @@ export class MainComponent implements OnInit {
         this.schools = data.map((school: any) => ({
           ...school
         }));
-        // Iterate through the schools and create markers for each
+        // Stwórz markery dla szkół
         this.schools.forEach((school: any, index: number) => {
           if (!school) {
             console.error(`School at index ${index} is undefined.`);
@@ -126,12 +144,29 @@ export class MainComponent implements OnInit {
           }
           this.createMarker(school);
         });
-        // Add the markers to the map
+        // Dodaj markery do mapy
         this.map.addLayer(this.markers);
       },
       (error) => console.error('Failed to fetch schools:', error)
     );
   }
+
+  private updateMapMarkers(): void {
+    this.markers.clearLayers(); // Usuń istniejące markery
+
+    // Iteruj przez przefiltrowane szkoły i stwórz nowe markery
+    this.schools.forEach((school: any) => {
+      if (school.latitude && school.longitude) {
+        const marker = L.marker([school.latitude, school.longitude])
+          .bindPopup(this.createPopup(school)); // Utwórz popup dla szkoły
+        this.markers.addLayer(marker); // Dodaj marker do grupy
+      }
+    });
+
+    // Dodaj zaktualizowane markery do mapy
+    this.map.addLayer(this.markers);
+  }
+
   
   createMarker(school: any): void {
     if (!school || !school.latitude || !school.longitude) {
@@ -208,9 +243,30 @@ export class MainComponent implements OnInit {
     this.hamburgerElement.nativeElement.classList.toggle('change-bar3');
   }
 
-  public filterSchools() {
-    console.log('xd');
+  public filterSchools(): void {
+    const params: any = {
+      Nazwa: this.filters.name || '',
+      Miejscowosc: this.filters.city || '',
+      Wojewodztwo: this.filters.voivodeship || '',
+      Gmina: this.filters.gmina || '',
+      Powiat: this.filters.powiat || '',
+      Typ: Object.keys(this.filters.selectedSchoolTypes || {})
+        .filter(key => this.filters.selectedSchoolTypes[key])
+        .join(',')
+    };
+  
+    this.http.get('http://localhost:5000/api/rspo/new-school/new-school/filters', {
+      headers: this.headers,
+      params
+    }).subscribe(
+      (data: any) => {
+        this.schools = data; // Aktualizacja listy szkół na podstawie wyników filtrowania
+        this.updateMapMarkers();
+      },
+      (error) => console.error('Failed to filter schools:', error)
+    );
   }
+  
 
   public filterSchoolsEvent(event: CustomEvent) {
     console.log('xd', event.detail.value);

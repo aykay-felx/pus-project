@@ -25,16 +25,51 @@
     <div #dropdownButton #headerArrow class="headerArrow arrow"
       [ngClass]="{'arrow--down': !showDropdown, 'arrow--up': showDropdown}" (click)="toggleDropdown()"></div>
 
-    <div *ngIf="showDropdown" class="dropdown-content">
-      <p class="dropdown-content__title">Filtry</p>
-
-      <div class="voivodeship__container">
-        <label for="select-voivodeship">Województwo:</label>
-        <ion-select #voivodeship [(ngModel)]="selectedVoivodeship" (ngModelChange)="filterSchools()">
-          <ion-select-option *ngFor="let voivode of voivodeships" [value]="voivode.value">{{ voivode.label
-            }}</ion-select-option>
-        </ion-select>
+      <div class="dropdown-content">
+        <p class="dropdown-content__title">Filtry</p>
+      
+        <div class="voivodeship__container">
+          <label for="select-voivodeship">Województwo:</label>
+          <ion-select #voivodeship [(ngModel)]="filters.voivodeship" (ngModelChange)="filterSchools()">
+            <ion-select-option *ngFor="let voivode of voivodeships" [value]="voivode.value">
+              {{ voivode.label }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+      
+        <div class="school-type__container">
+          <ion-item *ngFor="let type of schoolTypes">
+            <ion-checkbox slot="start" [(ngModel)]="filters.selectedSchoolTypes[type.value]"
+              (ionChange)="filterSchools()"></ion-checkbox>
+            <ion-label>{{ type.label }}</ion-label>
+          </ion-item>
+        </div>
+      
+        <div class="name__container">
+          <label for="name">Nazwa:</label>
+          <ion-input id="name" [(ngModel)]="filters.name" placeholder="Wprowadź nazwę szkoły"
+            (ionChange)="filterSchools()"></ion-input>
+        </div>
+      
+        <div class="city__container">
+          <label for="city">Miejscowość:</label>
+          <ion-input id="city" [(ngModel)]="filters.city" placeholder="Wprowadź miejscowość"
+            (ionChange)="filterSchools()"></ion-input>
+        </div>
+      
+        <div class="gmina__container">
+          <label for="gmina">Gmina:</label>
+          <ion-input id="gmina" [(ngModel)]="filters.gmina" placeholder="Wprowadź gminę"
+            (ionChange)="filterSchools()"></ion-input>
+        </div>
+      
+        <div class="powiat__container">
+          <label for="powiat">Powiat:</label>
+          <ion-input id="powiat" [(ngModel)]="filters.powiat" placeholder="Wprowadź powiat"
+            (ionChange)="filterSchools()"></ion-input>
+        </div>
       </div>
+      
 
       <div class="school-type__container">
         <ion-item *ngFor="let type of schoolTypes">
