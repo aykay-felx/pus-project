@@ -267,6 +267,8 @@ public class OldSchoolRepository : IOldSchoolService
             cmd.Parameters.AddWithValue("JezykiNauczane", DBNull.Value);
 
         await cmd.ExecuteNonQueryAsync();
+
+        await AddHistoryRecordAsync(connection, transaction, newSchool.RspoNumer, "Create a new school");
     }
     
     private async Task UpdateOldSchoolAsync(
