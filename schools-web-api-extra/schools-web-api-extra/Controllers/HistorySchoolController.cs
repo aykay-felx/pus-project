@@ -3,6 +3,8 @@ using schools_web_api_extra.Interface;
 
 namespace schools_web_api_extra.Controllers;
 
+[ApiController]
+[Route("api/rspo")]
 public class HistorySchoolController : ControllerBase
 {
     private readonly IHistoryService _service;
