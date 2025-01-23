@@ -68,7 +68,7 @@ public class NewSchoolController : ControllerBase
     /// Get filtered records from newschools.
     /// GET: api/RSPO/new-school/filters
     /// </summary>
-    [HttpGet("new-school/filters")]
+    [HttpGet("new-schools/filters")]
     public async Task<IActionResult> GetOldSchoolsByFilters([FromQuery] FiltersDTO filters)
     {
         try
@@ -101,13 +101,13 @@ public class NewSchoolController : ControllerBase
     /// </summary>
     /// <param name="rsponumer"></param>
     /// <returns></returns>
-    [HttpDelete("new-school/{rsponumer}")]
+    [HttpDelete("new-schools/{rsponumer}")]
     public async Task<IActionResult> DeleteNewSchoolByRspoNumer(string rsponumer)
     {
         try
         {
             await _service.DeleteNewSchoolAsync(rsponumer);
-            return Ok($"NeSchool with rsponumer = {rsponumer} has been successfully deleted");
+            return Ok($"NewSchool with rsponumer = {rsponumer} has been successfully deleted");
         }
         catch (Exception e)
         {
