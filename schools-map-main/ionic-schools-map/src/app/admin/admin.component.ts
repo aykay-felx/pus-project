@@ -221,7 +221,8 @@ export class AdminComponent  implements OnInit {
     }
   }
   
-  applyChanges() {
+   applyChanges() {
+    return;
     const changedSchools = this.newSchools
       .filter(school => {
         const oldSchool = school.matchedOldSchool = this.oldSchools.find(
@@ -246,7 +247,7 @@ export class AdminComponent  implements OnInit {
           subFieldRspoNumer: {
             isDifferent: school.rspoNumer !== school.matchedOldSchool?.rspoNumer,
             oldValue: school.matchedOldSchool?.rspoNumer || '',
-            shouldApply: true,
+            shouldApply: school.rspoNumer !== school.matchedOldSchool?.rspoNumer,
             isManual: true
           },
           
@@ -254,7 +255,7 @@ export class AdminComponent  implements OnInit {
           subFieldLongitude: {
             isDifferent: school.longitude !== school.matchedOldSchool?.longitude,
             oldValue: String(oldSchool?.longitude || '0'),
-            shouldApply: true,
+            shouldApply: school.longitude !== school.matchedOldSchool?.longitude,
             isManual: true
           },
   
@@ -262,7 +263,7 @@ export class AdminComponent  implements OnInit {
           subFieldLatitude: {
             isDifferent: school.latitude !== school.matchedOldSchool?.latitude,
             oldValue: String(oldSchool?.latitude || '0'),
-            shouldApply: true,
+            shouldApply: school.latitude !== school.matchedOldSchool?.latitude,
             isManual: true
           },
   
@@ -270,7 +271,7 @@ export class AdminComponent  implements OnInit {
           subFieldTyp: {
             isDifferent: school.typ !== school.matchedOldSchool?.typ,
             oldValue: school.matchedOldSchool?.typ || '',
-            shouldApply: true,
+            shouldApply: school.typ !== school.matchedOldSchool?.typ,
             isManual: true
           },
   
@@ -278,7 +279,7 @@ export class AdminComponent  implements OnInit {
           subFieldNazwa: {
             isDifferent: school.nazwa !== school.matchedOldSchool?.nazwa,
             oldValue: school.matchedOldSchool?.nazwa || '',
-            shouldApply: true,
+            shouldApply: school.nazwa !== school.matchedOldSchool?.nazwa,
             isManual: true
           },
   
@@ -286,7 +287,7 @@ export class AdminComponent  implements OnInit {
           subFieldMiejscowosc: {
             isDifferent: school.miejscowosc !== school.matchedOldSchool?.miejscowosc,
             oldValue: school.matchedOldSchool?.miejscowosc || '',
-            shouldApply: true,
+            shouldApply: school.miejscowosc !== school.matchedOldSchool?.miejscowosc,
             isManual: true
           },
   
@@ -294,7 +295,7 @@ export class AdminComponent  implements OnInit {
           subFieldWojewodztwo: {
             isDifferent: school.wojewodztwo !== school.matchedOldSchool?.wojewodztwo,
             oldValue: school.matchedOldSchool?.wojewodztwo || '',
-            shouldApply: true,
+            shouldApply: school.wojewodztwo !== school.matchedOldSchool?.wojewodztwo,
             isManual: true
           },
   
@@ -302,7 +303,7 @@ export class AdminComponent  implements OnInit {
           subFieldKodPocztowy: {
             isDifferent: school.kodPocztowy !== school.matchedOldSchool?.kodPocztowy,
             oldValue: school.matchedOldSchool?.kodPocztowy || '',
-            shouldApply: true,
+            shouldApply: school.kodPocztowy !== school.matchedOldSchool?.kodPocztowy,
             isManual: true
           },
   
@@ -310,7 +311,7 @@ export class AdminComponent  implements OnInit {
           subFieldNumerBudynku: {
             isDifferent: school.numerBudynku !== school.matchedOldSchool?.numerBudynku,
             oldValue: school.matchedOldSchool?.numerBudynku || '',
-            shouldApply: true,
+            shouldApply: school.numerBudynku !== school.matchedOldSchool?.numerBudynku,
             isManual: true
           },
   
@@ -318,7 +319,7 @@ export class AdminComponent  implements OnInit {
           subFieldEmail: {
             isDifferent: school.email !== school.matchedOldSchool?.email,
             oldValue: school.matchedOldSchool?.email || '',
-            shouldApply: true,
+            shouldApply: school.email !== school.matchedOldSchool?.email,
             isManual: true
           },
   
@@ -326,7 +327,7 @@ export class AdminComponent  implements OnInit {
           subFieldUlica: {
             isDifferent: school.ulica !== school.matchedOldSchool?.ulica,
             oldValue: school.matchedOldSchool?.ulica || '',
-            shouldApply: true,
+            shouldApply: school.ulica !== school.matchedOldSchool?.ulica,
             isManual: true
           },
   
@@ -334,7 +335,7 @@ export class AdminComponent  implements OnInit {
           subFieldTelefon: {
             isDifferent: school.telefon !== school.matchedOldSchool?.telefon,
             oldValue: school.matchedOldSchool?.telefon || '',
-            shouldApply: true,
+            shouldApply: school.telefon !== school.matchedOldSchool?.telefon,
             isManual: true
           },
   
@@ -342,7 +343,7 @@ export class AdminComponent  implements OnInit {
           subFieldStatusPublicznosc: {
             isDifferent: school.statusPublicznosc !== school.matchedOldSchool?.statusPublicznosc,
             oldValue: school.matchedOldSchool?.statusPublicznosc || '',
-            shouldApply: true,
+            shouldApply: school.statusPublicznosc !== school.matchedOldSchool?.statusPublicznosc,
             isManual: true
           },
   
@@ -350,7 +351,7 @@ export class AdminComponent  implements OnInit {
           subFieldStronaInternetowa: {
             isDifferent: school.stronaInternetowa !== school.matchedOldSchool?.stronaInternetowa,
             oldValue: school.matchedOldSchool?.stronaInternetowa || '',
-            shouldApply: true,
+            shouldApply: school.stronaInternetowa !== school.matchedOldSchool?.stronaInternetowa,
             isManual: true
           },
   
@@ -358,7 +359,7 @@ export class AdminComponent  implements OnInit {
           subFieldDyrektor: {
             isDifferent: school.dyrektor !== school.matchedOldSchool?.dyrektor,
             oldValue: school.matchedOldSchool?.dyrektor || '',
-            shouldApply: true,
+            shouldApply: school.dyrektor !== school.matchedOldSchool?.dyrektor,
             isManual: true
           },
   
@@ -366,7 +367,7 @@ export class AdminComponent  implements OnInit {
           subFieldNipPodmiotu: {
             isDifferent: school.nipPodmiotu !== school.matchedOldSchool?.nipPodmiotu,
             oldValue: school.matchedOldSchool?.nipPodmiotu || '',
-            shouldApply: true,
+            shouldApply: school.nipPodmiotu !== school.matchedOldSchool?.nipPodmiotu,
             isManual: true
           },
   
@@ -374,7 +375,7 @@ export class AdminComponent  implements OnInit {
           subFieldRegonPodmiotu: {
             isDifferent: school.regonPodmiotu !== school.matchedOldSchool?.regonPodmiotu,
             oldValue: school.matchedOldSchool?.regonPodmiotu || '',
-            shouldApply: true,
+            shouldApply: school.regonPodmiotu !== school.matchedOldSchool?.regonPodmiotu,
             isManual: true
           },
   
@@ -382,7 +383,7 @@ export class AdminComponent  implements OnInit {
           subFieldDataZalozenia: {
             isDifferent: school.dataZalozenia !== school.matchedOldSchool?.dataZalozenia,
             oldValue: school.matchedOldSchool?.dataZalozenia || '',
-            shouldApply: true,
+            shouldApply: school.dataZalozenia !== school.matchedOldSchool?.dataZalozenia,
             isManual: true
           },
   
@@ -390,7 +391,7 @@ export class AdminComponent  implements OnInit {
           subFieldLiczbaUczniow: {
             isDifferent: school.liczbaUczniow !== school.matchedOldSchool?.liczbaUczniow,
             oldValue: String(oldSchool?.liczbaUczniow || '0'),
-            shouldApply: true,
+            shouldApply: school.liczbaUczniow !== school.matchedOldSchool?.liczbaUczniow,
             isManual: true
           },
   
@@ -398,7 +399,7 @@ export class AdminComponent  implements OnInit {
           subFieldKategoriaUczniow: {
             isDifferent: school.kategoriaUczniow !== school.matchedOldSchool?.kategoriaUczniow,
             oldValue: school.matchedOldSchool?.kategoriaUczniow || '',
-            shouldApply: true,
+            shouldApply: school.kategoriaUczniow !== school.matchedOldSchool?.kategoriaUczniow,
             isManual: true
           },
   
@@ -406,7 +407,7 @@ export class AdminComponent  implements OnInit {
           subFieldSpecyfikaPlacowki: {
             isDifferent: school.specyfikaPlacowki !== school.matchedOldSchool?.specyfikaPlacowki,
             oldValue: school.matchedOldSchool?.specyfikaPlacowki || '',
-            shouldApply: true,
+            shouldApply: school.specyfikaPlacowki !== school.matchedOldSchool?.specyfikaPlacowki,
             isManual: true
           },
   
@@ -414,7 +415,7 @@ export class AdminComponent  implements OnInit {
           subFieldGmina: {
             isDifferent: school.gmina !== school.matchedOldSchool?.gmina,
             oldValue: school.matchedOldSchool?.gmina || '',
-            shouldApply: true,
+            shouldApply: school.gmina !== school.matchedOldSchool?.gmina,
             isManual: true
           },
   
@@ -422,7 +423,7 @@ export class AdminComponent  implements OnInit {
           subFieldPowiat: {
             isDifferent: school.powiat !== school.matchedOldSchool?.powiat,
             oldValue: school.matchedOldSchool?.powiat || '',
-            shouldApply: true,
+            shouldApply: school.powiat !== school.matchedOldSchool?.powiat,
             isManual: true
           },
   
@@ -430,7 +431,7 @@ export class AdminComponent  implements OnInit {
           subFieldJezykiNauczane: {
             isDifferent: school.jezykiNauczane !== school.matchedOldSchool?.jezykiNauczane,
             oldValue: school.matchedOldSchool?.jezykiNauczane ? school.matchedOldSchool.jezykiNauczane.join(', ') : '',
-            shouldApply: true,
+            shouldApply: school.jezykiNauczane !== school.matchedOldSchool?.jezykiNauczane,
             isManual: false
           },
   
@@ -446,7 +447,7 @@ export class AdminComponent  implements OnInit {
       return;
     }
 
-    const url = 'https://localhost:5000/api/rspo/old-school/old-schools/apply-changes';
+    const url = 'https://localhost:5001/api/RSPO/old-schools/apply-changes';
     //console.log('Payload being sent:', JSON.stringify(changedSchools, null, 2));
     this.http.post(url, changedSchools, {
       headers: new HttpHeaders({
