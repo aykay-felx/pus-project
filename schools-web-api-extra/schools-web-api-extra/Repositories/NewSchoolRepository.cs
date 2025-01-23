@@ -593,7 +593,7 @@ public class NewSchoolRepository : INewSchoolService
 
                 if (affectedRows == 0)
                 {
-                    throw new InvalidOperationException($"Record with rsponumer = {rsponumer} not found and was not deleted.");
+                    throw new InvalidOperationException($"Record with rsponumer = {rsponumer} not found and was not deleted on new school.");
                 }
             }
 
