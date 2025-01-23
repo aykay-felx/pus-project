@@ -365,7 +365,7 @@ public class OldSchoolRepository : IOldSchoolService
             return $"{kvp.Key}: {oldValue} -> {newValue}";
         }));
 
-        await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, $"Updated fields: {changesDescription}");
+        await AddHistoryRecordAsync(connection, transaction, oldSchool.RspoNumer, $"{changesDescription}");
     }
     private async Task AddHistoryRecordAsync(
       NpgsqlConnection connection,

@@ -28,7 +28,7 @@ export class HistoryComponent  implements OnInit {
   errorMessage: string = '';
   rspoNumer: string = '';
 
-  private historyUrl = 'http://localhost:5000/history';
+  private historyUrl = 'http://localhost:5000/api/rspo/history';
 
   constructor(
     private router: Router,
