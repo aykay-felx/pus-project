@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 
 
+
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
@@ -21,10 +22,37 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class AdminComponent  implements OnInit {
   
+
+  userName: string = '';
+  filters = {
+    Nazwa: '',
+    Typ: '',
+    Miejscowosc: '',
+    Wojewodztwo: '',
+    Gmina: '',
+    Powiat: ''
+  };
+
+  saveFilters() {
+    console.log(this.filters);
+  }
+
+  resetFilters() {
+    this.filters = {
+      Nazwa: '',
+      Typ: '',
+      Miejscowosc: '',
+      Wojewodztwo: '',
+      Gmina: '',
+      Powiat: ''
+    };
+  }
+
   changesMade: boolean = false;
 
   private oldSchoolsUrl = 'http://localhost:5000/api/rspo/old-school/old-schools';
   private newSchoolsUrl = 'http://localhost:5000/api/rspo/new-school/new-schools';
+
 
   filteredSchools: any[] = [];
   oldSchools: any[] = [];
@@ -55,10 +83,11 @@ export class AdminComponent  implements OnInit {
     this.loadSchools();
   }
 
-  getSchools(): Observable<{ oldSchools: any[], newSchools: any[] }> {
+  getSchools(): Observable<{ oldSchools: any[], newSchools: any[], filteredSchools: any[]}> {
     return forkJoin({
       oldSchools: this.http.get<any[]>(this.oldSchoolsUrl),
-      newSchools: this.http.get<any[]>(this.newSchoolsUrl)
+      newSchools: this.http.get<any[]>(this.newSchoolsUrl),
+      filteredSchools: this.http.get<any[]>(this.newSchoolsUrl)
     });
   }
 
@@ -100,6 +129,18 @@ export class AdminComponent  implements OnInit {
   
     await alert.present();
   }
+
+  updateData() {
+    const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch-and-compare';
+    this.http.get(url).subscribe(
+      (response) => {
+        console.log('Dane zostały pobrane i porównane:', response);
+      },
+      (error) => {
+        console.error('Błąd podczas wywoływania endpointu:', error);
+      }
+    );
+  }
   
   public loadSchools() {
     this.getSchools().subscribe(response => {
@@ -115,10 +156,45 @@ export class AdminComponent  implements OnInit {
         isNewObj: true,
         matchedOldSchool: null
       }));
+
+      this.filteredSchools = response.newSchools.map(school => ({
+        ...school,
+        isExpanded: false,
+        isNewObj: true,
+        matchedOldSchool: null
+      }));
   
       this.changeDetectorRef.detectChanges();
     });
   }
+
+  isFilled(){
+    return this.filters.Miejscowosc == "" && this.filters.Wojewodztwo == "" && this.filters.Gmina == "" && this.filters.Nazwa == "" && this.filters.Powiat == "" && this.filters.Typ == ""
+  }
+
+  applyFilters() {
+    const queryParams = Object.keys(this.filters)
+      .filter(key => this.filters[key as keyof typeof this.filters]) // Rzutowanie klucza
+      .map(key => `${key}=${this.filters[key as keyof typeof this.filters]}`)
+      .join('&');
+    console.log(queryParams)
+  
+    const filterUrl = `http://localhost:5000/api/rspo/new-school/new-schools/filters?${queryParams}`;
+    console.log(this.isFilled())
+    this.http.get<any[]>(filterUrl).subscribe(response => {
+      if (this.isFilled()){
+        this.filteredSchools = this.newSchools;
+        console.log('Filtrowane szkoły:', response);
+      }
+      else{
+        this.filteredSchools = response;
+        console.log('Filtrowane szkoły:', response);
+      }
+    });
+
+  }
+  
+  
   
   
   public async deleteSchool(rspoNumer: string): Promise<void> {
@@ -222,7 +298,6 @@ export class AdminComponent  implements OnInit {
   }
   
    applyChanges() {
-    return;
     const changedSchools = this.newSchools
       .filter(school => {
         const oldSchool = school.matchedOldSchool = this.oldSchools.find(

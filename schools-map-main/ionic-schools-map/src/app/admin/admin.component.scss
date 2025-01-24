@@ -103,4 +103,47 @@
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Dostosuj rozkład elementów w poziomie */
+    margin-bottom: 20px;
+  
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+  
+  .filter-container {
+    form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        height: 30px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        height: 30px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+}
   

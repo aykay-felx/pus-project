@@ -1,8 +1,20 @@
 <ion-header *ngIf="isLoggedIn">
   <ion-toolbar>
     <ion-title slot="start">Admin Panel</ion-title>
-    <ion-buttons>
+    <ion-buttons slot="start">
+      <ion-button (click)="updateData()">Aktualizuj</ion-button>
     </ion-buttons>
+    <div class="filter-container">
+      <form (submit)="applyFilters()">
+        <input type="text" placeholder="Nazwa szkoły" [(ngModel)]="filters.Nazwa" name="nazwa">
+        <input type="text" placeholder="Typ szkoły" [(ngModel)]="filters.Typ" name="typ">
+        <input type="text" placeholder="Miejscowość" [(ngModel)]="filters.Miejscowosc" name="miejscowosc">
+        <input type="text" placeholder="Województwo" [(ngModel)]="filters.Wojewodztwo" name="wojewodztwo">
+        <input type="text" placeholder="Gmina" [(ngModel)]="filters.Gmina" name="gmina">
+        <input type="text" placeholder="Powiat" [(ngModel)]="filters.Powiat" name="powiat">
+        <button type="submit">Filtruj</button>
+      </form>
+    </div>
     <ion-buttons slot="end">
       <ion-button (click)="goToMain()">
         Cofnij
@@ -21,7 +33,7 @@
 
   <ng-template #loggedInTemplate>
     <ion-content>
-      <div *ngFor="let school of newSchools">
+      <div *ngFor="let school of filteredSchools">
         <ion-card (click)="toggleDetails(school)">
           <ion-card-header>
             <ion-card-title>{{ school.nazwa }}</ion-card-title>
