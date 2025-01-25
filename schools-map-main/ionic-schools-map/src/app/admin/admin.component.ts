@@ -72,7 +72,9 @@ export class AdminComponent  implements OnInit {
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadSchools();
+  }
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -135,6 +137,7 @@ export class AdminComponent  implements OnInit {
     this.http.get(url).subscribe(
       (response) => {
         console.log('Dane zostały pobrane i porównane:', response);
+        this.loadSchools();
       },
       (error) => {
         console.error('Błąd podczas wywoływania endpointu:', error);
@@ -191,7 +194,6 @@ export class AdminComponent  implements OnInit {
         console.log('Filtrowane szkoły:', response);
       }
     });
-
   }
   
   
@@ -217,43 +219,51 @@ export class AdminComponent  implements OnInit {
             const deleteUrlOldSchool = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
   
             try {
+              // Próbuj usunąć szkołę z nowej listy
               await this.http.delete(deleteUrlNewSchool).toPromise();
               this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
-              this.loadSchools();
+  
               await this.alertController.create({
                 header: 'Sukces',
                 message: 'Szkoła została pomyślnie usunięta.',
-                buttons: ['OK']
+                buttons: ['OK'],
               }).then(alert => alert.present());
   
             } catch (error: any) {
               const errorMessage = error?.error?.message || '';
               if (errorMessage.includes('not found')) {
                 try {
+                  // Próbuj usunąć szkołę ze starej listy, jeśli nie ma jej w nowej
                   await this.http.delete(deleteUrlOldSchool).toPromise();
                   this.oldSchools = this.oldSchools.filter(school => school.rspoNumer !== rspoNumer);
-                  this.loadSchools();
+  
                   await this.alertController.create({
                     header: 'Sukces',
                     message: 'Szkoła została pomyślnie usunięta.',
-                    buttons: ['OK']
+                    buttons: ['OK'],
                   }).then(alert => alert.present());
   
                 } catch (oldSchoolError) {
+                  // Obsługa błędu dla starej szkoły
                   await this.alertController.create({
                     header: 'Błąd',
                     message: 'Wystąpił błąd podczas usuwania szkoły.',
-                    buttons: ['OK']
+                    buttons: ['OK'],
                   }).then(alert => alert.present());
                 }
               }
             }
-          }
-        }
-      ]
+  
+            // Odśwież widok
+            this.loadSchools();
+          },
+        },
+      ],
     });
+  
     await alert.present();
-  }  
+  }
+  
 
   public toggleDetails(school: any) {
     school.isExpanded = !school.isExpanded;
@@ -293,6 +303,7 @@ export class AdminComponent  implements OnInit {
     const { data } = await modal.onDidDismiss(); // Obsługa po zamknięciu
     if (data) {
       console.log('Zaktualizowane dane:', data);
+      this.loadSchools();
       // Zaktualizuj dane szkoły w widoku
     }
   }
@@ -533,7 +544,6 @@ export class AdminComponent  implements OnInit {
       response => {
         console.log('Zmiany zostały pomyślnie zatwierdzone:', response);
         alert(response);  // Alert the text response
-        this.loadSchools();
       },
       error => {
         console.error('Błąd podczas zatwierdzania zmian:', error);
@@ -541,6 +551,4 @@ export class AdminComponent  implements OnInit {
       }
     );
   }
-  
-  
 }

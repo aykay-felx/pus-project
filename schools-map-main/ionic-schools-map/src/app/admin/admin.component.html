@@ -42,19 +42,20 @@
             <p>{{ school.miejscowosc }}, {{ school.gmina }}</p>
             <p>{{ school.kategoriaUczniow }} - {{ school.liczbaUczniow }} students</p>
           </ion-card-content>
+          <ion-button color="primary" (click)="editSchool(school)">
+            Edytuj
+          </ion-button>
+  
+          <ion-button color="primary" (click)="showHistory(school.rspoNumer)">
+            Pokaż historię
+          </ion-button>        
+  
+          <ion-button color="danger" (click)="deleteSchool(school.rspoNumer)">
+            Usuń
+          </ion-button>
         </ion-card>
 
-        <ion-button color="primary" (click)="editSchool(school)">
-          Edytuj
-        </ion-button>
 
-        <ion-button color="primary" (click)="showHistory(school.rspoNumer)">
-          Pokaż historię
-        </ion-button>        
-
-        <ion-button color="danger" (click)="deleteSchool(school.rspoNumer)">
-          Usuń
-        </ion-button>
         
         <!-- Expanded Details Section -->
         <div *ngIf="school.isExpanded" class="school-details">
