@@ -21,7 +21,9 @@ public class NewSchoolRepository : INewSchoolService
     /// Extract a list of schools from an external API (https://api-rspo.men.gov.pl/api/placowki).
     /// Convert them to List<NewSchool> and return.
     /// </summary>
-    public async Task<List<NewSchool>> FetchSchoolsFromApiAsync()
+    public async Task<List<NewSchool>> FetchSchoolsFromApiAsync(
+        Func<int, double, Task> reportProgress,
+        CancellationToken cancellationToken)
     {
         var apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page=1";
         var httpClient = _httpClientFactory.CreateClient();
@@ -39,12 +41,14 @@ public class NewSchoolRepository : INewSchoolService
         var content = await response.Content.ReadAsStringAsync();
         var jsonResponse = JObject.Parse(content);
 
-        var totalPages = 2; /*int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);*/
+        var totalPages = int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);
 
         var newSchools = new List<NewSchool>();
 
         for (int i = 1; i <= totalPages; i++)
         {
+            if (cancellationToken.IsCancellationRequested) break;
+            
             apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page={i}";
             request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
             request.Headers.Add("accept", "application/json");
@@ -59,6 +63,9 @@ public class NewSchoolRepository : INewSchoolService
             content = await response.Content.ReadAsStringAsync();
             var schools = JsonConvertToFullSchols.JsonConvertToFullSchools(content);
             newSchools.AddRange(schools);
+
+            var progress = (double)i / totalPages * 100;
+            await reportProgress(i, progress);
         }
 
         return newSchools;
