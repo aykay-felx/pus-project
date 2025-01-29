@@ -52,13 +52,15 @@ public class NewSchoolController : ControllerBase
         {
             await _service.DeleteAllNewSchoolAsync();
 
-            await _service.FetchSchoolsFromApiAsync(
+            var newSchools = await _service.FetchSchoolsFromApiAsync(
                 async (page, progress) =>
                 {
                     var progressMessage = new { page, progress };
                     await Response.WriteAsync($"data: {JsonConvert.SerializeObject(progressMessage)}");
                     await Response.Body.FlushAsync(cancellationToken);
                 }, cancellationToken);
+
+            await _service.SaveNewSchoolsAsync(newSchools);
 
             await Response.WriteAsync("data: {\"message\": \"Fetch complete\"}", cancellationToken);
             await Response.Body.FlushAsync(cancellationToken);
@@ -85,6 +87,8 @@ public class NewSchoolController : ControllerBase
         try
         {
             var newSchools = (await _service.GetAllNewSchoolAsync()).ToList();
+
+            await _service.DeleteAllNewSchoolAsync();
 
             var comparedList = await _service.CompareWithOldSchoolsAsync(newSchools);
 

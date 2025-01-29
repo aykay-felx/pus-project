@@ -41,14 +41,14 @@ public class NewSchoolRepository : INewSchoolService
         var content = await response.Content.ReadAsStringAsync();
         var jsonResponse = JObject.Parse(content);
 
-        var totalPages = int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);
+        var totalPages = 5; // int.Parse(jsonResponse["hydra:view"]["hydra:last"].ToString().Split('=')[1]);
 
         var newSchools = new List<NewSchool>();
 
         for (int i = 1; i <= totalPages; i++)
         {
             if (cancellationToken.IsCancellationRequested) break;
-            
+
             apiUrl = $"https://api-rspo.men.gov.pl/api/placowki/?page={i}";
             request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
             request.Headers.Add("accept", "application/json");
@@ -412,7 +412,7 @@ public class NewSchoolRepository : INewSchoolService
             throw;
         }
     }
-    
+
     /// <summary>
     /// Get All OldSchools
     /// </summary>
@@ -511,8 +511,8 @@ public class NewSchoolRepository : INewSchoolService
                 JezykiNauczane = reader["JezykiNauczane"]?.ToString()?.Split(',',
                     StringSplitOptions.RemoveEmptyEntries),
 
-                // 3) Flags (bool?) 
-                //  - If the isDifferentObj column is of BOOLEAN type, read as bool? 
+                // 3) Flags (bool?)
+                //  - If the isDifferentObj column is of BOOLEAN type, read as bool?
                 //    (if NULL in DB, return null)
                 isDifferentObj = reader["isDifferentObj"] == DBNull.Value
                     ? null
@@ -617,10 +617,10 @@ public class NewSchoolRepository : INewSchoolService
             throw; // Rethrow exception for further handling
         }
     }
-    
+
     private string SerializeJson(object value)
         => value != null ? JsonConvert.SerializeObject(value) : null;
-    
+
     private T? DeserializeJson<T>(object dbValue)
     {
         if (dbValue == DBNull.Value)
