@@ -193,27 +193,37 @@ export class AdminComponent  implements OnInit, OnDestroy {
 
   updateData() {
     const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch';
+  
+    const eventSource = new EventSource(url); // Initialize EventSource for SSE
+  
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data); // Parse JSON data from SSE
+      console.log('Received SSE message:', data);
+      if (data.message === 'Fetch complete') {
+        eventSource.close(); // Close the connection when fetch is complete
+        this.compareData(); // Call the compare endpoint after fetch is done
+      }
+    };
+  
+    eventSource.onerror = (error) => {
+      console.error('Error in SSE connection:', error);
+      eventSource.close(); // Close connection on error
+    };
+  }
+  
+  compareData() {
+    const url = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
+  
     this.http.get(url).subscribe(
       (response) => {
-        console.log('Dane zostały pobrane i porównane:', response);
+        console.log('Comparison completed:', response);
         this.loadSchools();
       },
       (error) => {
-        console.error('Błąd podczas wywoływania endpointu:', error);
+        console.error('Error while calling compare endpoint:', error);
       }
     );
-
-    const url2 = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
-    this.http.get(url2).subscribe(
-      (response) => {
-        console.log('Dane zostały pobrane i porównane:', response);
-        this.loadSchools();
-      },
-      (error) => {
-        console.error('Błąd podczas wywoływania endpointu:', error);
-      }
-    );
-}  
+  }
 
 
   cancelUpdate() {
