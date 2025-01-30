@@ -56,23 +56,19 @@ public class NewSchoolController : ControllerBase
                 async (page, progress) =>
                 {
                     var progressMessage = new { page, progress };
-                    await Response.WriteAsync($"{{ data: {JsonConvert.SerializeObject(progressMessage)} }}");
+                    await Response.WriteAsync($"{JsonConvert.SerializeObject(progressMessage)}\n\n");
                     await Response.Body.FlushAsync(cancellationToken);
                 }, cancellationToken);
 
             await _service.SaveNewSchoolsAsync(newSchools);
 
-            await Response.WriteAsync("{ data: {\"message\": \"Fetch complete\"} }", cancellationToken);
+            await Response.WriteAsync("{\"message\": \"Fetch complete\"}\n\n", cancellationToken);
             await Response.Body.FlushAsync(cancellationToken);
         }
         catch (Exception e)
         {
-            await Response.WriteAsync($"{{data: {{\"error\": \"{e.Message}\"}}}}");
+            await Response.WriteAsync($"{{\"error\": \"{e.Message}\"}}\n\n");
             await Response.Body.FlushAsync(cancellationToken);
-        }
-        finally
-        {
-            Response.Body.Close();
         }
     }
     
