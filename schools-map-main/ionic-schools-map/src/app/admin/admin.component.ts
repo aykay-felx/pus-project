@@ -101,6 +101,16 @@ export class AdminComponent  implements OnInit, OnDestroy {
     this.filteredSchools.forEach(school => school.selected = this.allSelected);
   }
 
+  saveSelectedSchools() {
+    const selectedSchools = this.filteredSchools.filter(school => school.selected);
+    if (selectedSchools.length > 0) {
+      this.applyChanges(selectedSchools);
+    } else {
+      alert('Nie zaznaczono żadnej szkoły.');
+    }
+  }
+
+
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
   }
@@ -472,8 +482,8 @@ export class AdminComponent  implements OnInit, OnDestroy {
     }
   }
   
-   applyChanges() {
-    const changedSchools = this.newSchools
+  applyChanges(selectedSchools: any[] = this.newSchools) {
+    const changedSchools = selectedSchools
       .filter(school => {
         const oldSchool = school.matchedOldSchool = this.oldSchools.find(
           oldSchool => oldSchool.rspoNumer === school.rspoNumer

@@ -2,6 +2,9 @@
   <ion-toolbar>
     <ion-title slot="start">Admin Panel</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="saveSelectedSchools()">
+        Zapisz zaznaczone
+      </ion-button>      
       <ion-button (click)="toggleSelectAllSchools()">
         {{ allSelected ? 'Odznacz wszystkie' : 'Zaznacz wszystkie' }}
       </ion-button>      
