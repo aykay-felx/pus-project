@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -11,7 +11,8 @@ import { AuthService } from '../auth.service';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { map } from 'rxjs/operators';
-
+import { FetchSchoolsService } from '../fetch-progress.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -21,8 +22,12 @@ import { map } from 'rxjs/operators';
   standalone: true,
   imports: [ IonicModule, FormsModule, CommonModule, AdminLoginComponent, RouterModule ]
 })
-export class AdminComponent  implements OnInit {
-  
+export class AdminComponent  implements OnInit, OnDestroy {
+  progress: number = 0;
+  isLoading: boolean = false;
+  errorMessage: string = '';
+  private fetchSubscription: Subscription | undefined;
+
   showFilter: boolean = false;
   userName: string = '';
   filters = {
@@ -70,11 +75,18 @@ export class AdminComponent  implements OnInit {
     private alertController: AlertController,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private fetchSchoolsService: FetchSchoolsService
   ) { }
 
   ngOnInit() {
     this.loadSchools();
+  }
+
+  ngOnDestroy() {
+    if (this.fetchSubscription) {
+      this.fetchSubscription.unsubscribe();
+    }
   }
 
   get isLoggedIn(): boolean {
@@ -180,27 +192,47 @@ export class AdminComponent  implements OnInit {
   }
 
   updateData() {
-    const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch';
-    this.http.get(url).subscribe(
-      (response) => {
-        console.log('Dane zostały pobrane i porównane:', response);
-        this.loadSchools();
+    this.isLoading = true;
+    this.progress = 0;
+    this.errorMessage = '';
+  
+    this.fetchSubscription = this.fetchSchoolsService.fetchSchools().subscribe({
+      next: (data) => {
+        if (data.progress !== undefined) {
+          this.progress = data.progress;
+        }
       },
-      (error) => {
-        console.error('Błąd podczas wywoływania endpointu:', error);
-      }
-    );
-    const url2 = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
-    this.http.get(url2).subscribe(
-      (response) => {
-        console.log('Dane zostały pobrane i porównane:', response);
-        this.loadSchools();
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err;
+        console.error('Błąd podczas aktualizacji:', err);
+        this.alertController.create({
+          header: 'Błąd',
+          message: err,
+          buttons: ['OK']
+        }).then(alert => alert.present());
       },
-      (error) => {
-        console.error('Błąd podczas wywoływania endpointu:', error);
+      complete: () => {
+        this.isLoading = false;
+        this.progress = 100;
+        console.log('Aktualizacja zakończona');
+        this.loadSchools();
       }
-    );
+    });
   }
+
+  cancelUpdate() {
+    if (this.fetchSubscription) {
+      this.fetchSubscription.unsubscribe();
+      this.isLoading = false;
+      this.progress = 0;
+      this.alertController.create({
+        header: 'Anulowano',
+        message: 'Operacja aktualizacji została anulowana.',
+        buttons: ['OK']
+      }).then(alert => alert.present());
+    }
+  }  
   
   public loadSchools() {
     this.getSchools().subscribe(response => {

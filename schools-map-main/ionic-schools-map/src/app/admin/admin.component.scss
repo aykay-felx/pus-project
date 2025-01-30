@@ -1,4 +1,16 @@
 //############################# school comparison #############################
+.progress-container {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+ion-progress-bar {
+  width: 100%;
+  margin-top: 10px;
+}
+
 .comparison-table {
     display: flex;
     flex-direction: column;

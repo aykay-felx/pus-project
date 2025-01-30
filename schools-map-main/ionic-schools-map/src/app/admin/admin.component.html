@@ -18,6 +18,13 @@
         Wyloguj
       </ion-button>
     </ion-buttons>
+    <div *ngIf="isLoading" class="progress-container">
+      <ion-progress-bar [value]="progress / 100" type="determinate"></ion-progress-bar>
+      <p>{{ progress }}% ukończone</p>
+      <ion-button color="medium" (click)="cancelUpdate()" size="small">
+        Anuluj
+      </ion-button>
+    </div>    
   </ion-toolbar>
   <div class="filter-container" *ngIf="showFilter">
     <form (submit)="applyFilters()" class="filter-form">
