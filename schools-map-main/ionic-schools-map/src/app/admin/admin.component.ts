@@ -217,9 +217,25 @@ export class AdminComponent  implements OnInit, OnDestroy {
         this.progress = 100;
         console.log('Aktualizacja zakończona');
         this.loadSchools();
+  
+        const compareUrl = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
+        this.http.get(compareUrl).subscribe(
+          (response) => {
+            console.log('Dane zostały pobrane i porównane:', response);
+            this.loadSchools();
+          },
+          (error) => {
+            console.error('Błąd podczas wywoływania endpointu compare:', error);
+            this.alertController.create({
+              header: 'Błąd',
+              message: 'Błąd podczas porównywania danych.',
+              buttons: ['OK']
+            }).then(alert => alert.present());
+          }
+        );
       }
     });
-  }
+  }  
 
   cancelUpdate() {
     if (this.fetchSubscription) {
