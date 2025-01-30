@@ -192,50 +192,29 @@ export class AdminComponent  implements OnInit, OnDestroy {
   }
 
   updateData() {
-    this.isLoading = true;
-    this.progress = 0;
-    this.errorMessage = '';
-  
-    this.fetchSubscription = this.fetchSchoolsService.fetchSchools().subscribe({
-      next: (data) => {
-        if (data.progress !== undefined) {
-          this.progress = data.progress;
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err;
-        console.error('Błąd podczas aktualizacji:', err);
-        this.alertController.create({
-          header: 'Błąd',
-          message: err,
-          buttons: ['OK']
-        }).then(alert => alert.present());
-      },
-      complete: () => {
-        this.isLoading = false;
-        this.progress = 100;
-        console.log('Aktualizacja zakończona');
+    const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch';
+    this.http.get(url).subscribe(
+      (response) => {
+        console.log('Dane zostały pobrane i porównane:', response);
         this.loadSchools();
-  
-        const compareUrl = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
-        this.http.get(compareUrl).subscribe(
-          (response) => {
-            console.log('Dane zostały pobrane i porównane:', response);
-            this.loadSchools();
-          },
-          (error) => {
-            console.error('Błąd podczas wywoływania endpointu compare:', error);
-            this.alertController.create({
-              header: 'Błąd',
-              message: 'Błąd podczas porównywania danych.',
-              buttons: ['OK']
-            }).then(alert => alert.present());
-          }
-        );
+      },
+      (error) => {
+        console.error('Błąd podczas wywoływania endpointu:', error);
       }
-    });
-  }  
+    );
+
+    const url2 = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
+    this.http.get(url2).subscribe(
+      (response) => {
+        console.log('Dane zostały pobrane i porównane:', response);
+        this.loadSchools();
+      },
+      (error) => {
+        console.error('Błąd podczas wywoływania endpointu:', error);
+      }
+    );
+}  
+
 
   cancelUpdate() {
     if (this.fetchSubscription) {
@@ -283,23 +262,32 @@ export class AdminComponent  implements OnInit, OnDestroy {
   applyFilters() {
     const queryParams = Object.keys(this.filters)
       .filter(key => this.filters[key as keyof typeof this.filters]) // Rzutowanie klucza
-      .map(key => `${key}=${this.filters[key as keyof typeof this.filters]}`)
+      .map(key => {
+        let value = this.filters[key as keyof typeof this.filters];
+        
+        if (typeof value === 'string' && value.length > 0) {
+          value = value.charAt(0).toUpperCase() + value.slice(1);
+        }
+        
+        return `${key}=${value}`;
+      })
       .join('&');
-    console.log(queryParams)
+    
+    console.log(queryParams);
   
     const filterUrl = `http://localhost:5000/api/rspo/new-school/new-schools/filters?${queryParams}`;
-    console.log(this.isFilled())
+    console.log(this.isFilled());
+    
     this.http.get<any[]>(filterUrl).subscribe(response => {
-      if (this.isFilled()){
+      if (this.isFilled()) {
         this.filteredSchools = this.newSchools;
         console.log('Filtrowane szkoły:', response);
-      }
-      else{
+      } else {
         this.filteredSchools = response;
         console.log('Filtrowane szkoły:', response);
       }
     });
-  }
+}
 
   public async deleteSchoolWithoutAsking(rspoNumer: string): Promise<void> {
     if (!rspoNumer) {
