@@ -14,7 +14,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   imports: [IonicModule, FormsModule, CommonModule]
 })
 export class EditSchoolModalComponent implements OnInit {
-  @Input() school: any; // Przekazane dane szkoły
+  @Input() school: any;
 
   constructor(
     private http: HttpClient, 
@@ -27,7 +27,7 @@ export class EditSchoolModalComponent implements OnInit {
     //console.log('OldSchool: ', this.school.matchedOldSchool);
   }
 
-  saveChanges() {
+  public saveChanges() {
         const school = this.school;
         const oldSchool = this.school.matchedOldSchool;
         // Map fields to match the expected Swagger API structure

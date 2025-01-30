@@ -137,7 +137,8 @@ export class AdminComponent  implements OnInit {
     this.router.navigate(['/main']);
   }
 
-  public showHistory(rspoNumer: string): void {
+  public showHistory(event: Event, rspoNumer: string): void {
+    event.stopPropagation();
     if (rspoNumer) {
       this.router.navigate(['/history', rspoNumer]);
     } else {
@@ -303,7 +304,8 @@ export class AdminComponent  implements OnInit {
   
   
   
-  public async deleteSchool(rspoNumer: string): Promise<void> {
+  public async deleteSchool(event: Event, rspoNumer: string): Promise<void> {
+    event.stopPropagation();
     if (!rspoNumer) {
       return;
     }
@@ -367,7 +369,6 @@ export class AdminComponent  implements OnInit {
   
     await alert.present();
   }
-  
 
   public toggleDetails(school: any) {
     school.isExpanded = !school.isExpanded;
@@ -396,7 +397,8 @@ export class AdminComponent  implements OnInit {
     }
   }
 
-  async editSchool(school: any) {
+  async editSchool(event: Event, school: any) {
+    event.stopPropagation();
     const modal = await this.modalController.create({
       component: EditSchoolModalComponent,
       componentProps: { school } // Przekazanie danych szkoły do modala

@@ -51,20 +51,16 @@
             <p>{{ school.kategoriaUczniow }} - {{ school.liczbaUczniow }} students</p>
           </ion-card-content>
           <div class="card-buttons">
-            <ion-checkbox [(ngModel)]="school.selected" slot="start" style="margin-top:13px"></ion-checkbox>
-            <ion-button class="green">
-              Zapisz
-            </ion-button>
-
-            <ion-button class="common" (click)="editSchool(school)">
+            <ion-checkbox [(ngModel)]="school.selected" slot="start" style="margin-top:13px" (click)="$event.stopPropagation()"></ion-checkbox>    
+            <ion-button class="primary" (click)="editSchool($event, school)">
               Edytuj
             </ion-button>
-    
-            <ion-button class="common" (click)="showHistory(school.rspoNumer)">
+        
+            <ion-button class="common" (click)="showHistory($event, school.rspoNumer)">
               Pokaż historię
             </ion-button>        
     
-            <ion-button class="red" (click)="deleteSchool(school.rspoNumer)">
+            <ion-button class="red" (click)="deleteSchool($event, school.rspoNumer)">
               Usuń
             </ion-button>
           </div>
