@@ -28,6 +28,12 @@ export class AdminComponent  implements OnInit, OnDestroy {
   errorMessage: string = '';
   private fetchSubscription: Subscription | undefined;
 
+  selectAllSchools() {
+    this.filteredSchools.forEach(school => school.selected = true);
+  }
+  
+  
+
   showFilter: boolean = false;
   userName: string = '';
   filters = {
@@ -61,6 +67,7 @@ export class AdminComponent  implements OnInit, OnDestroy {
 
 
   filteredSchools: any[] = [];
+  allSelected: boolean = false;
   oldSchools: any[] = [];
   newSchools: any[] = [];
 
@@ -87,6 +94,11 @@ export class AdminComponent  implements OnInit, OnDestroy {
     if (this.fetchSubscription) {
       this.fetchSubscription.unsubscribe();
     }
+  }
+
+  toggleSelectAllSchools() {
+    this.allSelected = !this.allSelected;
+    this.filteredSchools.forEach(school => school.selected = this.allSelected);
   }
 
   get isLoggedIn(): boolean {
