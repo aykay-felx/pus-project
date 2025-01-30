@@ -10,6 +10,7 @@ import { EditSchoolModalComponent } from '../edit-school-modal/edit-school-modal
 import { AuthService } from '../auth.service';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { map } from 'rxjs/operators';
 
 
 
@@ -22,7 +23,7 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class AdminComponent  implements OnInit {
   
-
+  showFilter: boolean = false;
   userName: string = '';
   filters = {
     Nazwa: '',
@@ -90,7 +91,46 @@ export class AdminComponent  implements OnInit {
       oldSchools: this.http.get<any[]>(this.oldSchoolsUrl),
       newSchools: this.http.get<any[]>(this.newSchoolsUrl),
       filteredSchools: this.http.get<any[]>(this.newSchoolsUrl)
+    }).pipe(
+      map(response => {
+        // Dodajemy pole 'selected' do każdej szkoły w filteredSchools
+        const filteredSchoolsWithSelected = response.filteredSchools.map(school => ({
+          ...school,
+          selected: false // Dodajemy domyślną wartość 'false' dla pola 'selected'
+        }));
+  
+        return {
+          oldSchools: response.oldSchools,
+          newSchools: response.newSchools,
+          filteredSchools: filteredSchoolsWithSelected
+        };
+      })
+    );
+  }
+
+  // Metoda do usuwania zaznaczonych szkół
+  public async deleteSelectedSchools() {
+    const alert = await this.alertController.create({
+      header: 'Usuń szkołę',
+      message: `Czy na pewno chcesz usunąć wybrane szkoły?`,
+      buttons: [
+        {
+          text: 'Anuluj',
+          role: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          handler: async () => {
+            this.filteredSchools.forEach(school => {
+              if (school.selected) {
+                this.deleteSchoolWithoutAsking(school.rspoNumer); // Usuwamy pojedynczą szkołę
+              }
+            });
+          }
+        }
+      ]
     });
+    await alert.present();
   }
 
   public goToMain(): void {
@@ -132,9 +172,25 @@ export class AdminComponent  implements OnInit {
     await alert.present();
   }
 
+  
+
+  toggleFilter() {
+    this.showFilter = !this.showFilter; // Przełącza widoczność okienka filtrów
+  }
+
   updateData() {
-    const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch-and-compare';
+    const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch';
     this.http.get(url).subscribe(
+      (response) => {
+        console.log('Dane zostały pobrane i porównane:', response);
+        this.loadSchools();
+      },
+      (error) => {
+        console.error('Błąd podczas wywoływania endpointu:', error);
+      }
+    );
+    const url2 = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';
+    this.http.get(url2).subscribe(
       (response) => {
         console.log('Dane zostały pobrane i porównane:', response);
         this.loadSchools();
@@ -194,6 +250,54 @@ export class AdminComponent  implements OnInit {
         console.log('Filtrowane szkoły:', response);
       }
     });
+  }
+
+  public async deleteSchoolWithoutAsking(rspoNumer: string): Promise<void> {
+    if (!rspoNumer) {
+      return;
+    }
+  
+    const deleteUrlNewSchool = `http://localhost:5000/api/rspo/new-school/new-schools/${rspoNumer}`;
+    const deleteUrlOldSchool = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
+
+    try {
+      // Próbuj usunąć szkołę z nowej listy
+      await this.http.delete(deleteUrlNewSchool).toPromise();
+      this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
+
+      await this.alertController.create({
+        header: 'Sukces',
+        message: 'Szkoła została pomyślnie usunięta.',
+        buttons: ['OK'],
+      }).then(alert => alert.present());
+
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || '';
+      if (errorMessage.includes('not found')) {
+        try {
+          // Próbuj usunąć szkołę ze starej listy, jeśli nie ma jej w nowej
+          await this.http.delete(deleteUrlOldSchool).toPromise();
+          this.oldSchools = this.oldSchools.filter(school => school.rspoNumer !== rspoNumer);
+
+          await this.alertController.create({
+            header: 'Sukces',
+            message: 'Szkoła została pomyślnie usunięta.',
+            buttons: ['OK'],
+          }).then(alert => alert.present());
+
+        } catch (oldSchoolError) {
+          // Obsługa błędu dla starej szkoły
+          await this.alertController.create({
+            header: 'Błąd',
+            message: 'Wystąpił błąd podczas usuwania szkoły.',
+            buttons: ['OK'],
+          }).then(alert => alert.present());
+        }
+      }
+    }
+
+    // Odśwież widok
+    this.loadSchools();
   }
   
   

@@ -1,21 +1,16 @@
 <ion-header *ngIf="isLoggedIn">
   <ion-toolbar>
     <ion-title slot="start">Admin Panel</ion-title>
-    <ion-buttons slot="start">
-      <ion-button (click)="updateData()">Aktualizuj</ion-button>
-    </ion-buttons>
-    <div class="filter-container">
-      <form (submit)="applyFilters()">
-        <input type="text" placeholder="Nazwa szkoły" [(ngModel)]="filters.Nazwa" name="nazwa">
-        <input type="text" placeholder="Typ szkoły" [(ngModel)]="filters.Typ" name="typ">
-        <input type="text" placeholder="Miejscowość" [(ngModel)]="filters.Miejscowosc" name="miejscowosc">
-        <input type="text" placeholder="Województwo" [(ngModel)]="filters.Wojewodztwo" name="wojewodztwo">
-        <input type="text" placeholder="Gmina" [(ngModel)]="filters.Gmina" name="gmina">
-        <input type="text" placeholder="Powiat" [(ngModel)]="filters.Powiat" name="powiat">
-        <button type="submit">Filtruj</button>
-      </form>
-    </div>
     <ion-buttons slot="end">
+      <ion-button (click)="updateData()">
+        Aktualizuj
+      </ion-button>
+      <ion-button (click)="toggleFilter()">
+        Filtrowanie
+      </ion-button>
+      <ion-button color="red" (click)="deleteSelectedSchools()">
+        Usuń Zaznaczone
+      </ion-button>
       <ion-button (click)="goToMain()">
         Cofnij
       </ion-button>
@@ -24,6 +19,19 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <div class="filter-container" *ngIf="showFilter">
+    <form (submit)="applyFilters()" class="filter-form">
+      <div class="filter-inputs">
+        <input type="text" placeholder="Nazwa szkoły" [(ngModel)]="filters.Nazwa" name="nazwa">
+        <input type="text" placeholder="Typ szkoły" [(ngModel)]="filters.Typ" name="typ">
+        <input type="text" placeholder="Miejscowość" [(ngModel)]="filters.Miejscowosc" name="miejscowosc">
+        <input type="text" placeholder="Województwo" [(ngModel)]="filters.Wojewodztwo" name="wojewodztwo">
+        <input type="text" placeholder="Gmina" [(ngModel)]="filters.Gmina" name="gmina">
+        <input type="text" placeholder="Powiat" [(ngModel)]="filters.Powiat" name="powiat">
+      </div>
+      <button type="submit">Filtruj</button>
+    </form>
+  </div>
 </ion-header>
 
 <ion-content>
@@ -42,17 +50,24 @@
             <p>{{ school.miejscowosc }}, {{ school.gmina }}</p>
             <p>{{ school.kategoriaUczniow }} - {{ school.liczbaUczniow }} students</p>
           </ion-card-content>
-          <ion-button color="primary" (click)="editSchool(school)">
-            Edytuj
-          </ion-button>
-  
-          <ion-button color="primary" (click)="showHistory(school.rspoNumer)">
-            Pokaż historię
-          </ion-button>        
-  
-          <ion-button color="danger" (click)="deleteSchool(school.rspoNumer)">
-            Usuń
-          </ion-button>
+          <div class="card-buttons">
+            <ion-checkbox [(ngModel)]="school.selected" slot="start" style="margin-top:13px"></ion-checkbox>
+            <ion-button class="green">
+              Zapisz
+            </ion-button>
+
+            <ion-button class="common" (click)="editSchool(school)">
+              Edytuj
+            </ion-button>
+    
+            <ion-button class="common" (click)="showHistory(school.rspoNumer)">
+              Pokaż historię
+            </ion-button>        
+    
+            <ion-button class="red" (click)="deleteSchool(school.rspoNumer)">
+              Usuń
+            </ion-button>
+          </div>
         </ion-card>
 
 
@@ -310,13 +325,6 @@
             </ion-card-content>
           </ion-card>
         </div>
-      </div>
-      <ion-button expand="full" color="success" (click)="applyChanges()" class="submit-button">
-        Zatwierdź zmiany
-      </ion-button>
-      <!-- Will fix it later -->
-      <div class="apply-changes-container">
-        <button (click)="applyChanges()" [disabled]="changesMade">Apply Changes</button>
       </div>
     </ion-content>
   </ng-template>
