@@ -20,7 +20,9 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<ISchoolService, SchoolRepository>();
+builder.Services.AddSingleton<INewSchoolService, NewSchoolRepository>();
+builder.Services.AddSingleton<IOldSchoolService, OldSchoolRepository>();
+builder.Services.AddSingleton<IHistoryService, HistoryRepository>();
 
 builder.Services.AddCors(options =>
 {

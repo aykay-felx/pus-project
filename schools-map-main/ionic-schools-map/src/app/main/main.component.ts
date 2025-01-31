@@ -84,16 +84,15 @@ export class MainComponent implements OnInit {
     this.initializeMap();
   }
 
-  goToAdmin(): void {
+  public goToAdmin(): void {
     this.router.navigate(['/admin']);
   }
 
   private initializeMap(): void {
-    this.markers = L.markerClusterGroup(); // Initialize marker cluster group
+    this.markers = L.markerClusterGroup();
 
     const mapZoom = window.innerWidth > 800 ? 6 : 5;
 
-    // Initialize the map and assign it to the class property
     this.map = L.map('map').setView([51.9194, 19.1451], mapZoom);
 
     L.tileLayer(
@@ -108,14 +107,13 @@ export class MainComponent implements OnInit {
       }
     ).addTo(this.map);
 
-    // Add a test marker
     const testMarker = L.marker([51.9194, 19.1451]);
     this.markers.addLayer(testMarker);
     this.map.addLayer(this.markers);
   }
 
   fetchAllSchools(): void {
-    this.http.get('http://localhost:5000/api/rspo/old-schools', { headers: this.headers }).subscribe(
+    this.http.get('http://localhost:5000/api/rspo/new-school/new-schools', { headers: this.headers }).subscribe(
       (data: any) => {
         this.schools = data.map((school: any) => ({
           ...school
@@ -167,12 +165,9 @@ export class MainComponent implements OnInit {
   }
 
   createPopup(data: any) {
-    // Check if the required fields exist and have valid values
     const nazwa = data.nazwa || 'Brak nazwy';  // Fallback if 'nazwa' is missing
     const miejscowosc = data.miejscowosc || 'Brak miejscowości';  // Fallback if 'miejscowosc' is missing
     const ulica = data.ulica ? data.ulica : 'Brak ulicy';  // Fallback to empty string if 'ulica' is missing
-    const kodPocztowy = data.kodPocztowy || 'Brak kodu pocztowego';  // Fallback if 'kodPocztowy' is missing
-    const poczta = data.poczta || '';  // Fallback if 'poczta' is missing
     const stronaInternetowa = data.stronaInternetowa || 'Brak strony internetowej';  // Fallback link if 'stronaInternetowa' is missing
     const email = data.email || 'Brak adresu e-mail';  // Fallback if 'email' is missing
   
@@ -180,7 +175,6 @@ export class MainComponent implements OnInit {
       <div class="popup">
         <p class="popup__school-name">${nazwa}</p>
         <p class="popup__city">${miejscowosc} ${ulica}</p>
-        <p class="popup__address">${kodPocztowy} ${poczta}</p>
         <a href="${stronaInternetowa}" target="_blank">${stronaInternetowa}</a>
         <a href="mailto:${email}">${email}</a>
       </div>
