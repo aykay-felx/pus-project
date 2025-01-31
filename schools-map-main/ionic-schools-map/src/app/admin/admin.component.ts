@@ -83,6 +83,7 @@ export class AdminComponent  implements OnInit, OnDestroy {
     private authService: AuthService,
     private route: ActivatedRoute,
     private changeDetectorRef: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef,
     private fetchSchoolsService: FetchSchoolsService
   ) { }
 
@@ -127,10 +128,9 @@ export class AdminComponent  implements OnInit, OnDestroy {
       filteredSchools: this.http.get<any[]>(this.newSchoolsUrl)
     }).pipe(
       map(response => {
-        // Dodajemy pole 'selected' do każdej szkoły w filteredSchools
         const filteredSchoolsWithSelected = response.filteredSchools.map(school => ({
           ...school,
-          selected: false // Dodajemy domyślną wartość 'false' dla pola 'selected'
+          selected: false
         }));
   
         return {
@@ -142,7 +142,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
     );
   }
 
-  // Metoda do usuwania zaznaczonych szkół
   public async deleteSelectedSchools() {
     const alert = await this.alertController.create({
       header: 'Usuń szkołę',
@@ -210,26 +209,40 @@ export class AdminComponent  implements OnInit, OnDestroy {
   
 
   toggleFilter() {
-    this.showFilter = !this.showFilter; // Przełącza widoczność okienka filtrów
+    this.showFilter = !this.showFilter;
   }
 
+  inProgress = false;
+
   updateData() {
+    this.inProgress = true;
+    this.progress = 0;
+    this.cdr.detectChanges();
+
     const url = 'https://localhost:5001/api/rspo/new-school/new-schools/fetch';
-  
-    const eventSource = new EventSource(url); // Initialize EventSource for SSE
-  
+    const eventSource = new EventSource(url);
+
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data); // Parse JSON data from SSE
+      const data = JSON.parse(event.data);
       console.log('Received SSE message:', data);
+      
+      if (data.progress !== undefined) {
+        this.progress = data.progress;
+        this.cdr.detectChanges();
+      }
+      
       if (data.message === 'Fetch complete') {
-        eventSource.close(); // Close the connection when fetch is complete
-        this.compareData(); // Call the compare endpoint after fetch is done
+        eventSource.close();
+        this.compareData();
+        this.cdr.detectChanges();
       }
     };
-  
+
     eventSource.onerror = (error) => {
       console.error('Error in SSE connection:', error);
-      eventSource.close(); // Close connection on error
+      this.inProgress = false;
+      eventSource.close();
+      this.cdr.detectChanges();
     };
   }
   
@@ -239,6 +252,7 @@ export class AdminComponent  implements OnInit, OnDestroy {
     this.http.get(url).subscribe(
       (response) => {
         console.log('Comparison completed:', response);
+        this.inProgress = false;
         this.loadSchools();
       },
       (error) => {
@@ -293,7 +307,7 @@ export class AdminComponent  implements OnInit, OnDestroy {
 
   applyFilters() {
     const queryParams = Object.keys(this.filters)
-      .filter(key => this.filters[key as keyof typeof this.filters]) // Rzutowanie klucza
+      .filter(key => this.filters[key as keyof typeof this.filters])
       .map(key => {
         let value = this.filters[key as keyof typeof this.filters];
         
@@ -330,7 +344,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
     const deleteUrlOldSchool = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
 
     try {
-      // Próbuj usunąć szkołę z nowej listy
       await this.http.delete(deleteUrlNewSchool).toPromise();
       this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
 
@@ -344,7 +357,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
       const errorMessage = error?.error?.message || '';
       if (errorMessage.includes('not found')) {
         try {
-          // Próbuj usunąć szkołę ze starej listy, jeśli nie ma jej w nowej
           await this.http.delete(deleteUrlOldSchool).toPromise();
           this.oldSchools = this.oldSchools.filter(school => school.rspoNumer !== rspoNumer);
 
@@ -355,7 +367,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
           }).then(alert => alert.present());
 
         } catch (oldSchoolError) {
-          // Obsługa błędu dla starej szkoły
           await this.alertController.create({
             header: 'Błąd',
             message: 'Wystąpił błąd podczas usuwania szkoły.',
@@ -365,7 +376,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
       }
     }
 
-    // Odśwież widok
     this.loadSchools();
   }
   
@@ -393,7 +403,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
             const deleteUrlOldSchool = `http://localhost:5000/api/rspo/old-school/oldschools/${rspoNumer}`;
   
             try {
-              // Próbuj usunąć szkołę z nowej listy
               await this.http.delete(deleteUrlNewSchool).toPromise();
               this.newSchools = this.newSchools.filter(school => school.rspoNumer !== rspoNumer);
   
@@ -407,7 +416,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
               const errorMessage = error?.error?.message || '';
               if (errorMessage.includes('not found')) {
                 try {
-                  // Próbuj usunąć szkołę ze starej listy, jeśli nie ma jej w nowej
                   await this.http.delete(deleteUrlOldSchool).toPromise();
                   this.oldSchools = this.oldSchools.filter(school => school.rspoNumer !== rspoNumer);
   
@@ -418,7 +426,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
                   }).then(alert => alert.present());
   
                 } catch (oldSchoolError) {
-                  // Obsługa błędu dla starej szkoły
                   await this.alertController.create({
                     header: 'Błąd',
                     message: 'Wystąpił błąd podczas usuwania szkoły.',
@@ -428,7 +435,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
               }
             }
   
-            // Odśwież widok
             this.loadSchools();
           },
         },
@@ -442,7 +448,6 @@ export class AdminComponent  implements OnInit, OnDestroy {
     school.isExpanded = !school.isExpanded;
   
     if (school.isExpanded && school.isNewObj) {
-      // Find a matching old school
       school.matchedOldSchool = this.oldSchools.find(
         oldSchool => oldSchool.rspoNumer === school.rspoNumer
       );
@@ -457,11 +462,11 @@ export class AdminComponent  implements OnInit, OnDestroy {
 
   public compareValues(newVal: any, oldVal: any): string {
     if (newVal === oldVal) {
-      return 'green';  // Same value
+      return 'green';
     } else if (!newVal || !oldVal) {
-      return '';  // If one of the values is 'N/A' or empty, no highlight
+      return ''; 
     } else {
-      return 'red';  // Different values
+      return 'red'; 
     }
   }
 
@@ -469,16 +474,15 @@ export class AdminComponent  implements OnInit, OnDestroy {
     event.stopPropagation();
     const modal = await this.modalController.create({
       component: EditSchoolModalComponent,
-      componentProps: { school } // Przekazanie danych szkoły do modala
+      componentProps: { school } 
     });
   
     await modal.present();
   
-    const { data } = await modal.onDidDismiss(); // Obsługa po zamknięciu
+    const { data } = await modal.onDidDismiss();
     if (data) {
       console.log('Zaktualizowane dane:', data);
       this.loadSchools();
-      // Zaktualizuj dane szkoły w widoku
     }
   }
   
@@ -495,13 +499,11 @@ export class AdminComponent  implements OnInit, OnDestroy {
   
         console.log('Porównanie szkoły:', school, 'z', oldSchool);
   
-        // Porównanie wszystkich pól
         return Object.keys(school).some(key => school[key] !== oldSchool[key]);
       })
       .map(school => {
         const oldSchool = school.matchedOldSchool;
   
-        // Map fields to match the expected Swagger API structure
         return {
           rspoNumer: school.rspoNumer || '',
           subFieldRspoNumer: {
@@ -687,7 +689,7 @@ export class AdminComponent  implements OnInit, OnDestroy {
             isManual: true
           },
   
-          jezykiNauczane: school.jezykiNauczane || [],
+          jezykiNauczane: school.jezykiNauczane || '',
           subFieldJezykiNauczane: {
             isDifferent: school.jezykiNauczane !== school.matchedOldSchool?.jezykiNauczane,
             oldValue: school.matchedOldSchool?.jezykiNauczane ? school.matchedOldSchool.jezykiNauczane.join(', ') : '',
@@ -708,16 +710,15 @@ export class AdminComponent  implements OnInit, OnDestroy {
     }
 
     const url = 'https://localhost:5001/api/RSPO/old-schools/apply-changes';
-    //console.log('Payload being sent:', JSON.stringify(changedSchools, null, 2));
     this.http.post(url, changedSchools, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       }),
-      responseType: 'text'  // Set responseType to 'text'
+      responseType: 'text'
     }).subscribe(
       response => {
         console.log('Zmiany zostały pomyślnie zatwierdzone:', response);
-        alert(response);  // Alert the text response
+        alert(response);
       },
       error => {
         console.error('Błąd podczas zatwierdzania zmian:', error);
