@@ -215,6 +215,13 @@ export class AdminComponent  implements OnInit, OnDestroy {
   inProgress = false;
 
   updateData() {
+    const userConfirmed = confirm("Czy na pewno chcesz rozpocząć aktualizację danych? Może to potrwać dłużej niż godzinę, a niezapisane zmiany zostaną utracone.");
+    
+    if (!userConfirmed) {
+        console.log("Aktualizacja anulowana przez użytkownika.");
+        return;
+    }
+
     this.inProgress = true;
     this.progress = 0;
     this.cdr.detectChanges();
@@ -223,28 +230,29 @@ export class AdminComponent  implements OnInit, OnDestroy {
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Received SSE message:', data);
-      
-      if (data.progress !== undefined) {
-        this.progress = data.progress;
-        this.cdr.detectChanges();
-      }
-      
-      if (data.message === 'Fetch complete') {
-        eventSource.close();
-        this.compareData();
-        this.cdr.detectChanges();
-      }
+        const data = JSON.parse(event.data);
+        console.log('Received SSE message:', data);
+        
+        if (data.progress !== undefined) {
+            this.progress = data.progress;
+            this.cdr.detectChanges();
+        }
+        
+        if (data.message === 'Fetch complete') {
+            eventSource.close();
+            this.compareData();
+            this.cdr.detectChanges();
+        }
     };
 
     eventSource.onerror = (error) => {
-      console.error('Error in SSE connection:', error);
-      this.inProgress = false;
-      eventSource.close();
-      this.cdr.detectChanges();
+        console.error('Error in SSE connection:', error);
+        this.inProgress = false;
+        eventSource.close();
+        this.cdr.detectChanges();
     };
-  }
+}
+
   
   compareData() {
     const url = 'https://localhost:5001/api/rspo/new-school/new-schools/compare';

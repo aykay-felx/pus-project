@@ -2,19 +2,19 @@
   <ion-toolbar>
     <ion-title slot="start">Admin Panel</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="saveSelectedSchools()">
+      <ion-button (click)="saveSelectedSchools()" [disabled]="inProgress">
         Zapisz zaznaczone
       </ion-button>      
       <ion-button (click)="toggleSelectAllSchools()">
         {{ allSelected ? 'Odznacz wszystkie' : 'Zaznacz wszystkie' }}
       </ion-button>      
-      <ion-button (click)="updateData()">
+      <ion-button (click)="updateData()" [disabled]="inProgress">
         Aktualizuj
       </ion-button>
-      <ion-button (click)="toggleFilter()">
+      <ion-button (click)="toggleFilter()" [disabled]="inProgress">
         Filtrowanie
       </ion-button>
-      <ion-button color="red" (click)="deleteSelectedSchools()">
+      <ion-button color="red" (click)="deleteSelectedSchools()" [disabled]="inProgress">
         Usuń Zaznaczone
       </ion-button>
       <ion-button (click)="goToMain()">
@@ -59,15 +59,15 @@
           </ion-card-content>
           <div class="card-buttons">
             <ion-checkbox [(ngModel)]="school.selected" slot="start" style="margin-top:13px" (click)="$event.stopPropagation()"></ion-checkbox>    
-            <ion-button class="primary" (click)="editSchool($event, school)">
+            <ion-button class="primary" (click)="editSchool($event, school)" [disabled]="inProgress">
               Edytuj
             </ion-button>
         
-            <ion-button class="common" (click)="showHistory($event, school.rspoNumer)">
+            <ion-button class="common" (click)="showHistory($event, school.rspoNumer)" [disabled]="inProgress">
               Pokaż historię
             </ion-button>        
     
-            <ion-button class="red" (click)="deleteSchool($event, school.rspoNumer)">
+            <ion-button class="red" (click)="deleteSchool($event, school.rspoNumer)" [disabled]="inProgress">
               Usuń
             </ion-button>
           </div>
